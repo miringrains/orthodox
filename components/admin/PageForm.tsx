@@ -132,7 +132,7 @@ export function PageForm({ parishes, page }: PageFormProps) {
       // Convert title to JSONB format {en: title}
       const titleJson = { en: data.title }
 
-      const pageData = {
+      const pageData: any = {
         parish_id: data.parish_id,
         slug: data.slug,
         title: titleJson,
@@ -148,6 +148,12 @@ export function PageForm({ parishes, page }: PageFormProps) {
 
         if (error) throw error
       } else {
+        // For new pages with builder enabled, add default template
+        if (data.builder_enabled) {
+          const { getDefaultPageTemplate } = await import('@/lib/page-templates')
+          pageData.builder_schema = getDefaultPageTemplate()
+        }
+        
         const { error } = await supabase.from('pages').insert(pageData)
         if (error) throw error
       }

@@ -34,7 +34,14 @@ export default function BuilderPage() {
         // Load builder_schema if it exists
         // Craft.js stores content as JSON, we can load it directly
         const builderData = page?.builder_schema as any
-        setContent(builderData || null)
+        
+        // If no content exists and builder is enabled, load default template
+        if (!builderData && page?.builder_enabled) {
+          const { getDefaultPageTemplate } = await import('@/lib/page-templates')
+          setContent(getDefaultPageTemplate())
+        } else {
+          setContent(builderData || null)
+        }
         setLoading(false)
       } catch (error) {
         console.error('Error loading page:', error)

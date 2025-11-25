@@ -187,27 +187,24 @@ function ImageBlockSettings() {
             className="hidden"
             id="image-upload"
           />
-          <label htmlFor="image-upload">
+          <label htmlFor="image-upload" className="cursor-pointer">
             <Button
               type="button"
               variant="outline"
               className="w-full"
               disabled={uploading}
-              asChild
             >
-              <span className="cursor-pointer">
-                {uploading ? (
-                  <>
-                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    Uploading...
-                  </>
-                ) : (
-                  <>
-                    <Upload className="h-4 w-4 mr-2" />
-                    Choose Image
-                  </>
-                )}
-              </span>
+              {uploading ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Uploading...
+                </>
+              ) : (
+                <>
+                  <Upload className="h-4 w-4 mr-2" />
+                  Choose Image
+                </>
+              )}
             </Button>
           </label>
         </div>
