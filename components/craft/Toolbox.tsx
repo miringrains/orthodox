@@ -78,9 +78,18 @@ export function Toolbox() {
                   <div
                     key={name}
                     ref={(ref) => {
-                      if (ref) {
-                        // Create a new instance of the component with default props from craft config
-                        connectors.create(ref, React.createElement(Component as any, defaultProps))
+                      if (ref && connectors) {
+                        try {
+                          // Create a new instance of the component with default props from craft config
+                          // Use componentName to ensure Craft.js can resolve it correctly
+                          connectors.create(ref, React.createElement(Component as any, {
+                            ...defaultProps,
+                            // Ensure componentName is set for Craft.js resolution
+                            'data-craft-component': componentName,
+                          }))
+                        } catch (error) {
+                          console.error(`Error creating component ${componentName}:`, error)
+                        }
                       }
                     }}
                     className="flex items-center gap-3 p-3 border border-gray-200 rounded-lg hover:border-primary hover:bg-primary/5 cursor-grab active:cursor-grabbing transition-all group"

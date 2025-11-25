@@ -96,57 +96,56 @@ export function Heading({
     }
   }
 
-  const Tag = level
+  const headingProps = {
+    ref: (ref: HTMLElement | null) => {
+      if (ref) {
+        connect(drag(ref))
+      }
+    },
+    className: `
+      ${defaultSizes[level]}
+      ${alignClasses[align]}
+      ${isSelected ? 'ring-2 ring-primary rounded' : ''}
+      ${isSelected && !isEditing ? 'cursor-text' : ''}
+    `,
+    style: {
+      fontFamily: fontFamily || undefined,
+      fontSize: fontSize || undefined,
+      fontWeight: fontWeight || undefined,
+      color: textColor || undefined,
+      backgroundColor: backgroundColor || undefined,
+      padding: paddingStyle,
+      margin: marginStyle,
+      borderRadius: `${borderRadius}px`,
+      border: borderStyleStr,
+      boxShadow: boxShadow || undefined,
+      lineHeight: lineHeight || undefined,
+      letterSpacing: letterSpacing || undefined,
+    } as React.CSSProperties,
+    onDoubleClick: () => {
+      if (isSelected) {
+        setIsEditing(true)
+        setEditText(text || '')
+      }
+    },
+  }
 
-  return (
-    <Tag
-      ref={(ref) => {
-        if (ref) {
-          connect(drag(ref))
-        }
-      }}
-      className={`
-        ${defaultSizes[level]}
-        ${alignClasses[align]}
-        ${isSelected ? 'ring-2 ring-primary rounded' : ''}
-        ${isSelected && !isEditing ? 'cursor-text' : ''}
-      `}
-      style={{
-        fontFamily: fontFamily || undefined,
-        fontSize: fontSize || undefined,
-        fontWeight: fontWeight || undefined,
-        color: textColor || undefined,
-        backgroundColor: backgroundColor || undefined,
-        padding: paddingStyle,
-        margin: marginStyle,
-        borderRadius: `${borderRadius}px`,
-        border: borderStyleStr,
-        boxShadow: boxShadow || undefined,
-        lineHeight: lineHeight || undefined,
-        letterSpacing: letterSpacing || undefined,
-      }}
-      onDoubleClick={() => {
-        if (isSelected) {
-          setIsEditing(true)
-          setEditText(text || '')
-        }
-      }}
-    >
-      {isEditing && isSelected ? (
-        <input
-          type="text"
-          value={editText}
-          onChange={(e) => setEditText(e.target.value)}
-          onBlur={handleBlur}
-          onKeyDown={handleKeyDown}
-          className="w-full border-2 border-primary rounded p-2 focus:outline-none"
-          autoFocus
-        />
-      ) : (
-        text || `Heading ${level.toUpperCase()}`
-      )}
-    </Tag>
+  const content = isEditing && isSelected ? (
+    <input
+      type="text"
+      value={editText}
+      onChange={(e) => setEditText(e.target.value)}
+      onBlur={handleBlur}
+      onKeyDown={handleKeyDown}
+      className="w-full border-2 border-primary rounded p-2 focus:outline-none"
+      autoFocus
+    />
+  ) : (
+    text || `Heading ${level.toUpperCase()}`
   )
+
+  // Use React.createElement to avoid dynamic tag issues with Craft.js
+  return React.createElement(level, headingProps, content)
 }
 
 function HeadingSettings() {
