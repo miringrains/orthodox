@@ -2,11 +2,17 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
-export function GalleryGrid({ title, imageUrls }: { title: string; imageUrls: { url: string }[] }) {
+interface GalleryGridProps {
+  title?: string
+  imageUrls?: { url: string }[]
+}
+
+export function GalleryGrid(props: GalleryGridProps) {
+  const { title = 'Parish Gallery', imageUrls = [] } = props
   return (
     <div>
       <h2 className="text-2xl font-bold mb-6">{title}</h2>
-      {imageUrls.length > 0 ? (
+      {imageUrls && imageUrls.length > 0 ? (
         <div className="grid gap-4 md:grid-cols-3">
           {imageUrls.map((img, i) => (
             <Card key={i}>

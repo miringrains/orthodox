@@ -2,12 +2,18 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
-export function NewsList({ title, limit }: { title: string; limit: number }) {
+interface NewsListProps {
+  title?: string
+  limit?: number
+}
+
+export function NewsList(props: NewsListProps) {
+  const { title = 'Recent Announcements', limit = 3 } = props
   return (
     <div>
       <h2 className="text-2xl font-bold mb-6">{title}</h2>
       <div className="grid gap-4 md:grid-cols-3">
-        {Array.from({ length: limit }).map((_, i) => (
+        {Array.from({ length: limit || 3 }).map((_, i) => (
           <Card key={i}>
             <CardHeader>
               <CardTitle className="text-lg">Announcement {i + 1}</CardTitle>

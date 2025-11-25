@@ -3,15 +3,14 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Calendar } from 'lucide-react'
 
-export function FeastHighlight({
-  feastName,
-  date,
-  description,
-}: {
-  feastName: string
-  date: string
-  description: string
-}) {
+interface FeastHighlightProps {
+  feastName?: string
+  date?: string
+  description?: string
+}
+
+export function FeastHighlight(props: FeastHighlightProps) {
+  const { feastName = 'Great Feast', date = new Date().toLocaleDateString(), description = 'Join us in celebration' } = props
   return (
     <Card className="border-primary bg-primary/5">
       <CardHeader>

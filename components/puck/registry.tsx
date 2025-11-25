@@ -1,5 +1,6 @@
 'use client'
 
+import React from 'react'
 import { Config } from '@measured/puck'
 import { HeroSection } from './components/HeroSection'
 import { SchedulePreview } from './components/SchedulePreview'
@@ -22,7 +23,7 @@ export const config: Config = {
         subtitle: 'Join us in worship and fellowship',
         imageUrl: '',
       },
-      render: HeroSection,
+      render: (props: any) => <HeroSection {...props} />,
     },
     SchedulePreview: {
       fields: {
@@ -33,7 +34,7 @@ export const config: Config = {
         title: 'Service Schedule',
         showFullSchedule: true,
       },
-      render: SchedulePreview,
+      render: (props: any) => <SchedulePreview {...props} />,
     },
     DonationPanel: {
       fields: {
@@ -44,7 +45,7 @@ export const config: Config = {
         title: 'Support Our Parish',
         description: 'Your generosity helps us serve our community',
       },
-      render: DonationPanel,
+      render: (props: any) => <DonationPanel {...props} />,
     },
     NewsList: {
       fields: {
@@ -55,7 +56,7 @@ export const config: Config = {
         title: 'Recent Announcements',
         limit: 3,
       },
-      render: NewsList,
+      render: (props: any) => <NewsList {...props} />,
     },
     SermonCardGrid: {
       fields: {
@@ -66,7 +67,7 @@ export const config: Config = {
         title: 'Recent Sermons',
         limit: 3,
       },
-      render: SermonCardGrid,
+      render: (props: any) => <SermonCardGrid {...props} />,
     },
     GalleryGrid: {
       fields: {
@@ -77,7 +78,7 @@ export const config: Config = {
         title: 'Parish Gallery',
         imageUrls: [],
       },
-      render: GalleryGrid,
+      render: (props: any) => <GalleryGrid {...props} />,
     },
     FeastHighlight: {
       fields: {
@@ -90,7 +91,7 @@ export const config: Config = {
         date: new Date().toLocaleDateString(),
         description: 'Join us in celebration',
       },
-      render: FeastHighlight,
+      render: (props: any) => <FeastHighlight {...props} />,
     },
   },
 }

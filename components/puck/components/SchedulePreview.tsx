@@ -4,7 +4,13 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import Link from 'next/link'
 import { Calendar } from 'lucide-react'
 
-export function SchedulePreview({ title, showFullSchedule }: { title: string; showFullSchedule: boolean }) {
+interface SchedulePreviewProps {
+  title?: string
+  showFullSchedule?: boolean
+}
+
+export function SchedulePreview(props: SchedulePreviewProps) {
+  const { title = 'Service Schedule', showFullSchedule = true } = props
   // This would fetch actual schedule data in a real implementation
   return (
     <Card>

@@ -2,7 +2,14 @@
 
 import { Card, CardContent } from '@/components/ui/card'
 
-export function HeroSection({ title, subtitle, imageUrl }: { title: string; subtitle: string; imageUrl: string }) {
+interface HeroSectionProps {
+  title?: string
+  subtitle?: string
+  imageUrl?: string
+}
+
+export function HeroSection(props: HeroSectionProps) {
+  const { title = 'Welcome to Our Parish', subtitle = 'Join us in worship and fellowship', imageUrl = '' } = props
   return (
     <section className="relative py-20 bg-gradient-to-b from-primary/10 to-background">
       {imageUrl && (

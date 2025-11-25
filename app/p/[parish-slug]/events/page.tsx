@@ -45,14 +45,12 @@ export default async function EventsPage({
                     day: 'numeric',
                   })}
                 </p>
-                {event.time && (
-                  <p className="text-sm text-muted-foreground mb-2">
-                    {new Date(`2000-01-01T${event.time}`).toLocaleTimeString('en-US', {
-                      hour: 'numeric',
-                      minute: '2-digit',
-                    })}
-                  </p>
-                )}
+                <p className="text-sm text-muted-foreground mb-2">
+                  {new Date(event.start_at).toLocaleTimeString('en-US', {
+                    hour: 'numeric',
+                    minute: '2-digit',
+                  })}
+                </p>
                 {event.location && (
                   <p className="text-sm text-muted-foreground mb-2">📍 {event.location}</p>
                 )}

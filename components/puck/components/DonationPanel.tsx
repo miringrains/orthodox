@@ -5,7 +5,13 @@ import { Button } from '@/components/ui/button'
 import { DollarSign } from 'lucide-react'
 import Link from 'next/link'
 
-export function DonationPanel({ title, description }: { title: string; description: string }) {
+interface DonationPanelProps {
+  title?: string
+  description?: string
+}
+
+export function DonationPanel(props: DonationPanelProps) {
+  const { title = 'Support Our Parish', description = 'Your generosity helps us serve our community' } = props
   return (
     <Card className="border-primary">
       <CardHeader>
