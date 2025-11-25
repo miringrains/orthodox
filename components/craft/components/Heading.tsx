@@ -3,7 +3,7 @@
 import { useNode } from '@craftjs/core'
 import React, { useState } from 'react'
 import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
+import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { ColorPicker } from '../controls/ColorPicker'
 import { FontSelector } from '../controls/FontSelector'
@@ -11,10 +11,10 @@ import { SpacingControl } from '../controls/SpacingControl'
 import { BorderControl } from '../controls/BorderControl'
 import { ShadowControl } from '../controls/ShadowControl'
 
-interface TextBlockProps {
-  content?: string
+interface HeadingProps {
+  text?: string
+  level?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6'
   align?: 'left' | 'center' | 'right'
-  size?: 'sm' | 'md' | 'lg' | 'xl'
   fontFamily?: string
   fontSize?: string
   fontWeight?: string
@@ -27,12 +27,14 @@ interface TextBlockProps {
   borderColor?: string
   borderStyle?: 'solid' | 'dashed' | 'dotted' | 'none'
   boxShadow?: string
+  lineHeight?: string
+  letterSpacing?: string
 }
 
-export function TextBlock({ 
-  content, 
-  align, 
-  size,
+export function Heading({
+  text,
+  level = 'h1',
+  align = 'left',
   fontFamily,
   fontSize,
   fontWeight,
@@ -45,7 +47,9 @@ export function TextBlock({
   borderColor = '#000000',
   borderStyle = 'solid',
   boxShadow,
-}: TextBlockProps) {
+  lineHeight,
+  letterSpacing,
+}: HeadingProps) {
   const {
     connectors: { connect, drag },
     isSelected,
@@ -55,14 +59,7 @@ export function TextBlock({
   }))
 
   const [isEditing, setIsEditing] = useState(false)
-  const [editContent, setEditContent] = useState(content || '')
-
-  const sizeClasses = {
-    sm: 'text-sm',
-    md: 'text-base',
-    lg: 'text-lg',
-    xl: 'text-2xl',
-  }
+  const [editText, setEditText] = useState(text || '')
 
   const alignClasses = {
     left: 'text-left',
@@ -70,36 +67,47 @@ export function TextBlock({
     right: 'text-right',
   }
 
+  const defaultSizes = {
+    h1: 'text-4xl md:text-5xl',
+    h2: 'text-3xl md:text-4xl',
+    h3: 'text-2xl md:text-3xl',
+    h4: 'text-xl md:text-2xl',
+    h5: 'text-lg md:text-xl',
+    h6: 'text-base md:text-lg',
+  }
+
   const paddingStyle = `${padding.top}px ${padding.right}px ${padding.bottom}px ${padding.left}px`
   const marginStyle = `${margin.top}px ${margin.right}px ${margin.bottom}px ${margin.left}px`
   const borderStyleStr = borderWidth > 0 ? `${borderWidth}px ${borderStyle} ${borderColor}` : 'none'
 
   const handleBlur = () => {
-    setProp((props: any) => (props.content = editContent))
+    setProp((props: any) => (props.text = editText))
     setIsEditing(false)
   }
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
+    if (e.key === 'Enter') {
       e.preventDefault()
       handleBlur()
     }
     if (e.key === 'Escape') {
-      setEditContent(content || '')
+      setEditText(text || '')
       setIsEditing(false)
     }
   }
 
+  const Tag = level
+
   return (
-    <div
+    <Tag
       ref={(ref) => {
         if (ref) {
           connect(drag(ref))
         }
       }}
       className={`
-        ${sizeClasses[size || 'md']} 
-        ${alignClasses[align || 'left']} 
+        ${defaultSizes[level]}
+        ${alignClasses[align]}
         ${isSelected ? 'ring-2 ring-primary rounded' : ''}
         ${isSelected && !isEditing ? 'cursor-text' : ''}
       `}
@@ -114,34 +122,34 @@ export function TextBlock({
         borderRadius: `${borderRadius}px`,
         border: borderStyleStr,
         boxShadow: boxShadow || undefined,
+        lineHeight: lineHeight || undefined,
+        letterSpacing: letterSpacing || undefined,
       }}
       onDoubleClick={() => {
         if (isSelected) {
           setIsEditing(true)
-          setEditContent(content || '')
+          setEditText(text || '')
         }
       }}
     >
       {isEditing && isSelected ? (
-        <textarea
-          value={editContent}
-          onChange={(e) => setEditContent(e.target.value)}
+        <input
+          type="text"
+          value={editText}
+          onChange={(e) => setEditText(e.target.value)}
           onBlur={handleBlur}
           onKeyDown={handleKeyDown}
-          className="w-full border-2 border-primary rounded p-2 focus:outline-none resize-none"
+          className="w-full border-2 border-primary rounded p-2 focus:outline-none"
           autoFocus
-          rows={Math.max(3, editContent.split('\n').length)}
         />
       ) : (
-        <div className="whitespace-pre-wrap max-w-4xl mx-auto">
-          {content || 'Double-click to edit text'}
-        </div>
+        text || `Heading ${level.toUpperCase()}`
       )}
-    </div>
+    </Tag>
   )
 }
 
-function TextBlockSettings() {
+function HeadingSettings() {
   const { actions: { setProp }, props } = useNode((node) => ({
     props: node.data.props,
   }))
@@ -149,13 +157,33 @@ function TextBlockSettings() {
   return (
     <div className="space-y-4 p-4">
       <div>
-        <Label>Content</Label>
-        <Textarea
-          value={props.content || ''}
-          onChange={(e) => setProp((props: any) => (props.content = e.target.value))}
-          rows={6}
+        <Label>Text</Label>
+        <Input
+          value={props.text || ''}
+          onChange={(e) => setProp((props: any) => (props.text = e.target.value))}
         />
       </div>
+
+      <div>
+        <Label>Heading Level</Label>
+        <Select
+          value={props.level || 'h1'}
+          onValueChange={(value) => setProp((props: any) => (props.level = value))}
+        >
+          <SelectTrigger>
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="h1">H1</SelectItem>
+            <SelectItem value="h2">H2</SelectItem>
+            <SelectItem value="h3">H3</SelectItem>
+            <SelectItem value="h4">H4</SelectItem>
+            <SelectItem value="h5">H5</SelectItem>
+            <SelectItem value="h6">H6</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
       <div>
         <Label>Alignment</Label>
         <Select
@@ -163,29 +191,12 @@ function TextBlockSettings() {
           onValueChange={(value) => setProp((props: any) => (props.align = value))}
         >
           <SelectTrigger>
-            <SelectValue placeholder="Select alignment" />
+            <SelectValue />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="left">Left</SelectItem>
             <SelectItem value="center">Center</SelectItem>
             <SelectItem value="right">Right</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-      <div>
-        <Label>Size</Label>
-        <Select
-          value={props.size || 'md'}
-          onValueChange={(value) => setProp((props: any) => (props.size = value))}
-        >
-          <SelectTrigger>
-            <SelectValue placeholder="Select size" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="sm">Small</SelectItem>
-            <SelectItem value="md">Medium</SelectItem>
-            <SelectItem value="lg">Large</SelectItem>
-            <SelectItem value="xl">Extra Large</SelectItem>
           </SelectContent>
         </Select>
       </div>
@@ -198,19 +209,18 @@ function TextBlockSettings() {
 
       <div>
         <Label>Font Size</Label>
-        <input
+        <Input
           type="text"
           value={props.fontSize || ''}
           onChange={(e) => setProp((props: any) => (props.fontSize = e.target.value))}
-          placeholder="e.g., 16px, 1rem, 1.2em"
-          className="w-full mt-2 px-3 py-2 border rounded-md"
+          placeholder="e.g., 32px, 2rem, 2em"
         />
       </div>
 
       <div>
         <Label>Font Weight</Label>
         <Select
-          value={props.fontWeight || 'normal'}
+          value={props.fontWeight || 'bold'}
           onValueChange={(value) => setProp((props: any) => (props.fontWeight = value))}
         >
           <SelectTrigger>
@@ -227,6 +237,26 @@ function TextBlockSettings() {
             <SelectItem value="800">Extra Bold</SelectItem>
           </SelectContent>
         </Select>
+      </div>
+
+      <div>
+        <Label>Line Height</Label>
+        <Input
+          type="text"
+          value={props.lineHeight || ''}
+          onChange={(e) => setProp((props: any) => (props.lineHeight = e.target.value))}
+          placeholder="e.g., 1.5, 1.2em, 24px"
+        />
+      </div>
+
+      <div>
+        <Label>Letter Spacing</Label>
+        <Input
+          type="text"
+          value={props.letterSpacing || ''}
+          onChange={(e) => setProp((props: any) => (props.letterSpacing = e.target.value))}
+          placeholder="e.g., 0.05em, 1px"
+        />
       </div>
 
       <ColorPicker
@@ -273,15 +303,15 @@ function TextBlockSettings() {
   )
 }
 
-TextBlock.craft = {
-  displayName: 'Text Block',
+Heading.craft = {
+  displayName: 'Heading',
   props: {
-    content: 'Enter your text here',
+    text: 'Heading Text',
+    level: 'h1',
     align: 'left',
-    size: 'md',
     fontFamily: 'inherit',
     fontSize: '',
-    fontWeight: 'normal',
+    fontWeight: 'bold',
     textColor: '#000000',
     backgroundColor: '',
     padding: { top: 0, right: 0, bottom: 0, left: 0 },
@@ -291,8 +321,11 @@ TextBlock.craft = {
     borderColor: '#000000',
     borderStyle: 'solid',
     boxShadow: 'none',
+    lineHeight: '',
+    letterSpacing: '',
   },
   related: {
-    settings: TextBlockSettings,
+    settings: HeadingSettings,
   },
 }
+

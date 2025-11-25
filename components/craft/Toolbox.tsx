@@ -17,22 +17,32 @@ import {
 import { TextBlock } from './components/TextBlock'
 import { ImageBlock } from './components/ImageBlock'
 import { ButtonBlock } from './components/ButtonBlock'
+import { Heading } from './components/Heading'
 import { HeroSection } from './components/HeroSection'
 import { Navbar } from './components/Navbar'
+import { Container } from './components/Container'
+import { Section } from './components/Section'
+import { TwoColumn } from './components/TwoColumn'
+import { ThreeColumn } from './components/ThreeColumn'
 import { SchedulePreview } from './components/SchedulePreview'
 import { DonationPanel } from './components/DonationPanel'
 import { NewsList } from './components/NewsList'
 import { SermonCardGrid } from './components/SermonCardGrid'
 import { GalleryGrid } from './components/GalleryGrid'
 import { FeastHighlight } from './components/FeastHighlight'
-import { Navigation } from 'lucide-react'
+import { Navigation, Columns, Heading as HeadingIcon } from 'lucide-react'
 
 const components = [
+  { name: 'Heading', icon: HeadingIcon, component: Heading, componentName: 'Heading', category: 'Basic' },
   { name: 'Text Block', icon: Type, component: TextBlock, componentName: 'TextBlock', category: 'Basic' },
   { name: 'Image', icon: Image, component: ImageBlock, componentName: 'ImageBlock', category: 'Basic' },
   { name: 'Button', icon: MousePointerClick, component: ButtonBlock, componentName: 'ButtonBlock', category: 'Basic' },
   { name: 'Navbar', icon: Navigation, component: Navbar, componentName: 'Navbar', category: 'Layout' },
+  { name: 'Container', icon: Layout, component: Container, componentName: 'Container', category: 'Layout' },
+  { name: 'Section', icon: Layout, component: Section, componentName: 'Section', category: 'Layout' },
   { name: 'Hero Section', icon: Layout, component: HeroSection, componentName: 'HeroSection', category: 'Layout' },
+  { name: 'Two Column', icon: Columns, component: TwoColumn, componentName: 'TwoColumn', category: 'Layout' },
+  { name: 'Three Column', icon: Columns, component: ThreeColumn, componentName: 'ThreeColumn', category: 'Layout' },
   { name: 'Schedule', icon: Calendar, component: SchedulePreview, componentName: 'SchedulePreview', category: 'Content' },
   { name: 'Donation', icon: DollarSign, component: DonationPanel, componentName: 'DonationPanel', category: 'Content' },
   { name: 'News List', icon: Megaphone, component: NewsList, componentName: 'NewsList', category: 'Content' },
