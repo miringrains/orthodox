@@ -44,22 +44,27 @@ export function Toolbox() {
 
   return (
     <div className="p-4 space-y-2">
-      {components.map(({ name, icon: Icon, component: Component, componentName }) => (
-        <div
-          key={name}
-          ref={(ref) => {
-            if (ref) {
-              // Create a new instance of the component with default props
-              connectors.create(ref, React.createElement(Component as any, {}))
-            }
-          }}
-          className="flex items-center gap-3 p-3 border rounded-lg hover:bg-muted cursor-grab active:cursor-grabbing transition-colors"
-          draggable={false}
-        >
-          <Icon className="h-5 w-5 text-muted-foreground" />
-          <span className="text-sm font-medium">{name}</span>
-        </div>
-      ))}
+      {components.map(({ name, icon: Icon, component: Component, componentName }) => {
+        // Get default props from component's craft configuration
+        const defaultProps = (Component as any).craft?.props || {}
+        
+        return (
+          <div
+            key={name}
+            ref={(ref) => {
+              if (ref) {
+                // Create a new instance of the component with default props from craft config
+                connectors.create(ref, React.createElement(Component as any, defaultProps))
+              }
+            }}
+            className="flex items-center gap-3 p-3 border rounded-lg hover:bg-muted cursor-grab active:cursor-grabbing transition-colors"
+            draggable={false}
+          >
+            <Icon className="h-5 w-5 text-muted-foreground" />
+            <span className="text-sm font-medium">{name}</span>
+          </div>
+        )
+      })}
     </div>
   )
 }
