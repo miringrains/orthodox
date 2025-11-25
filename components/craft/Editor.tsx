@@ -185,7 +185,13 @@ function EditorContent({ onSave, initialContent }: { onSave: (content: any) => P
 
 export function CraftEditor({ content, onSave, pageId }: CraftEditorProps) {
   return (
-    <Editor resolver={craftComponents}>
+    <Editor 
+      resolver={craftComponents}
+      onRender={({ render }) => {
+        // Ensure related settings are populated on nodes
+        return render
+      }}
+    >
       <EditorContent onSave={onSave} initialContent={content} />
     </Editor>
   )

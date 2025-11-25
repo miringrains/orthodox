@@ -19,10 +19,13 @@ export function SettingsPanel() {
       const resolver = state.options?.resolver || {}
       const Component = resolver[componentType]
       
-      // Get settings from component's craft.related.settings
-      const settings = Component && typeof Component !== 'string'
-        ? (Component as any)?.craft?.related?.settings
-        : undefined
+      // Craft.js stores settings in node.related.settings
+      // If not found there, fall back to Component.craft.related.settings
+      let settings = node?.related?.settings
+      
+      if (!settings && Component && typeof Component !== 'string') {
+        settings = (Component as any)?.craft?.related?.settings
+      }
 
       const displayName = Component && typeof Component !== 'string'
         ? (Component as any)?.craft?.displayName || nodeData?.displayName || nodeData?.name || 'Component'
@@ -32,6 +35,7 @@ export function SettingsPanel() {
         id: currentlySelectedNodeId,
         name: displayName,
         settings: settings,
+        componentType: componentType,
         isDeletable: query.node(currentlySelectedNodeId).isDeletable(),
       }
     }
@@ -51,9 +55,13 @@ export function SettingsPanel() {
           {selected.settings ? (
             React.createElement(selected.settings)
           ) : (
-            <div className="text-sm text-muted-foreground py-4">
+            <div className="text-sm text-muted-foreground py-4 space-y-2">
               <p>No settings available for this component</p>
-              <p className="text-xs mt-2">Debug: Settings component not found</p>
+              <div className="text-xs space-y-1">
+                <p>Component: {selected.name}</p>
+                <p>Type: {selected.componentType || 'unknown'}</p>
+                <p>Settings function: {selected.settings ? 'Found' : 'Not found'}</p>
+              </div>
             </div>
           )}
           {selected.isDeletable && (
