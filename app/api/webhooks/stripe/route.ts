@@ -4,11 +4,12 @@ import { createClient } from '@/lib/supabase/server'
 // Stub implementation - will be fully implemented when Stripe keys are added
 export async function POST(req: Request) {
   const body = await req.text()
-  const signature = headers().get('stripe-signature')
+  const headersList = await headers()
+  const signature = headersList.get('stripe-signature')
 
   if (!process.env.STRIPE_WEBHOOK_SECRET) {
     // Stub mode - log and return success
-    console.log('Stripe webhook received (stub mode)')
+    console.log('Stripe webhook received (stub mode - Stripe not configured)')
     return new Response(JSON.stringify({ received: true }), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
