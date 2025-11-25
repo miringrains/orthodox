@@ -10,16 +10,35 @@ export async function getUserParishes() {
   
   if (!user) return []
 
-  const { data: parishUsers } = await supabase
+  // First get parish_user records
+  const { data: parishUsers, error } = await supabase
     .from('parish_users')
-    .select('parish_id, role, parishes(id, name, slug)')
+    .select('parish_id, role')
     .eq('user_id', user.id)
 
-  return parishUsers?.map((pu) => ({
-    id: pu.parish_id,
-    role: pu.role,
-    ...(pu.parishes as any),
-  })) || []
+  if (error || !parishUsers || parishUsers.length === 0) {
+    return []
+  }
+
+  // Then fetch parish details for each parish_id
+  const parishIds = parishUsers.map((pu) => pu.parish_id)
+  const { data: parishes } = await supabase
+    .from('parishes')
+    .select('id, name, slug')
+    .in('id', parishIds)
+
+  if (!parishes) return []
+
+  // Combine parish data with roles
+  return parishes.map((parish) => {
+    const parishUser = parishUsers.find((pu) => pu.parish_id === parish.id)
+    return {
+      id: parish.id,
+      name: parish.name,
+      slug: parish.slug,
+      role: parishUser?.role || 'viewer',
+    }
+  })
 }
 
 /**
