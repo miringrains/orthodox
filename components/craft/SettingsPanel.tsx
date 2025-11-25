@@ -10,7 +10,7 @@ export function SettingsPanel() {
   const { selected, actions, query } = useEditor((state, query) => {
     // Get selected node ID - try multiple methods
     const selectedEvents = query.getEvent('selected').last() || []
-    const currentlySelectedNodeId = selectedEvents[0] || state.events.selected?.last() || null
+    const currentlySelectedNodeId = selectedEvents[0] || (state.events.selected as any)?.last() || null
     
     // Debug: Always log selection attempts
     if (currentlySelectedNodeId) {
@@ -21,7 +21,7 @@ export function SettingsPanel() {
       })
     }
     
-    let selected
+    let selectedNode
 
     if (currentlySelectedNodeId) {
       try {
@@ -120,7 +120,7 @@ export function SettingsPanel() {
           isDeletable = currentlySelectedNodeId !== 'ROOT'
         }
 
-        selected = {
+        selectedNode = {
           id: currentlySelectedNodeId,
           name: displayName,
           settings: settings,
@@ -135,7 +135,7 @@ export function SettingsPanel() {
     }
 
     return {
-      selected,
+      selected: selectedNode,
     }
   })
 
