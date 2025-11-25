@@ -309,25 +309,26 @@ function ImageBlockSettings() {
         )}
       </div>
 
-      <div>
-        <Label>Image URL</Label>
-        <div className="flex gap-2 mt-2">
-          <Input
-            value={props.imageUrl || ''}
-            onChange={(e) => setProp((props: any) => (props.imageUrl = e.target.value))}
-            placeholder="Or paste image URL"
-          />
-          {props.imageUrl && (
+      {props.imageUrl && (
+        <div>
+          <Label>Current Image</Label>
+          <div className="mt-2 relative">
+            <img 
+              src={props.imageUrl} 
+              alt={props.alt || 'Preview'} 
+              className="w-full h-32 object-cover rounded border"
+            />
             <Button
-              variant="ghost"
+              variant="destructive"
               size="icon"
+              className="absolute top-2 right-2"
               onClick={() => setProp((props: any) => (props.imageUrl = ''))}
             >
               <X className="h-4 w-4" />
             </Button>
-          )}
+          </div>
         </div>
-      </div>
+      )}
 
       <div>
         <Label>Alt Text</Label>

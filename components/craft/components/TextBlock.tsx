@@ -131,9 +131,25 @@ export function TextBlock({
           className="w-full border-2 border-primary rounded p-2 focus:outline-none resize-none"
           autoFocus
           rows={Math.max(3, editContent.split('\n').length)}
+          style={{
+            fontFamily: fontFamily || undefined,
+            fontSize: fontSize || undefined,
+            fontWeight: fontWeight || undefined,
+            color: textColor || undefined,
+            backgroundColor: backgroundColor || undefined,
+          }}
         />
       ) : (
-        <div className="whitespace-pre-wrap max-w-4xl mx-auto">
+        <div 
+          className="whitespace-pre-wrap max-w-4xl mx-auto"
+          style={{
+            fontFamily: fontFamily || undefined,
+            fontSize: fontSize || undefined,
+            fontWeight: fontWeight || undefined,
+            color: textColor || undefined,
+            backgroundColor: backgroundColor || undefined,
+          }}
+        >
           {content || 'Double-click to edit text'}
         </div>
       )}
