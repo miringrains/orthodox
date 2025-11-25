@@ -1,5 +1,6 @@
 'use client'
 
+import React from 'react'
 import { useEditor } from '@craftjs/core'
 import { Button } from '@/components/ui/button'
 import { 
@@ -48,7 +49,7 @@ export function Toolbox() {
           key={name}
           ref={(ref) => {
             if (ref) {
-              connectors.create(ref, <Component />)
+              connectors.create(ref, () => React.createElement(Component as any))
             }
           }}
           className="flex items-center gap-3 p-3 border rounded-lg hover:bg-muted cursor-move transition-colors"

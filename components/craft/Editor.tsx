@@ -107,8 +107,15 @@ function EditorContent({ onSave, initialContent }: { onSave: (content: any) => P
         {/* Canvas Area */}
         <div className="flex-1 overflow-auto bg-gray-50 p-8">
           <Frame>
-            <Element is="div" canvas>
-              {/* Start building by dragging components here */}
+            <Element
+              is="div"
+              canvas
+              className="min-h-[400px] w-full border-2 border-dashed border-gray-300 rounded-lg p-8 bg-white"
+            >
+              <div className="text-center text-muted-foreground py-20">
+                <p className="text-lg font-medium mb-2">Drag components here to start building</p>
+                <p className="text-sm">Components are available in the left sidebar</p>
+              </div>
             </Element>
           </Frame>
         </div>
