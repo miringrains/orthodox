@@ -51,12 +51,12 @@ export async function middleware(request: NextRequest) {
   // Protect admin routes
   if (!user && path.startsWith('/admin')) {
     const url = request.nextUrl.clone()
-    url.pathname = '/login'
+    url.pathname = '/auth/login'
     return NextResponse.redirect(url)
   }
 
   // Redirect authenticated users away from auth pages
-  if (user && (path === '/login' || path === '/signup')) {
+  if (user && (path === '/login' || path === '/signup' || path === '/auth/login' || path === '/auth/signup')) {
     const url = request.nextUrl.clone()
     url.pathname = '/admin/dashboard'
     return NextResponse.redirect(url)

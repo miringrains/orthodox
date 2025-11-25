@@ -42,7 +42,7 @@ export default function Error({
           )}
           <div className="flex gap-2">
             {isAuthError ? (
-              <Button onClick={() => (window.location.href = '/login')} className="w-full">
+              <Button onClick={() => (window.location.href = '/auth/login')} className="w-full">
                 Go to Login
               </Button>
             ) : (

@@ -76,7 +76,7 @@ export default function LoginPage() {
           </Button>
         </form>
         <div className="mt-4 text-center text-sm">
-          <a href="/signup" className="text-primary hover:underline">
+          <a href="/auth/signup" className="text-primary hover:underline">
             Don't have an account? Sign up
           </a>
         </div>
