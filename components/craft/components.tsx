@@ -10,6 +10,8 @@ import { Container } from './components/Container'
 import { Section } from './components/Section'
 import { TwoColumn } from './components/TwoColumn'
 import { ThreeColumn } from './components/ThreeColumn'
+import { Spacer } from './components/Spacer'
+import { Divider } from './components/Divider'
 import { SchedulePreview } from './components/SchedulePreview'
 import { DonationPanel } from './components/DonationPanel'
 import { NewsList } from './components/NewsList'
@@ -29,6 +31,8 @@ export const craftComponents = {
   Section,
   TwoColumn,
   ThreeColumn,
+  Spacer,
+  Divider,
   SchedulePreview,
   DonationPanel,
   NewsList,

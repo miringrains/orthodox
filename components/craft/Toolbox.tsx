@@ -24,13 +24,15 @@ import { Container } from './components/Container'
 import { Section } from './components/Section'
 import { TwoColumn } from './components/TwoColumn'
 import { ThreeColumn } from './components/ThreeColumn'
+import { Spacer } from './components/Spacer'
+import { Divider } from './components/Divider'
 import { SchedulePreview } from './components/SchedulePreview'
 import { DonationPanel } from './components/DonationPanel'
 import { NewsList } from './components/NewsList'
 import { SermonCardGrid } from './components/SermonCardGrid'
 import { GalleryGrid } from './components/GalleryGrid'
 import { FeastHighlight } from './components/FeastHighlight'
-import { Navigation, Columns, Heading as HeadingIcon } from 'lucide-react'
+import { Navigation, Columns, Heading as HeadingIcon, Minus, Space } from 'lucide-react'
 
 const components = [
   { name: 'Heading', icon: HeadingIcon, component: Heading, componentName: 'Heading', category: 'Basic' },
@@ -43,6 +45,8 @@ const components = [
   { name: 'Hero Section', icon: Layout, component: HeroSection, componentName: 'HeroSection', category: 'Layout' },
   { name: 'Two Column', icon: Columns, component: TwoColumn, componentName: 'TwoColumn', category: 'Layout' },
   { name: 'Three Column', icon: Columns, component: ThreeColumn, componentName: 'ThreeColumn', category: 'Layout' },
+  { name: 'Spacer', icon: Space, component: Spacer, componentName: 'Spacer', category: 'Layout' },
+  { name: 'Divider', icon: Minus, component: Divider, componentName: 'Divider', category: 'Layout' },
   { name: 'Schedule', icon: Calendar, component: SchedulePreview, componentName: 'SchedulePreview', category: 'Content' },
   { name: 'Donation', icon: DollarSign, component: DonationPanel, componentName: 'DonationPanel', category: 'Content' },
   { name: 'News List', icon: Megaphone, component: NewsList, componentName: 'NewsList', category: 'Content' },
