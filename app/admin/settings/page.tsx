@@ -12,11 +12,15 @@ export default async function SettingsPage() {
 
   if (!user) return null
 
-  // Get user's parishes
-  const { data: parishUsers } = await supabase
+  // Get user's parishes - use the same function as other pages
+  const { data: parishUsers, error: parishUsersError } = await supabase
     .from('parish_users')
     .select('parish_id, role, parishes(*)')
     .eq('user_id', user.id)
+
+  if (parishUsersError) {
+    console.error('Error fetching parish_users in settings:', parishUsersError)
+  }
 
   const { data: userProfile } = await supabase
     .from('users')
