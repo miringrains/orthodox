@@ -55,7 +55,7 @@ export function Section({
       }}
     >
       <div className="container mx-auto px-4" style={{ maxWidth: containerWidth }}>
-        <Element is="div" canvas>
+        <Element is="div" canvas id="section-content">
           {/* Drop components here */}
         </Element>
       </div>

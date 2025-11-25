@@ -71,7 +71,7 @@ export function HeroSection({
             )}
           </div>
         )}
-        <Element is="div" canvas>
+        <Element is="div" canvas id="hero-content">
           {/* Drop components here (buttons, images, etc.) */}
         </Element>
       </div>

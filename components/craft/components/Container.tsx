@@ -71,7 +71,7 @@ export function Container({
         boxShadow: boxShadow || 'none',
       }}
     >
-      <Element is="div" canvas>
+      <Element is="div" canvas id="container-content">
         {/* Drop components here */}
       </Element>
     </div>
