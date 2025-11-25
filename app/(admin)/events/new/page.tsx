@@ -3,6 +3,8 @@ import { getUserParishes } from '@/lib/parish-context'
 import { requireAuth } from '@/lib/auth'
 import { EventForm } from '@/components/admin/EventForm'
 
+export const dynamic = 'force-dynamic'
+
 export default async function NewEventPage() {
   await requireAuth()
   const parishes = await getUserParishes()

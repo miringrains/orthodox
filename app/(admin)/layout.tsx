@@ -1,5 +1,5 @@
 import { AdminLayout } from '@/components/layouts/AdminLayout'
-import { requireAuth } from '@/lib/auth'
+import { getCurrentUser } from '@/lib/auth'
 import { redirect } from 'next/navigation'
 
 export default async function AdminLayoutWrapper({
@@ -7,9 +7,8 @@ export default async function AdminLayoutWrapper({
 }: {
   children: React.ReactNode
 }) {
-  try {
-    await requireAuth()
-  } catch {
+  const user = await getCurrentUser()
+  if (!user) {
     redirect('/login')
   }
 

@@ -4,6 +4,8 @@ import { requireAuth } from '@/lib/auth'
 import { getUserParishes } from '@/lib/parish-context'
 import { SermonForm } from '@/components/admin/SermonForm'
 
+export const dynamic = 'force-dynamic'
+
 export default async function EditSermonPage({
   params,
 }: {

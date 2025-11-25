@@ -4,6 +4,8 @@ import { requireAuth } from '@/lib/auth'
 import { getUserParishes } from '@/lib/parish-context'
 import { AnnouncementForm } from '@/components/admin/AnnouncementForm'
 
+export const dynamic = 'force-dynamic'
+
 export default async function EditAnnouncementPage({
   params,
 }: {

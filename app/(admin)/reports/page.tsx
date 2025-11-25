@@ -3,6 +3,8 @@ import { requireAuth } from '@/lib/auth'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { ExportCSVButton } from '@/components/admin/ExportCSVButton'
 
+export const dynamic = 'force-dynamic'
+
 export default async function ReportsPage() {
   await requireAuth()
   const supabase = await createClient()

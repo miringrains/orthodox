@@ -1,7 +1,5 @@
 'use client'
 
-export const dynamic = 'force-dynamic'
-
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
@@ -34,8 +32,8 @@ export default function LoginPage() {
       return
     }
 
-    router.push('/admin/dashboard')
-    router.refresh()
+    // Use window.location for reliable redirect after auth
+    window.location.href = '/admin/dashboard'
   }
 
   return (

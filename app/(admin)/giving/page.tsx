@@ -4,6 +4,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { DollarSign, Heart, FolderKanban } from 'lucide-react'
 
+export const dynamic = 'force-dynamic'
+
 export default async function GivingPage() {
   await requireAuth()
   const supabase = await createClient()

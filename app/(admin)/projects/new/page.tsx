@@ -3,6 +3,8 @@ import { getUserParishes } from '@/lib/parish-context'
 import { requireAuth } from '@/lib/auth'
 import { ProjectForm } from '@/components/admin/ProjectForm'
 
+export const dynamic = 'force-dynamic'
+
 export default async function NewProjectPage() {
   await requireAuth()
   const parishes = await getUserParishes()

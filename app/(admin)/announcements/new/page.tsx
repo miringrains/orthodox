@@ -3,6 +3,8 @@ import { getUserParishes } from '@/lib/parish-context'
 import { requireAuth } from '@/lib/auth'
 import { AnnouncementForm } from '@/components/admin/AnnouncementForm'
 
+export const dynamic = 'force-dynamic'
+
 export default async function NewAnnouncementPage() {
   await requireAuth()
   const parishes = await getUserParishes()

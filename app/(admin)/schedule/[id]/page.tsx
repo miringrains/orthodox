@@ -4,6 +4,8 @@ import { requireAuth } from '@/lib/auth'
 import { getUserParishes } from '@/lib/parish-context'
 import { ScheduleForm } from '@/components/admin/ScheduleForm'
 
+export const dynamic = 'force-dynamic'
+
 export default async function EditSchedulePage({
   params,
 }: {

@@ -3,6 +3,8 @@ import { getUserParishes } from '@/lib/parish-context'
 import { requireAuth } from '@/lib/auth'
 import { ScheduleForm } from '@/components/admin/ScheduleForm'
 
+export const dynamic = 'force-dynamic'
+
 export default async function NewSchedulePage() {
   await requireAuth()
   const parishes = await getUserParishes()

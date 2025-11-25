@@ -3,6 +3,8 @@ import { getUserParishes } from '@/lib/parish-context'
 import { requireAuth } from '@/lib/auth'
 import { SermonForm } from '@/components/admin/SermonForm'
 
+export const dynamic = 'force-dynamic'
+
 export default async function NewSermonPage() {
   await requireAuth()
   const parishes = await getUserParishes()

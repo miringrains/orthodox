@@ -4,6 +4,8 @@ import { requireAuth } from '@/lib/auth'
 import { getUserParishes } from '@/lib/parish-context'
 import { CommunityNeedForm } from '@/components/admin/CommunityNeedForm'
 
+export const dynamic = 'force-dynamic'
+
 export default async function EditCommunityNeedPage({
   params,
 }: {
