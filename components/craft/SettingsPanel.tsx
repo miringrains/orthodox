@@ -1,6 +1,6 @@
 'use client'
 
-import { useEditor, useNode } from '@craftjs/core'
+import { useEditor } from '@craftjs/core'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import React from 'react'
@@ -14,18 +14,18 @@ export function SettingsPanel() {
       const node = state.nodes[currentlySelectedNodeId]
       const nodeData = node?.data as any
       
-      // Get the component type to find its craft config
-      const componentType = nodeData?.type
+      // Get the component type - Craft.js stores it as type.resolvedName
+      const componentType = nodeData?.type?.resolvedName || nodeData?.type
       const resolver = state.options?.resolver || {}
       const Component = resolver[componentType]
       
       // Get settings from component's craft.related.settings
-      // Component could be a string or a function/component
-      const settings = typeof Component === 'function' 
-        ? (Component as any)?.craft?.related?.settings 
+      // Component from resolver is always a function/component, not a string
+      const settings = Component && typeof Component !== 'string'
+        ? (Component as any)?.craft?.related?.settings
         : undefined
 
-      const displayName = typeof Component === 'function'
+      const displayName = Component && typeof Component !== 'string'
         ? (Component as any)?.craft?.displayName || nodeData?.displayName || nodeData?.name || 'Component'
         : nodeData?.displayName || nodeData?.name || 'Component'
 
@@ -53,7 +53,8 @@ export function SettingsPanel() {
             React.createElement(selected.settings)
           ) : (
             <div className="text-sm text-muted-foreground py-4">
-              No settings available for this component
+              <p>No settings available for this component</p>
+              <p className="text-xs mt-2">Debug: Component type not found in resolver</p>
             </div>
           )}
           {selected.isDeletable && (
