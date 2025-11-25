@@ -110,9 +110,9 @@ function EditorContent({ onSave, initialContent }: { onSave: (content: any) => P
             <Element
               is="div"
               canvas
-              className="min-h-[400px] w-full border-2 border-dashed border-gray-300 rounded-lg p-8 bg-white"
+              className="min-h-[400px] w-full border-2 border-dashed border-gray-300 rounded-lg p-8 bg-white relative"
             >
-              <div className="text-center text-muted-foreground py-20">
+              <div className="text-center text-muted-foreground py-20 pointer-events-none">
                 <p className="text-lg font-medium mb-2">Drag components here to start building</p>
                 <p className="text-sm">Components are available in the left sidebar</p>
               </div>

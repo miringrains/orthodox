@@ -27,16 +27,16 @@ import { GalleryGrid } from './components/GalleryGrid'
 import { FeastHighlight } from './components/FeastHighlight'
 
 const components = [
-  { name: 'Text Block', icon: Type, component: TextBlock },
-  { name: 'Image', icon: Image, component: ImageBlock },
-  { name: 'Button', icon: MousePointerClick, component: ButtonBlock },
-  { name: 'Hero Section', icon: Layout, component: HeroSection },
-  { name: 'Schedule', icon: Calendar, component: SchedulePreview },
-  { name: 'Donation', icon: DollarSign, component: DonationPanel },
-  { name: 'News List', icon: Megaphone, component: NewsList },
-  { name: 'Sermons', icon: Headphones, component: SermonCardGrid },
-  { name: 'Gallery', icon: Grid3x3, component: GalleryGrid },
-  { name: 'Feast', icon: Sparkles, component: FeastHighlight },
+  { name: 'Text Block', icon: Type, component: TextBlock, componentName: 'TextBlock' },
+  { name: 'Image', icon: Image, component: ImageBlock, componentName: 'ImageBlock' },
+  { name: 'Button', icon: MousePointerClick, component: ButtonBlock, componentName: 'ButtonBlock' },
+  { name: 'Hero Section', icon: Layout, component: HeroSection, componentName: 'HeroSection' },
+  { name: 'Schedule', icon: Calendar, component: SchedulePreview, componentName: 'SchedulePreview' },
+  { name: 'Donation', icon: DollarSign, component: DonationPanel, componentName: 'DonationPanel' },
+  { name: 'News List', icon: Megaphone, component: NewsList, componentName: 'NewsList' },
+  { name: 'Sermons', icon: Headphones, component: SermonCardGrid, componentName: 'SermonCardGrid' },
+  { name: 'Gallery', icon: Grid3x3, component: GalleryGrid, componentName: 'GalleryGrid' },
+  { name: 'Feast', icon: Sparkles, component: FeastHighlight, componentName: 'FeastHighlight' },
 ]
 
 export function Toolbox() {
@@ -44,15 +44,17 @@ export function Toolbox() {
 
   return (
     <div className="p-4 space-y-2">
-      {components.map(({ name, icon: Icon, component: Component }) => (
+      {components.map(({ name, icon: Icon, component: Component, componentName }) => (
         <div
           key={name}
           ref={(ref) => {
             if (ref) {
-              connectors.create(ref, () => React.createElement(Component as any))
+              // Create a new instance of the component with default props
+              connectors.create(ref, React.createElement(Component as any, {}))
             }
           }}
-          className="flex items-center gap-3 p-3 border rounded-lg hover:bg-muted cursor-move transition-colors"
+          className="flex items-center gap-3 p-3 border rounded-lg hover:bg-muted cursor-grab active:cursor-grabbing transition-colors"
+          draggable={false}
         >
           <Icon className="h-5 w-5 text-muted-foreground" />
           <span className="text-sm font-medium">{name}</span>
