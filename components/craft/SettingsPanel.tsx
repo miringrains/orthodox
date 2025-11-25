@@ -20,11 +20,13 @@ export function SettingsPanel() {
       const Component = resolver[componentType]
       
       // Craft.js stores settings in node.related.settings
-      // If not found there, fall back to Component.craft.related.settings
+      // If not found there, get from Component.craft.related.settings
       let settings = node?.related?.settings
       
+      // If not in node.related, get from component definition
       if (!settings && Component && typeof Component !== 'string') {
-        settings = (Component as any)?.craft?.related?.settings
+        const componentCraft = (Component as any)?.craft
+        settings = componentCraft?.related?.settings
       }
 
       const displayName = Component && typeof Component !== 'string'
@@ -36,6 +38,9 @@ export function SettingsPanel() {
         name: displayName,
         settings: settings,
         componentType: componentType,
+        hasComponent: !!Component,
+        hasCraft: !!(Component && typeof Component !== 'string' && (Component as any)?.craft),
+        hasRelated: !!(Component && typeof Component !== 'string' && (Component as any)?.craft?.related),
         isDeletable: query.node(currentlySelectedNodeId).isDeletable(),
       }
     }
@@ -56,11 +61,14 @@ export function SettingsPanel() {
             React.createElement(selected.settings)
           ) : (
             <div className="text-sm text-muted-foreground py-4 space-y-2">
-              <p>No settings available for this component</p>
-              <div className="text-xs space-y-1">
-                <p>Component: {selected.name}</p>
-                <p>Type: {selected.componentType || 'unknown'}</p>
-                <p>Settings function: {selected.settings ? 'Found' : 'Not found'}</p>
+              <p className="font-medium">No settings available for this component</p>
+              <div className="text-xs space-y-1 bg-gray-100 p-3 rounded">
+                <p><strong>Component:</strong> {selected.name}</p>
+                <p><strong>Type:</strong> {selected.componentType || 'unknown'}</p>
+                <p><strong>Has Component:</strong> {selected.hasComponent ? 'Yes' : 'No'}</p>
+                <p><strong>Has Craft:</strong> {selected.hasCraft ? 'Yes' : 'No'}</p>
+                <p><strong>Has Related:</strong> {selected.hasRelated ? 'Yes' : 'No'}</p>
+                <p><strong>Settings Function:</strong> {selected.settings ? 'Found' : 'Not found'}</p>
               </div>
             </div>
           )}
