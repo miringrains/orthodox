@@ -21,12 +21,12 @@ export default async function ParishHomePage({
   const supabase = await createClient()
 
   // Check if home page has builder content
-  const { data: homePage } = await supabase
+  const { data: homePage, error: homePageError } = await supabase
     .from('pages')
     .select('builder_schema, builder_enabled')
     .eq('parish_id', parishId)
     .eq('kind', 'HOME')
-    .single()
+    .maybeSingle()
 
   // If builder is enabled and has content, render it
   if (homePage?.builder_enabled && homePage?.builder_schema) {
@@ -35,6 +35,11 @@ export default async function ParishHomePage({
         <PuckRenderer data={homePage.builder_schema} />
       </div>
     )
+  }
+
+  // If there was an error (other than not found), log it but continue with default content
+  if (homePageError && homePageError.code !== 'PGRST116') {
+    console.error('Error fetching home page:', homePageError)
   }
 
   // Otherwise, render default content
