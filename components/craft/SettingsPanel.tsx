@@ -12,28 +12,54 @@ export function SettingsPanel() {
     let selected
 
     if (currentlySelectedNodeId) {
-      const node = state.nodes[currentlySelectedNodeId]
+      // Use query.node() to get node data - this is the recommended way
+      const nodeQuery = query.node(currentlySelectedNodeId)
+      const node = nodeQuery.get()
       const nodeData = node?.data as any
       
-      // Get the component type - Craft.js stores it as type.resolvedName
-      const componentType = nodeData?.type?.resolvedName || nodeData?.type
-      const resolver = state.options?.resolver || {}
-      const Component = resolver[componentType]
+      // Craft.js stores component type in node.data.type
+      // It can be a string or an object with resolvedName/name
+      let componentType: string | undefined
+      if (nodeData?.type) {
+        if (typeof nodeData.type === 'string') {
+          componentType = nodeData.type
+        } else if (nodeData.type.resolvedName) {
+          componentType = nodeData.type.resolvedName
+        } else if (nodeData.type.name) {
+          componentType = nodeData.type.name
+        }
+      }
       
-      // Craft.js stores settings in node.related.settings
-      // First check node.related (populated by Craft.js)
+      const resolver = state.options?.resolver || {}
+      let Component: any = null
+      
+      // Try to resolve component by type name
+      if (componentType) {
+        Component = resolver[componentType]
+      }
+      
+      // Craft.js automatically populates node.related from Component.craft.related
+      // But sometimes we need to manually get it from the component
       let settings = node?.related?.settings
       
       // If not in node.related, get from Component.craft.related.settings
       if (!settings && Component && typeof Component !== 'string') {
         const componentCraft = (Component as any)?.craft
-        settings = componentCraft?.related?.settings
+        if (componentCraft?.related?.settings) {
+          settings = componentCraft.related.settings
+        }
       }
       
-      // If still not found, try to get it from the component directly
-      if (!settings && Component && typeof Component !== 'string') {
-        // Some components might have settings as a static property
-        settings = (Component as any)?.Settings || (Component as any)?.settings
+      // Debug logging to help diagnose issues
+      if (!settings && componentType) {
+        console.warn('SettingsPanel: Could not find settings for component', {
+          nodeId: currentlySelectedNodeId,
+          componentType,
+          resolverKeys: Object.keys(resolver),
+          hasComponent: !!Component,
+          componentCraft: Component ? (Component as any)?.craft : null,
+          nodeRelated: node?.related,
+        })
       }
 
       const displayName = Component && typeof Component !== 'string'
@@ -44,8 +70,8 @@ export function SettingsPanel() {
         id: currentlySelectedNodeId,
         name: displayName,
         settings: settings,
-        componentType: componentType,
-        isDeletable: query.node(currentlySelectedNodeId).isDeletable(),
+        componentType: componentType || 'unknown',
+        isDeletable: nodeQuery.isDeletable(),
         isHidden: nodeData?.custom?.hidden || false,
       }
     }
@@ -154,8 +180,11 @@ export function SettingsPanel() {
             </div>
           </div>
           {selected.settings ? (
-            <div>
-              {React.createElement(selected.settings)}
+            <div className="space-y-4">
+              {typeof selected.settings === 'function' 
+                ? React.createElement(selected.settings)
+                : selected.settings
+              }
             </div>
           ) : (
             <div className="text-sm text-muted-foreground py-4 space-y-2">
