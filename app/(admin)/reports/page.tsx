@@ -1,8 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { requireAuth } from '@/lib/auth'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Download } from 'lucide-react'
+import { ExportCSVButton } from '@/components/admin/ExportCSVButton'
 
 export default async function ReportsPage() {
   await requireAuth()
@@ -26,28 +25,6 @@ export default async function ReportsPage() {
     .eq('status', 'completed')
     .order('created_at', { ascending: false })
 
-  const exportToCSV = () => {
-    if (!donations || donations.length === 0) return
-
-    const headers = ['Date', 'Amount', 'Currency', 'Fund', 'Parish', 'Status']
-    const rows = donations.map((d) => [
-      new Date(d.created_at || '').toLocaleDateString(),
-      d.amount,
-      d.currency || 'USD',
-      (d.donation_funds as any)?.name || 'General',
-      (d.parishes as any)?.name || 'Unknown',
-      d.status,
-    ])
-
-    const csv = [headers, ...rows].map((row) => row.join(',')).join('\n')
-    const blob = new Blob([csv], { type: 'text/csv' })
-    const url = window.URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = `donations-${new Date().toISOString().split('T')[0]}.csv`
-    a.click()
-  }
-
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -55,12 +32,7 @@ export default async function ReportsPage() {
           <h1 className="text-3xl font-bold">Reports</h1>
           <p className="text-muted-foreground mt-2">View and export donation reports</p>
         </div>
-        {donations && donations.length > 0 && (
-          <Button onClick={exportToCSV}>
-            <Download className="h-4 w-4 mr-2" />
-            Export CSV
-          </Button>
-        )}
+        <ExportCSVButton donations={donations || []} />
       </div>
 
       {donations && donations.length > 0 ? (

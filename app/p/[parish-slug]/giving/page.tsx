@@ -3,7 +3,7 @@ import { getParishIdFromSlug } from '@/lib/tenancy'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
-import { Candle } from 'lucide-react'
+import { Flame } from 'lucide-react'
 
 export default async function GivingPage({
   params,
@@ -32,7 +32,7 @@ export default async function GivingPage({
       <Card className="mb-8 border-primary">
         <CardHeader>
           <div className="flex items-center gap-2">
-            <Candle className="h-6 w-6 text-primary" />
+            <Flame className="h-6 w-6 text-primary" />
             <CardTitle>Light a Candle</CardTitle>
           </div>
           <CardDescription>
