@@ -23,21 +23,25 @@ function EditorContent({ onSave, initialContent }: { onSave: (content: any) => P
     enabled: state.options.enabled,
   }))
 
-  // Load content when available
+  // Load content when available - only once on mount
   useEffect(() => {
     if (initialContent && actions) {
       try {
         // Only load if we don't already have content
         const currentContent = query.serialize()
-        if (!currentContent || Object.keys(currentContent).length === 0) {
+        const isEmpty = !currentContent || 
+          Object.keys(currentContent).length === 0 || 
+          (currentContent.ROOT && Object.keys(currentContent.ROOT.nodes || {}).length === 0)
+        
+        if (isEmpty && initialContent) {
           actions.deserialize(initialContent)
         }
       } catch (error) {
         console.error('Error loading content:', error)
-        // If content is invalid, start fresh
+        // If content is invalid, start fresh - don't prevent editor from working
       }
     }
-  }, [initialContent, actions, query])
+  }, []) // Only run once on mount
 
   const handleSave = async () => {
     setSaving(true)
