@@ -20,7 +20,6 @@ export function SettingsPanel() {
       const Component = resolver[componentType]
       
       // Get settings from component's craft.related.settings
-      // Component from resolver is always a function/component, not a string
       const settings = Component && typeof Component !== 'string'
         ? (Component as any)?.craft?.related?.settings
         : undefined
@@ -54,7 +53,7 @@ export function SettingsPanel() {
           ) : (
             <div className="text-sm text-muted-foreground py-4">
               <p>No settings available for this component</p>
-              <p className="text-xs mt-2">Debug: Component type not found in resolver</p>
+              <p className="text-xs mt-2">Make sure the component has a settings function defined</p>
             </div>
           )}
           {selected.isDeletable && (
