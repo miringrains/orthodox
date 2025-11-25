@@ -12,67 +12,90 @@ export function SettingsPanel() {
     let selected
 
     if (currentlySelectedNodeId) {
-      // Use query.node() to get node data - this is the recommended way
-      const nodeQuery = query.node(currentlySelectedNodeId)
-      const node = nodeQuery.get()
-      const nodeData = node?.data as any
-      
-      // Craft.js stores component type in node.data.type
-      // It can be a string or an object with resolvedName/name
-      let componentType: string | undefined
-      if (nodeData?.type) {
-        if (typeof nodeData.type === 'string') {
-          componentType = nodeData.type
-        } else if (nodeData.type.resolvedName) {
-          componentType = nodeData.type.resolvedName
-        } else if (nodeData.type.name) {
-          componentType = nodeData.type.name
+      try {
+        // Use query.node() to get node data - this is the recommended way
+        const nodeQuery = query.node(currentlySelectedNodeId)
+        if (!nodeQuery) {
+          return { selected: null }
         }
-      }
-      
-      const resolver = state.options?.resolver || {}
-      let Component: any = null
-      
-      // Try to resolve component by type name
-      if (componentType) {
-        Component = resolver[componentType]
-      }
-      
-      // Craft.js automatically populates node.related from Component.craft.related
-      // But sometimes we need to manually get it from the component
-      let settings = node?.related?.settings
-      
-      // If not in node.related, get from Component.craft.related.settings
-      if (!settings && Component && typeof Component !== 'string') {
-        const componentCraft = (Component as any)?.craft
-        if (componentCraft?.related?.settings) {
-          settings = componentCraft.related.settings
+        
+        const node = nodeQuery.get()
+        if (!node || !node.data) {
+          return { selected: null }
         }
-      }
-      
-      // Debug logging to help diagnose issues
-      if (!settings && componentType) {
-        console.warn('SettingsPanel: Could not find settings for component', {
-          nodeId: currentlySelectedNodeId,
-          componentType,
-          resolverKeys: Object.keys(resolver),
-          hasComponent: !!Component,
-          componentCraft: Component ? (Component as any)?.craft : null,
-          nodeRelated: node?.related,
-        })
-      }
+        
+        const nodeData = node.data as any
+        
+        // Craft.js stores component type in node.data.type
+        // It can be a string or an object with resolvedName/name
+        let componentType: string | undefined
+        if (nodeData?.type) {
+          if (typeof nodeData.type === 'string') {
+            componentType = nodeData.type
+          } else if (nodeData.type.resolvedName) {
+            componentType = nodeData.type.resolvedName
+          } else if (nodeData.type.name) {
+            componentType = nodeData.type.name
+          }
+        }
+        
+        const resolver = state.options?.resolver || {}
+        let Component: any = null
+        
+        // Try to resolve component by type name
+        if (componentType) {
+          Component = resolver[componentType]
+        }
+        
+        // Craft.js automatically populates node.related from Component.craft.related
+        // But sometimes we need to manually get it from the component
+        let settings = node?.related?.settings
+        
+        // If not in node.related, get from Component.craft.related.settings
+        if (!settings && Component && typeof Component !== 'string') {
+          const componentCraft = (Component as any)?.craft
+          if (componentCraft?.related?.settings) {
+            settings = componentCraft.related.settings
+          }
+        }
+        
+        // Debug logging to help diagnose issues
+        if (!settings && componentType) {
+          console.warn('SettingsPanel: Could not find settings for component', {
+            nodeId: currentlySelectedNodeId,
+            componentType,
+            resolverKeys: Object.keys(resolver),
+            hasComponent: !!Component,
+            componentCraft: Component ? (Component as any)?.craft : null,
+            nodeRelated: node?.related,
+          })
+        }
 
-      const displayName = Component && typeof Component !== 'string'
-        ? (Component as any)?.craft?.displayName || nodeData?.displayName || nodeData?.name || componentType || 'Component'
-        : nodeData?.displayName || nodeData?.name || componentType || 'Component'
+        const displayName = Component && typeof Component !== 'string'
+          ? (Component as any)?.craft?.displayName || nodeData?.displayName || nodeData?.name || componentType || 'Component'
+          : nodeData?.displayName || nodeData?.name || componentType || 'Component'
 
-      selected = {
-        id: currentlySelectedNodeId,
-        name: displayName,
-        settings: settings,
-        componentType: componentType || 'unknown',
-        isDeletable: nodeQuery.isDeletable(),
-        isHidden: nodeData?.custom?.hidden || false,
+        // Safely check if deletable with error handling
+        let isDeletable = false
+        try {
+          isDeletable = nodeQuery.isDeletable()
+        } catch (error) {
+          console.warn('Error checking if node is deletable:', error)
+          // Default to true for non-root nodes
+          isDeletable = currentlySelectedNodeId !== 'ROOT'
+        }
+
+        selected = {
+          id: currentlySelectedNodeId,
+          name: displayName,
+          settings: settings,
+          componentType: componentType || 'unknown',
+          isDeletable: isDeletable,
+          isHidden: nodeData?.custom?.hidden || false,
+        }
+      } catch (error) {
+        console.error('Error in SettingsPanel:', error)
+        return { selected: null }
       }
     }
 
