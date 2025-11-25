@@ -8,7 +8,19 @@ import React from 'react'
 
 export function SettingsPanel() {
   const { selected, actions, query } = useEditor((state, query) => {
-    const [currentlySelectedNodeId] = query.getEvent('selected').last() || []
+    // Get selected node ID - try multiple methods
+    const selectedEvents = query.getEvent('selected').last() || []
+    const currentlySelectedNodeId = selectedEvents[0] || state.events.selected?.last() || null
+    
+    // Debug: Always log selection attempts
+    if (currentlySelectedNodeId) {
+      console.log('SettingsPanel: Component selected', {
+        nodeId: currentlySelectedNodeId,
+        selectedEvents,
+        stateSelected: state.events.selected,
+      })
+    }
+    
     let selected
 
     if (currentlySelectedNodeId) {
