@@ -26,30 +26,39 @@ export function Navbar({ logoUrl, logoText, menuItems, ctaText, ctaUrl }: Navbar
   }))
 
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false)
+  const navRef = React.useRef<HTMLElement>(null)
 
-  // Use a ref to check actual container width for responsive behavior
-  const containerRef = React.useRef<HTMLDivElement>(null)
-  const [isMobile, setIsMobile] = React.useState(false)
-
+  // Use ResizeObserver to detect when navbar container becomes mobile-sized
   React.useEffect(() => {
-    const checkMobile = () => {
-      if (containerRef.current) {
-        setIsMobile(containerRef.current.offsetWidth < 768)
-      } else {
-        // Fallback: check window width
-        setIsMobile(window.innerWidth < 768)
+    if (!navRef.current) return
+
+    const resizeObserver = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        const width = entry.contentRect.width
+        // If navbar becomes wider than mobile, close mobile menu
+        if (width >= 768 && mobileMenuOpen) {
+          setMobileMenuOpen(false)
+        }
       }
-    }
-    
-    checkMobile()
-    window.addEventListener('resize', checkMobile)
-    return () => window.removeEventListener('resize', checkMobile)
-  }, [])
+    })
+
+    resizeObserver.observe(navRef.current)
+    return () => resizeObserver.disconnect()
+  }, [mobileMenuOpen])
+
+  const handleToggleMenu = () => {
+    setMobileMenuOpen(prev => !prev)
+  }
+
+  const handleCloseMenu = () => {
+    setMobileMenuOpen(false)
+  }
 
   return (
     <nav
       ref={(ref) => {
         if (ref) {
+          navRef.current = ref
           connect(drag(ref))
         }
       }}
@@ -58,7 +67,7 @@ export function Navbar({ logoUrl, logoText, menuItems, ctaText, ctaUrl }: Navbar
         ${isSelected ? 'ring-2 ring-primary' : ''}
       `}
     >
-      <div ref={containerRef} className="container mx-auto px-4">
+      <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <div className="flex items-center gap-3">
@@ -70,7 +79,7 @@ export function Navbar({ logoUrl, logoText, menuItems, ctaText, ctaUrl }: Navbar
           </div>
 
           {/* Desktop Menu */}
-          <div className={`${isMobile ? 'hidden' : 'flex'} items-center gap-6`}>
+          <div className="hidden md:flex items-center gap-6">
             {(menuItems || []).map((item, index) => (
               <Link
                 key={index}
@@ -90,12 +99,8 @@ export function Navbar({ logoUrl, logoText, menuItems, ctaText, ctaUrl }: Navbar
           {/* Mobile Menu Button */}
           <button
             type="button"
-            className={`${isMobile ? 'flex' : 'hidden'} p-2 -mr-2 text-gray-700 hover:text-primary transition-colors rounded-md hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2`}
-            onClick={(e) => {
-              e.preventDefault()
-              e.stopPropagation()
-              setMobileMenuOpen(!mobileMenuOpen)
-            }}
+            className="md:hidden p-2 -mr-2 text-gray-700 hover:text-primary transition-colors rounded-md hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+            onClick={handleToggleMenu}
             aria-label="Toggle mobile menu"
             aria-expanded={mobileMenuOpen}
           >
@@ -108,46 +113,27 @@ export function Navbar({ logoUrl, logoText, menuItems, ctaText, ctaUrl }: Navbar
         </div>
 
         {/* Mobile Menu */}
-        {mobileMenuOpen && isMobile && (
-          <div 
-            className="border-t bg-white overflow-hidden"
-            onClick={(e) => {
-              // Prevent clicks inside menu from closing it
-              e.stopPropagation()
-            }}
-          >
-            <div className="py-4 px-2">
-              <div className="flex flex-col gap-3">
+        {mobileMenuOpen && (
+          <div className="md:hidden border-t bg-white">
+            <div className="py-4">
+              <div className="flex flex-col gap-2">
                 {(menuItems || []).map((item, index) => (
                   <Link
                     key={index}
                     href={item.url}
-                    className="text-gray-700 hover:text-primary transition-colors px-3 py-2 rounded-md hover:bg-gray-50"
-                    onClick={(e) => {
-                      e.preventDefault()
-                      setMobileMenuOpen(false)
-                      // In editor, prevent navigation
-                      if (typeof window !== 'undefined' && window.location.pathname.includes('/builder')) {
-                        return
-                      }
-                      window.location.href = item.url
-                    }}
+                    className="text-gray-700 hover:text-primary transition-colors px-4 py-2 rounded-md hover:bg-gray-50"
+                    onClick={handleCloseMenu}
                   >
                     {item.label}
                   </Link>
                 ))}
                 {ctaText && (
-                  <div className="px-3 pt-2">
+                  <div className="px-4 pt-2">
                     <Button 
                       asChild 
                       size="sm" 
                       className="w-full"
-                      onClick={(e) => {
-                        if (typeof window !== 'undefined' && window.location.pathname.includes('/builder')) {
-                          e.preventDefault()
-                          setMobileMenuOpen(false)
-                        }
-                      }}
+                      onClick={handleCloseMenu}
                     >
                       <Link href={ctaUrl || '#'}>{ctaText}</Link>
                     </Button>
