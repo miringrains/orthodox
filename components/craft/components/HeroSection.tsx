@@ -9,12 +9,18 @@ import { Button } from '@/components/ui/button'
 import { Upload, X, Loader2, Image as ImageIcon } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { useParams } from 'next/navigation'
+import { OpacityControl } from '../controls/OpacityControl'
+import { ColorPicker } from '../controls/ColorPicker'
 
 interface HeroSectionProps {
   title?: string
   subtitle?: string
   imageUrl?: string
   backgroundColor?: string
+  backgroundColorOpacity?: number
+  backgroundImageOpacity?: number
+  textColor?: string
+  textColorOpacity?: number
   padding?: { top: number; right: number; bottom: number; left: number }
   showTitle?: boolean
   showSubtitle?: boolean
@@ -25,6 +31,10 @@ export function HeroSection({
   subtitle, 
   imageUrl, 
   backgroundColor,
+  backgroundColorOpacity = 100,
+  backgroundImageOpacity = 20,
+  textColor,
+  textColorOpacity = 100,
   padding = { top: 80, right: 0, bottom: 80, left: 0 },
   showTitle = true,
   showSubtitle = true,
@@ -50,17 +60,50 @@ export function HeroSection({
         ${isSelected ? 'ring-2 ring-primary' : ''}
       `}
       style={{
-        backgroundColor: backgroundColor || undefined,
         padding: paddingStyle,
       }}
     >
+      {/* Background Image Layer */}
       {imageUrl && (
         <div
-          className="absolute inset-0 bg-cover bg-center opacity-20"
-          style={{ backgroundImage: `url(${imageUrl})` }}
+          className="absolute inset-0 bg-cover bg-center"
+          style={{ 
+            backgroundImage: `url(${imageUrl})`,
+            opacity: backgroundImageOpacity / 100,
+          }}
         />
       )}
-      <div className="container mx-auto px-4 relative z-10">
+      {/* Background Color Overlay Layer */}
+      {backgroundColor && (
+        <div
+          className="absolute inset-0"
+          style={{ 
+            backgroundColor: backgroundColor,
+            opacity: backgroundColorOpacity / 100,
+          }}
+        />
+      )}
+      <div 
+        className="container mx-auto px-4 relative z-10"
+        style={{
+          color: textColor ? (() => {
+            if (textColor.startsWith('#')) {
+              const hex = textColor.slice(1)
+              const r = parseInt(hex.slice(0, 2), 16)
+              const g = parseInt(hex.slice(2, 4), 16)
+              const b = parseInt(hex.slice(4, 6), 16)
+              return `rgba(${r}, ${g}, ${b}, ${textColorOpacity / 100})`
+            }
+            if (textColor.startsWith('rgba')) {
+              return textColor.replace(/,\s*[\d.]+\)$/, `, ${textColorOpacity / 100})`)
+            }
+            if (textColor.startsWith('rgb')) {
+              return textColor.replace('rgb', 'rgba').replace(')', `, ${textColorOpacity / 100})`)
+            }
+            return textColor
+          })() : undefined,
+        }}
+      >
         {(showTitle || showSubtitle) && (
           <div className="text-center mb-8">
             {showTitle && (
@@ -314,7 +357,22 @@ function HeroSectionSettings() {
             placeholder="#f0f9ff"
           />
         </div>
+        {props.backgroundColor && (
+          <OpacityControl
+            label="Background Color Opacity"
+            value={props.backgroundColorOpacity || 100}
+            onChange={(value) => setProp((props: any) => (props.backgroundColorOpacity = value))}
+          />
+        )}
       </div>
+
+      {props.imageUrl && (
+        <OpacityControl
+          label="Background Image Opacity"
+          value={props.backgroundImageOpacity || 20}
+          onChange={(value) => setProp((props: any) => (props.backgroundImageOpacity = value))}
+        />
+      )}
 
       <div>
         <Label>Padding</Label>
@@ -376,6 +434,10 @@ HeroSection.craft = {
     subtitle: 'Join us in worship and fellowship',
     imageUrl: '',
     backgroundColor: '#f0f9ff',
+    backgroundColorOpacity: 100,
+    backgroundImageOpacity: 20,
+    textColor: '',
+    textColorOpacity: 100,
     padding: { top: 80, right: 0, bottom: 80, left: 0 },
     showTitle: true,
     showSubtitle: true,

@@ -5,9 +5,14 @@ import React from 'react'
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { OpacityControl } from '../controls/OpacityControl'
+import { ColorPicker } from '../controls/ColorPicker'
 
 interface ContainerProps {
   backgroundColor?: string
+  backgroundColorOpacity?: number
+  textColor?: string
+  textColorOpacity?: number
   padding?: { top: number; right: number; bottom: number; left: number }
   margin?: { top: number; right: number; bottom: number; left: number }
   maxWidth?: string
@@ -21,6 +26,9 @@ interface ContainerProps {
 
 export function Container({ 
   backgroundColor,
+  backgroundColorOpacity = 100,
+  textColor,
+  textColorOpacity = 100,
   padding = { top: 0, right: 0, bottom: 0, left: 0 },
   margin = { top: 0, right: 0, bottom: 0, left: 0 },
   maxWidth = '100%',
@@ -49,6 +57,39 @@ export function Container({
     full: 'w-full',
   }
 
+  // Convert hex to rgba with opacity
+  const getBgColorWithOpacity = () => {
+    if (!backgroundColor) return 'transparent'
+    if (backgroundColor.startsWith('#')) {
+      const hex = backgroundColor.slice(1)
+      const r = parseInt(hex.slice(0, 2), 16)
+      const g = parseInt(hex.slice(2, 4), 16)
+      const b = parseInt(hex.slice(4, 6), 16)
+      return `rgba(${r}, ${g}, ${b}, ${backgroundColorOpacity / 100})`
+    }
+    // If it's already rgba/rgb, try to parse it
+    if (backgroundColor.startsWith('rgba')) {
+      return backgroundColor.replace(/,\s*[\d.]+\)$/, `, ${backgroundColorOpacity / 100})`)
+    }
+    return backgroundColor
+  }
+
+  // Convert hex to rgba with opacity for text color
+  const getTextColorWithOpacity = () => {
+    if (!textColor) return undefined
+    if (textColor.startsWith('#')) {
+      const hex = textColor.slice(1)
+      const r = parseInt(hex.slice(0, 2), 16)
+      const g = parseInt(hex.slice(2, 4), 16)
+      const b = parseInt(hex.slice(4, 6), 16)
+      return `rgba(${r}, ${g}, ${b}, ${textColorOpacity / 100})`
+    }
+    if (textColor.startsWith('rgba')) {
+      return textColor.replace(/,\s*[\d.]+\)$/, `, ${textColorOpacity / 100})`)
+    }
+    return textColor
+  }
+
   return (
     <div
       ref={(ref) => {
@@ -62,7 +103,8 @@ export function Container({
         min-h-[100px]
       `}
       style={{
-        backgroundColor: backgroundColor || 'transparent',
+        backgroundColor: getBgColorWithOpacity(),
+        color: getTextColorWithOpacity(),
         padding: paddingStyle,
         margin: marginStyle,
         maxWidth: maxWidth,
@@ -303,6 +345,9 @@ Container.craft = {
   displayName: 'Container',
   props: {
     backgroundColor: '#ffffff',
+    backgroundColorOpacity: 100,
+    textColor: '',
+    textColorOpacity: 100,
     padding: { top: 0, right: 0, bottom: 0, left: 0 },
     margin: { top: 0, right: 0, bottom: 0, left: 0 },
     maxWidth: '100%',

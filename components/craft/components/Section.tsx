@@ -5,10 +5,16 @@ import React from 'react'
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { OpacityControl } from '../controls/OpacityControl'
+import { ColorPicker } from '../controls/ColorPicker'
 
 interface SectionProps {
   backgroundColor?: string
+  backgroundColorOpacity?: number
   backgroundImage?: string
+  backgroundImageOpacity?: number
+  textColor?: string
+  textColorOpacity?: number
   padding?: { top: number; right: number; bottom: number; left: number }
   margin?: { top: number; right: number; bottom: number; left: number }
   containerWidth?: string
@@ -17,7 +23,11 @@ interface SectionProps {
 
 export function Section({
   backgroundColor,
+  backgroundColorOpacity = 100,
   backgroundImage,
+  backgroundImageOpacity = 100,
+  textColor,
+  textColorOpacity = 100,
   padding = { top: 40, right: 0, bottom: 40, left: 0 },
   margin = { top: 0, right: 0, bottom: 0, left: 0 },
   containerWidth = '1280px',
@@ -45,16 +55,53 @@ export function Section({
         ${isSelected ? 'ring-2 ring-primary' : ''}
       `}
       style={{
-        backgroundColor: backgroundColor || 'transparent',
-        backgroundImage: backgroundImage ? `url(${backgroundImage})` : undefined,
-        backgroundSize: backgroundImage ? 'cover' : undefined,
-        backgroundPosition: backgroundImage ? 'center' : undefined,
         padding: paddingStyle,
         margin: marginStyle,
         borderRadius: `${borderRadius}px`,
       }}
     >
-      <div className="container mx-auto px-4" style={{ maxWidth: containerWidth }}>
+      {/* Background Image Layer */}
+      {backgroundImage && (
+        <div
+          className="absolute inset-0 bg-cover bg-center"
+          style={{ 
+            backgroundImage: `url(${backgroundImage})`,
+            opacity: backgroundImageOpacity / 100,
+          }}
+        />
+      )}
+      {/* Background Color Overlay Layer */}
+      {backgroundColor && (
+        <div
+          className="absolute inset-0"
+          style={{ 
+            backgroundColor: backgroundColor,
+            opacity: backgroundColorOpacity / 100,
+          }}
+        />
+      )}
+      <div 
+        className="container mx-auto px-4" 
+        style={{ 
+          maxWidth: containerWidth,
+          color: textColor ? (() => {
+            if (textColor.startsWith('#')) {
+              const hex = textColor.slice(1)
+              const r = parseInt(hex.slice(0, 2), 16)
+              const g = parseInt(hex.slice(2, 4), 16)
+              const b = parseInt(hex.slice(4, 6), 16)
+              return `rgba(${r}, ${g}, ${b}, ${textColorOpacity / 100})`
+            }
+            if (textColor.startsWith('rgba')) {
+              return textColor.replace(/,\s*[\d.]+\)$/, `, ${textColorOpacity / 100})`)
+            }
+            if (textColor.startsWith('rgb')) {
+              return textColor.replace('rgb', 'rgba').replace(')', `, ${textColorOpacity / 100})`)
+            }
+            return textColor
+          })() : undefined,
+        }}
+      >
         <Element is="div" canvas id="section-content">
           {/* Drop components here */}
         </Element>
@@ -86,6 +133,13 @@ function SectionSettings() {
             placeholder="#ffffff"
           />
         </div>
+        {props.backgroundColor && (
+          <OpacityControl
+            label="Background Color Opacity"
+            value={props.backgroundColorOpacity || 100}
+            onChange={(value) => setProp((props: any) => (props.backgroundColorOpacity = value))}
+          />
+        )}
       </div>
 
       <div>
@@ -95,6 +149,29 @@ function SectionSettings() {
           onChange={(e) => setProp((props: any) => (props.backgroundImage = e.target.value))}
           placeholder="https://example.com/image.jpg"
         />
+        {props.backgroundImage && (
+          <OpacityControl
+            label="Background Image Opacity"
+            value={props.backgroundImageOpacity || 100}
+            onChange={(value) => setProp((props: any) => (props.backgroundImageOpacity = value))}
+          />
+        )}
+      </div>
+
+      <div>
+        <ColorPicker
+          label="Text Color"
+          value={props.textColor || ''}
+          onChange={(value) => setProp((props: any) => (props.textColor = value))}
+          placeholder="Inherit"
+        />
+        {props.textColor && (
+          <OpacityControl
+            label="Text Color Opacity"
+            value={props.textColorOpacity || 100}
+            onChange={(value) => setProp((props: any) => (props.textColorOpacity = value))}
+          />
+        )}
       </div>
 
       <div>
@@ -232,7 +309,11 @@ Section.craft = {
   displayName: 'Section',
   props: {
     backgroundColor: '#ffffff',
+    backgroundColorOpacity: 100,
     backgroundImage: '',
+    backgroundImageOpacity: 100,
+    textColor: '',
+    textColorOpacity: 100,
     padding: { top: 40, right: 0, bottom: 40, left: 0 },
     margin: { top: 0, right: 0, bottom: 0, left: 0 },
     containerWidth: '1280px',

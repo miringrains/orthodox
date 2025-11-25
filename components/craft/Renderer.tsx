@@ -1,6 +1,7 @@
 'use client'
 
 import { Editor, Frame } from '@craftjs/core'
+import { FontProvider } from './contexts/FontContext'
 import { craftComponents } from './components'
 
 interface CraftRendererProps {
@@ -19,10 +20,15 @@ export function CraftRenderer({ content }: CraftRendererProps) {
   }
 
   try {
+    // Extract global font settings from content if available
+    const globalFonts = content?.globalFonts || {}
+    
     return (
-      <Editor enabled={false} resolver={craftComponents}>
-        <Frame data={content} />
-      </Editor>
+      <FontProvider initialFonts={globalFonts}>
+        <Editor enabled={false} resolver={craftComponents}>
+          <Frame data={content} />
+        </Editor>
+      </FontProvider>
     )
   } catch (error) {
     console.error('Error rendering Craft.js content:', error)

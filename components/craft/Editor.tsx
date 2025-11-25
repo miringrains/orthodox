@@ -7,6 +7,8 @@ import { Save, ArrowLeft, CheckCircle2, AlertCircle, Monitor, Tablet, Smartphone
 import { useRouter } from 'next/navigation'
 import { Toolbox } from './Toolbox'
 import { SettingsPanel } from './SettingsPanel'
+import { GlobalSettings } from './GlobalSettings'
+import { FontProvider, useFontContext } from './contexts/FontContext'
 import { craftComponents } from './components'
 
 interface CraftEditorProps {
@@ -23,6 +25,80 @@ function EditorContent({ onSave, initialContent }: { onSave: (content: any) => P
   const { query, actions } = useEditor((state) => ({
     enabled: state.options.enabled,
   }))
+  const { fontFamily, baseFontSize, baseFontWeight } = useFontContext()
+
+  // Keyboard shortcuts
+  React.useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Cmd/Ctrl+D to duplicate
+      if ((e.metaKey || e.ctrlKey) && e.key === 'd') {
+        e.preventDefault()
+        const [selected] = query.getEvent('selected').last() || []
+        if (selected) {
+          try {
+            // Serialize entire editor and extract node tree
+            const serialized = query.serialize()
+            const content = typeof serialized === 'string' ? JSON.parse(serialized) : serialized
+            
+            // Extract the node tree starting from selected
+            const extractNodeTree = (nodeId: string, tree: any): any => {
+              if (!tree || !tree[nodeId]) return null
+              
+              const node = tree[nodeId]
+              const result: any = {
+                type: node.type,
+                props: { ...node.props },
+                nodes: {},
+                custom: { ...node.custom },
+              }
+              
+              if (node.nodes && Array.isArray(node.nodes)) {
+                node.nodes.forEach((childId: string) => {
+                  const childTree = extractNodeTree(childId, tree)
+                  if (childTree) {
+                    result.nodes[childId] = childTree
+                  }
+                })
+              }
+              
+              return result
+            }
+            
+            const nodeTree = extractNodeTree(selected, content)
+            if (nodeTree) {
+              const newNodeId = `node_${Date.now()}`
+              const newTree: any = { [newNodeId]: nodeTree }
+              
+              // Find parent by searching through the tree
+              let parentId = 'ROOT'
+              const findParent = (tree: any, targetId: string, currentParent: string = 'ROOT'): string | null => {
+                if (!tree || typeof tree !== 'object') return null
+                
+                for (const [id, node] of Object.entries(tree)) {
+                  if (id === targetId) return currentParent
+                  if (node && typeof node === 'object' && (node as any).nodes) {
+                    const found = findParent((node as any).nodes, targetId, id)
+                    if (found) return found
+                  }
+                }
+                return null
+              }
+              
+              const foundParent = findParent(content, selected)
+              if (foundParent) parentId = foundParent
+              
+              actions.addNodeTree(newTree, parentId)
+            }
+          } catch (error) {
+            console.error('Error duplicating:', error)
+          }
+        }
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [query, actions])
 
   // Load content when available - only once on mount
   useEffect(() => {
@@ -49,8 +125,17 @@ function EditorContent({ onSave, initialContent }: { onSave: (content: any) => P
     setSaving(true)
     setSaveStatus('idle')
     try {
-      const json = query.serialize()
-      await onSave(json)
+      const serialized = query.serialize()
+      // Include global font settings in saved content
+      const contentWithFonts = {
+        ...(typeof serialized === 'string' ? JSON.parse(serialized) : serialized),
+        globalFonts: {
+          fontFamily,
+          baseFontSize,
+          baseFontWeight,
+        },
+      }
+      await onSave(JSON.stringify(contentWithFonts))
       setSaveStatus('success')
       setTimeout(() => setSaveStatus('idle'), 2000)
     } catch (error) {
@@ -74,6 +159,7 @@ function EditorContent({ onSave, initialContent }: { onSave: (content: any) => P
         <div className="p-4 border-b bg-gray-50">
           <h2 className="font-semibold text-sm uppercase tracking-wide text-gray-600">Components</h2>
         </div>
+        <GlobalSettings />
         <Toolbox />
       </div>
 
@@ -184,15 +270,22 @@ function EditorContent({ onSave, initialContent }: { onSave: (content: any) => P
 }
 
 export function CraftEditor({ content, onSave, pageId }: CraftEditorProps) {
+  // Extract global font settings from content if available
+  const globalFonts = typeof content === 'string' 
+    ? (JSON.parse(content)?.globalFonts || {})
+    : (content?.globalFonts || {})
+  
   return (
-    <Editor 
-      resolver={craftComponents}
-      onRender={({ render }) => {
-        // Ensure related settings are populated on nodes
-        return render
-      }}
-    >
-      <EditorContent onSave={onSave} initialContent={content} />
-    </Editor>
+    <FontProvider initialFonts={globalFonts}>
+      <Editor 
+        resolver={craftComponents}
+        onRender={({ render }) => {
+          // Ensure related settings are populated on nodes
+          return render
+        }}
+      >
+        <EditorContent onSave={onSave} initialContent={content} />
+      </Editor>
+    </FontProvider>
   )
 }

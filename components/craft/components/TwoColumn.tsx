@@ -5,12 +5,16 @@ import React from 'react'
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { ColorPicker } from '../controls/ColorPicker'
+import { OpacityControl } from '../controls/OpacityControl'
 
 interface TwoColumnProps {
   leftWidth?: number
   rightWidth?: number
   gap?: number
   backgroundColor?: string
+  textColor?: string
+  textColorOpacity?: number
   padding?: { top: number; right: number; bottom: number; left: number }
 }
 
@@ -19,6 +23,8 @@ export function TwoColumn({
   rightWidth = 50,
   gap = 20,
   backgroundColor,
+  textColor,
+  textColorOpacity = 100,
   padding = { top: 0, right: 0, bottom: 0, left: 0 },
 }: TwoColumnProps) {
   const {
@@ -51,6 +57,22 @@ export function TwoColumn({
         style={{
           gridTemplateColumns: `${leftWidth}% ${rightWidth}%`,
           gap: `${gap}px`,
+          color: textColor ? (() => {
+            if (textColor.startsWith('#')) {
+              const hex = textColor.slice(1)
+              const r = parseInt(hex.slice(0, 2), 16)
+              const g = parseInt(hex.slice(2, 4), 16)
+              const b = parseInt(hex.slice(4, 6), 16)
+              return `rgba(${r}, ${g}, ${b}, ${textColorOpacity / 100})`
+            }
+            if (textColor.startsWith('rgba')) {
+              return textColor.replace(/,\s*[\d.]+\)$/, `, ${textColorOpacity / 100})`)
+            }
+            if (textColor.startsWith('rgb')) {
+              return textColor.replace('rgb', 'rgba').replace(')', `, ${textColorOpacity / 100})`)
+            }
+            return textColor
+          })() : undefined,
         }}
       >
         <Element is="div" canvas id="left-column">
@@ -187,6 +209,22 @@ function TwoColumnSettings() {
           </div>
         </div>
       </div>
+
+      <div>
+        <ColorPicker
+          label="Text Color"
+          value={props.textColor || ''}
+          onChange={(value) => setProp((props: any) => (props.textColor = value))}
+          placeholder="Inherit"
+        />
+        {props.textColor && (
+          <OpacityControl
+            label="Text Color Opacity"
+            value={props.textColorOpacity || 100}
+            onChange={(value) => setProp((props: any) => (props.textColorOpacity = value))}
+          />
+        )}
+      </div>
     </div>
   )
 }
@@ -198,6 +236,8 @@ TwoColumn.craft = {
     rightWidth: 50,
     gap: 20,
     backgroundColor: '#ffffff',
+    textColor: '',
+    textColorOpacity: 100,
     padding: { top: 0, right: 0, bottom: 0, left: 0 },
   },
   related: {

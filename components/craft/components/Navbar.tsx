@@ -78,27 +78,32 @@ export function Navbar({ logoUrl, logoText, menuItems, ctaText, ctaUrl }: Navbar
         </div>
 
         {/* Mobile Menu */}
-        {mobileMenuOpen && (
-          <div className="md:hidden border-t py-4">
+        <div 
+          className={`
+            md:hidden border-t overflow-hidden transition-all duration-300 ease-in-out
+            ${mobileMenuOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'}
+          `}
+        >
+          <div className="py-4">
             <div className="flex flex-col gap-4">
               {(menuItems || []).map((item, index) => (
                 <Link
                   key={index}
                   href={item.url}
-                  className="text-gray-700 hover:text-primary transition-colors"
+                  className="text-gray-700 hover:text-primary transition-colors px-2"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   {item.label}
                 </Link>
               ))}
               {ctaText && (
-                <Button asChild size="sm" className="w-full">
+                <Button asChild size="sm" className="w-full mx-2">
                   <Link href={ctaUrl || '#'}>{ctaText}</Link>
                 </Button>
               )}
             </div>
           </div>
-        )}
+        </div>
       </div>
     </nav>
   )

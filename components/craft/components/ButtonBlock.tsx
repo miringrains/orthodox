@@ -17,6 +17,7 @@ interface ButtonBlockProps {
   variant?: 'default' | 'outline' | 'secondary' | 'ghost' | 'destructive'
   size?: 'default' | 'sm' | 'lg'
   fullWidth?: boolean
+  useContainer?: boolean
   backgroundColor?: string
   textColor?: string
   padding?: { top: number; right: number; bottom: number; left: number }
@@ -34,6 +35,7 @@ export function ButtonBlock({
   variant, 
   size, 
   fullWidth,
+  useContainer = false,
   backgroundColor,
   textColor,
   padding = { top: 0, right: 0, bottom: 0, left: 0 },
@@ -76,14 +78,14 @@ export function ButtonBlock({
     </Button>
   )
 
-  return (
+  const wrapper = (
     <div
       ref={(ref) => {
         if (ref) {
           connect(drag(ref))
         }
       }}
-      className={`py-4 ${isSelected ? 'ring-2 ring-primary rounded' : ''}`}
+      className={`${isSelected ? 'ring-2 ring-primary rounded' : ''} ${useContainer ? 'container mx-auto px-4 md:px-6' : ''}`}
     >
       {url && url !== '#' ? (
         <Link href={url}>{button}</Link>
@@ -92,6 +94,8 @@ export function ButtonBlock({
       )}
     </div>
   )
+
+  return wrapper
 }
 
 function ButtonBlockSettings() {
@@ -150,6 +154,19 @@ function ButtonBlockSettings() {
         </Select>
       </div>
 
+      <div>
+        <Label>Use Container</Label>
+        <div className="flex items-center space-x-2 mt-2">
+          <input
+            type="checkbox"
+            checked={props.useContainer === true}
+            onChange={(e) => setProp((props: any) => (props.useContainer = e.target.checked))}
+            className="h-4 w-4"
+          />
+          <Label className="text-sm">Wrap in container with horizontal padding</Label>
+        </div>
+      </div>
+
       <ColorPicker
         label="Background Color"
         value={props.backgroundColor || ''}
@@ -203,6 +220,7 @@ ButtonBlock.craft = {
     variant: 'default',
     size: 'default',
     fullWidth: false,
+    useContainer: false,
     backgroundColor: '',
     textColor: '',
     padding: { top: 0, right: 0, bottom: 0, left: 0 },

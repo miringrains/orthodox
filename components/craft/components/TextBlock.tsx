@@ -10,6 +10,7 @@ import { FontSelector } from '../controls/FontSelector'
 import { SpacingControl } from '../controls/SpacingControl'
 import { BorderControl } from '../controls/BorderControl'
 import { ShadowControl } from '../controls/ShadowControl'
+import { useFontContext } from '../contexts/FontContext'
 
 interface TextBlockProps {
   content?: string
@@ -20,6 +21,8 @@ interface TextBlockProps {
   fontWeight?: string
   textColor?: string
   backgroundColor?: string
+  useContainer?: boolean
+  contentMaxWidth?: string
   padding?: { top: number; right: number; bottom: number; left: number }
   margin?: { top: number; right: number; bottom: number; left: number }
   borderRadius?: number
@@ -38,6 +41,8 @@ export function TextBlock({
   fontWeight,
   textColor,
   backgroundColor,
+  useContainer = true,
+  contentMaxWidth = '4xl',
   padding = { top: 0, right: 0, bottom: 0, left: 0 },
   margin = { top: 0, right: 0, bottom: 0, left: 0 },
   borderRadius = 0,
@@ -53,6 +58,12 @@ export function TextBlock({
   } = useNode((state) => ({
     isSelected: state.events.selected,
   }))
+  
+  // Use global font settings if component doesn't override
+  const globalFonts = useFontContext()
+  const effectiveFontFamily = fontFamily && fontFamily !== 'inherit' ? fontFamily : globalFonts.fontFamily
+  const effectiveFontSize = fontSize || globalFonts.baseFontSize
+  const effectiveFontWeight = fontWeight && fontWeight !== 'normal' ? fontWeight : globalFonts.baseFontWeight
 
   const [isEditing, setIsEditing] = useState(false)
   const [editContent, setEditContent] = useState(content || '')
@@ -104,9 +115,9 @@ export function TextBlock({
         ${isSelected && !isEditing ? 'cursor-text' : ''}
       `}
       style={{
-        fontFamily: fontFamily || undefined,
-        fontSize: fontSize || undefined,
-        fontWeight: fontWeight || undefined,
+        fontFamily: effectiveFontFamily !== 'inherit' ? effectiveFontFamily : undefined,
+        fontSize: effectiveFontSize,
+        fontWeight: effectiveFontWeight,
         color: textColor || undefined,
         backgroundColor: backgroundColor || undefined,
         padding: paddingStyle,
@@ -132,22 +143,32 @@ export function TextBlock({
           autoFocus
           rows={Math.max(3, editContent.split('\n').length)}
           style={{
-            fontFamily: fontFamily || undefined,
-            fontSize: fontSize || undefined,
-            fontWeight: fontWeight || undefined,
+            fontFamily: effectiveFontFamily !== 'inherit' ? effectiveFontFamily : undefined,
+            fontSize: effectiveFontSize,
+            fontWeight: effectiveFontWeight,
             color: textColor || undefined,
             backgroundColor: backgroundColor || undefined,
           }}
         />
       ) : (
         <div 
-          className="whitespace-pre-wrap max-w-4xl mx-auto"
+          className={`whitespace-pre-wrap ${useContainer ? 'mx-auto px-4 md:px-6' : ''}`}
           style={{
-            fontFamily: fontFamily || undefined,
-            fontSize: fontSize || undefined,
-            fontWeight: fontWeight || undefined,
+            fontFamily: effectiveFontFamily !== 'inherit' ? effectiveFontFamily : undefined,
+            fontSize: effectiveFontSize,
+            fontWeight: effectiveFontWeight,
             color: textColor || undefined,
             backgroundColor: backgroundColor || undefined,
+            maxWidth: useContainer && contentMaxWidth !== 'full' 
+              ? contentMaxWidth === 'sm' ? '640px'
+              : contentMaxWidth === 'md' ? '768px'
+              : contentMaxWidth === 'lg' ? '1024px'
+              : contentMaxWidth === 'xl' ? '1280px'
+              : contentMaxWidth === '2xl' ? '1536px'
+              : contentMaxWidth === '3xl' ? '1920px'
+              : contentMaxWidth === '4xl' ? '56rem'
+              : undefined
+              : '100%',
           }}
         >
           {content || 'Double-click to edit text'}
@@ -251,6 +272,43 @@ function TextBlockSettings() {
         onChange={(value) => setProp((props: any) => (props.textColor = value))}
       />
 
+      <div>
+        <Label>Use Container</Label>
+        <div className="flex items-center space-x-2 mt-2">
+          <input
+            type="checkbox"
+            checked={props.useContainer !== false}
+            onChange={(e) => setProp((props: any) => (props.useContainer = e.target.checked))}
+            className="h-4 w-4"
+          />
+          <Label className="text-sm">Wrap in container with horizontal padding</Label>
+        </div>
+      </div>
+
+      {props.useContainer !== false && (
+        <div>
+          <Label>Content Max Width</Label>
+          <Select
+            value={props.contentMaxWidth || '4xl'}
+            onValueChange={(value) => setProp((props: any) => (props.contentMaxWidth = value))}
+          >
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="full">Full Width</SelectItem>
+              <SelectItem value="sm">Small (640px)</SelectItem>
+              <SelectItem value="md">Medium (768px)</SelectItem>
+              <SelectItem value="lg">Large (1024px)</SelectItem>
+              <SelectItem value="xl">XL (1280px)</SelectItem>
+              <SelectItem value="2xl">2XL (1536px)</SelectItem>
+              <SelectItem value="3xl">3XL (1920px)</SelectItem>
+              <SelectItem value="4xl">4XL (max-w-4xl)</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      )}
+
       <ColorPicker
         label="Background Color"
         value={props.backgroundColor || ''}
@@ -300,6 +358,8 @@ TextBlock.craft = {
     fontWeight: 'normal',
     textColor: '#000000',
     backgroundColor: '',
+    useContainer: true,
+    contentMaxWidth: '4xl',
     padding: { top: 0, right: 0, bottom: 0, left: 0 },
     margin: { top: 0, right: 0, bottom: 0, left: 0 },
     borderRadius: 0,
