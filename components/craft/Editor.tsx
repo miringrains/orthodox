@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useRef } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Editor, Frame, Element, useEditor } from '@craftjs/core'
 import { Button } from '@/components/ui/button'
 import { Save, ArrowLeft, CheckCircle2, AlertCircle } from 'lucide-react'
@@ -15,13 +15,29 @@ interface CraftEditorProps {
   pageId: string
 }
 
-function EditorContent({ onSave }: { onSave: (content: any) => Promise<void> }) {
+function EditorContent({ onSave, initialContent }: { onSave: (content: any) => Promise<void>, initialContent?: any }) {
   const router = useRouter()
   const [saving, setSaving] = useState(false)
   const [saveStatus, setSaveStatus] = useState<'idle' | 'success' | 'error'>('idle')
-  const { query } = useEditor((state) => ({
+  const { query, actions } = useEditor((state) => ({
     enabled: state.options.enabled,
   }))
+
+  // Load content when available
+  useEffect(() => {
+    if (initialContent && actions) {
+      try {
+        // Only load if we don't already have content
+        const currentContent = query.serialize()
+        if (!currentContent || Object.keys(currentContent).length === 0) {
+          actions.deserialize(initialContent)
+        }
+      } catch (error) {
+        console.error('Error loading content:', error)
+        // If content is invalid, start fresh
+      }
+    }
+  }, [initialContent, actions, query])
 
   const handleSave = async () => {
     setSaving(true)
@@ -88,14 +104,14 @@ function EditorContent({ onSave }: { onSave: (content: any) => Promise<void> }) 
           </div>
         </div>
 
-          {/* Canvas Area */}
-          <div className="flex-1 overflow-auto bg-gray-50 p-8">
-            <Frame>
-              <Element is="div" canvas>
-                {/* Start building by dragging components here */}
-              </Element>
-            </Frame>
-          </div>
+        {/* Canvas Area */}
+        <div className="flex-1 overflow-auto bg-gray-50 p-8">
+          <Frame>
+            <Element is="div" canvas>
+              {/* Start building by dragging components here */}
+            </Element>
+          </Frame>
+        </div>
       </div>
 
       {/* Right Sidebar - Settings */}
@@ -112,9 +128,7 @@ function EditorContent({ onSave }: { onSave: (content: any) => Promise<void> }) 
 export function CraftEditor({ content, onSave, pageId }: CraftEditorProps) {
   return (
     <Editor resolver={craftComponents}>
-      <Frame data={content}>
-        <EditorContent onSave={onSave} />
-      </Frame>
+      <EditorContent onSave={onSave} initialContent={content} />
     </Editor>
   )
 }
