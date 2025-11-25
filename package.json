@@ -10,6 +10,8 @@
     "types:generate": "supabase gen types typescript --project-id trwhosectgaatgkojkiq --schema public,storage > lib/database.types.ts"
   },
   "dependencies": {
+    "@craftjs/core": "^0.2.12",
+    "@craftjs/layers": "^0.2.7",
     "@hookform/resolvers": "^5.2.2",
     "@measured/puck": "^0.20.2",
     "@radix-ui/react-avatar": "^1.1.11",
@@ -32,6 +34,7 @@
     "react": "19.2.0",
     "react-day-picker": "^9.11.2",
     "react-dom": "19.2.0",
+    "react-frame-component": "^5.2.7",
     "react-hook-form": "^7.66.1",
     "stripe": "^20.0.0",
     "tailwind-merge": "^3.4.0",

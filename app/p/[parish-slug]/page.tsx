@@ -2,7 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import { getParishIdFromSlug } from '@/lib/tenancy'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { PuckRenderer } from '@/components/puck/Renderer'
+import { CraftRenderer } from '@/components/craft/Renderer'
 import Link from 'next/link'
 import { Calendar, Megaphone, Headphones, DollarSign } from 'lucide-react'
 
@@ -30,9 +30,11 @@ export default async function ParishHomePage({
 
   // If builder is enabled and has content, render it
   if (homePage?.builder_enabled && homePage?.builder_schema) {
+    const builderData = homePage.builder_schema as any
+    
     return (
       <div className="container mx-auto px-4 py-12">
-        <PuckRenderer data={homePage.builder_schema} />
+        <CraftRenderer content={builderData} />
       </div>
     )
   }
