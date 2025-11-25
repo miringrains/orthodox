@@ -7,136 +7,59 @@ import { Copy, Eye, EyeOff } from 'lucide-react'
 import React from 'react'
 
 export function SettingsPanel() {
-  const { selected, actions, query } = useEditor((state, query) => {
-    // Get selected node ID using Craft.js API
-    // query.getEvent('selected').last() returns the last selected node ID
-    const selectedEvents = query.getEvent('selected').last()
-    const currentlySelectedNodeId = selectedEvents?.[0] || null
+  const { selected, actions, query } = useEditor((state) => {
+    // Use the correct Craft.js API: state.events.selected is an array
+    const [currentNodeId] = state.events.selected || []
     
-    let selectedNode = null
+    if (!currentNodeId) {
+      return { selected: null }
+    }
 
-    if (currentlySelectedNodeId) {
-      try {
-        // Use query.node() to get node data - this is the recommended way
-        const nodeQuery = query.node(currentlySelectedNodeId)
-        if (!nodeQuery) {
-          return { selected: null }
-        }
-        
-        const node = nodeQuery.get()
-        if (!node || !node.data) {
-          return { selected: null }
-        }
-        
-        const nodeData = node.data as any
-        
-        // Craft.js stores component type in node.data.type
-        // It can be a string or an object with resolvedName/name
-        let componentType: string | undefined
-        if (nodeData?.type) {
-          if (typeof nodeData.type === 'string') {
-            componentType = nodeData.type
-          } else if (nodeData.type.resolvedName) {
-            componentType = nodeData.type.resolvedName
-          } else if (nodeData.type.name) {
-            componentType = nodeData.type.name
-          }
-        }
-        
-        const resolver = state.options?.resolver || {}
-        let Component: any = null
-        
-        // Try to resolve component by type name
-        if (componentType) {
-          Component = resolver[componentType]
-        }
-        
-        // If not found, try iterating through resolver to find by function name
-        if (!Component && componentType) {
-          for (const [key, value] of Object.entries(resolver)) {
-            const comp = value as any
-            // Check if component name matches
-            if (comp?.name === componentType || comp?.displayName === componentType) {
-              Component = comp
-              break
-            }
-            // Also check craft.displayName
-            if (comp?.craft?.displayName === componentType) {
-              Component = comp
-              break
-            }
-          }
-        }
-        
-        // Craft.js should automatically populate node.related from Component.craft.related
-        // But we need to manually get it if not populated
-        let settings = node?.related?.settings
-        
-        // If not in node.related, get from Component.craft.related.settings
-        if (!settings && Component && typeof Component !== 'string') {
-          const componentCraft = (Component as any)?.craft
-          if (componentCraft?.related?.settings) {
-            settings = componentCraft.related.settings
-          }
-        }
-        
-        // Debug logging - always log to help diagnose
-        console.log('SettingsPanel Debug:', {
-          nodeId: currentlySelectedNodeId,
-          componentType,
-          resolverKeys: Object.keys(resolver),
-          hasComponent: !!Component,
-          componentName: Component?.name || Component?.displayName || 'unknown',
-          hasNodeRelated: !!node?.related,
-          nodeRelatedSettings: !!node?.related?.settings,
-          componentCraft: Component ? {
-            hasCraft: !!(Component as any)?.craft,
-            hasRelated: !!(Component as any)?.craft?.related,
-            hasSettings: !!(Component as any)?.craft?.related?.settings,
-            settingsType: typeof (Component as any)?.craft?.related?.settings,
-          } : null,
-          finalSettings: !!settings,
-        })
-        
-        // If still no settings, log detailed component info
-        if (!settings) {
-          console.warn('SettingsPanel: Settings not found', {
-            componentType,
-            component: Component,
-            craftProperty: (Component as any)?.craft,
-          })
-        }
+    const node = state.nodes[currentNodeId]
+    if (!node || !node.data) {
+      return { selected: null }
+    }
 
-        const displayName = Component && typeof Component !== 'string'
-          ? (Component as any)?.craft?.displayName || nodeData?.displayName || nodeData?.name || componentType || 'Component'
-          : nodeData?.displayName || nodeData?.name || componentType || 'Component'
-
-        // Safely check if deletable with error handling
-        let isDeletable = false
-        try {
-          isDeletable = nodeQuery.isDeletable()
-        } catch (error) {
-          console.warn('Error checking if node is deletable:', error)
-          // Default to true for non-root nodes
-          isDeletable = currentlySelectedNodeId !== 'ROOT'
+    // Get settings from node.related (Craft.js populates this automatically)
+    // If not populated, get from resolver component
+    let settings = node.related?.settings
+    
+    if (!settings) {
+      // Try to get from resolver component
+      const nodeData = node.data as any
+      const componentType = nodeData?.type?.resolvedName || nodeData?.type
+      const resolver = state.options?.resolver || {}
+      const Component = componentType ? resolver[componentType] : null
+      
+      if (Component && typeof Component !== 'string') {
+        const componentCraft = (Component as any)?.craft
+        if (componentCraft?.related?.settings) {
+          settings = componentCraft.related.settings
         }
-
-        selectedNode = {
-          id: currentlySelectedNodeId,
-          name: displayName,
-          settings: settings,
-          componentType: componentType || 'unknown',
-          isDeletable: isDeletable,
-          isHidden: nodeData?.custom?.hidden || false,
-        }
-      } catch (error) {
-        console.error('Error in SettingsPanel:', error)
-        return { selected: null }
       }
     }
 
+    // Get display name
+    const nodeData = node.data as any
+    const componentType = nodeData?.type?.resolvedName || nodeData?.type
+    const resolver = state.options?.resolver || {}
+    const Component = componentType ? resolver[componentType] : null
+    const displayName = Component && typeof Component !== 'string'
+      ? (Component as any)?.craft?.displayName || nodeData?.displayName || nodeData?.name || componentType || 'Component'
+      : nodeData?.displayName || nodeData?.name || componentType || 'Component'
+
+    // Check if deletable (ROOT node is not deletable)
+    const isDeletable = currentNodeId !== 'ROOT'
+
     return {
-      selected: selectedNode,
+      selected: {
+        id: currentNodeId,
+        name: displayName,
+        settings: settings,
+        componentType: componentType || 'unknown',
+        isDeletable: isDeletable,
+        isHidden: nodeData?.custom?.hidden || false,
+      },
     }
   })
 
