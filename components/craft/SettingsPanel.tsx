@@ -53,7 +53,7 @@ export function SettingsPanel() {
           ) : (
             <div className="text-sm text-muted-foreground py-4">
               <p>No settings available for this component</p>
-              <p className="text-xs mt-2">Make sure the component has a settings function defined</p>
+              <p className="text-xs mt-2">Debug: Settings component not found</p>
             </div>
           )}
           {selected.isDeletable && (
