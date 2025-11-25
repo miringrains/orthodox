@@ -23,11 +23,22 @@ export function CraftRenderer({ content }: CraftRendererProps) {
     // Extract global font settings from content if available
     const globalFonts = content?.globalFonts || {}
     
+    // Extract craft content (without globalFonts)
+    const { globalFonts: _, ...craftContent } = content || {}
+    
     return (
       <FontProvider initialFonts={globalFonts}>
-        <Editor enabled={false} resolver={craftComponents}>
-          <Frame data={content} />
-        </Editor>
+        <div
+          style={{
+            fontFamily: globalFonts.fontFamily && globalFonts.fontFamily !== 'inherit' ? globalFonts.fontFamily : undefined,
+            fontSize: globalFonts.baseFontSize || '16px',
+            fontWeight: globalFonts.baseFontWeight || 'normal',
+          }}
+        >
+          <Editor enabled={false} resolver={craftComponents}>
+            <Frame data={craftContent} />
+          </Editor>
+        </div>
       </FontProvider>
     )
   } catch (error) {

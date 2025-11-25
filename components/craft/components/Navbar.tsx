@@ -83,15 +83,10 @@ export function Navbar({ logoUrl, logoText, menuItems, ctaText, ctaUrl }: Navbar
         </div>
 
         {/* Mobile Menu */}
-        <div 
-          className={`
-            md:hidden border-t bg-white overflow-hidden transition-all duration-300 ease-in-out
-            ${mobileMenuOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'}
-          `}
-          style={{
-            display: mobileMenuOpen ? 'block' : 'none',
-          }}
-        >
+        {mobileMenuOpen && (
+          <div 
+            className="md:hidden border-t bg-white overflow-hidden"
+          >
           <div className="py-4">
             <div className="flex flex-col gap-4">
               {(menuItems || []).map((item, index) => (
@@ -111,7 +106,7 @@ export function Navbar({ logoUrl, logoText, menuItems, ctaText, ctaUrl }: Navbar
               )}
             </div>
           </div>
-        </div>
+        )}
       </div>
     </nav>
   )

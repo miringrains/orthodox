@@ -25,7 +25,7 @@ function EditorContent({ onSave, initialContent }: { onSave: (content: any) => P
   const { query, actions } = useEditor((state) => ({
     enabled: state.options.enabled,
   }))
-  const { fontFamily, baseFontSize, baseFontWeight } = useFontContext()
+  const { fontFamily, baseFontSize, baseFontWeight, setFontFamily, setBaseFontSize, setBaseFontWeight } = useFontContext()
 
   // Keyboard shortcuts
   React.useEffect(() => {
@@ -104,6 +104,15 @@ function EditorContent({ onSave, initialContent }: { onSave: (content: any) => P
   useEffect(() => {
     if (initialContent && actions) {
       try {
+        // Parse initial content to extract global fonts
+        const parsedContent = typeof initialContent === 'string' ? JSON.parse(initialContent) : initialContent
+        if (parsedContent?.globalFonts) {
+          // Update font context with saved fonts
+          if (parsedContent.globalFonts.fontFamily) setFontFamily(parsedContent.globalFonts.fontFamily)
+          if (parsedContent.globalFonts.baseFontSize) setBaseFontSize(parsedContent.globalFonts.baseFontSize)
+          if (parsedContent.globalFonts.baseFontWeight) setBaseFontWeight(parsedContent.globalFonts.baseFontWeight)
+        }
+        
         // Only load if we don't already have content
         const currentContent = query.serialize()
         const contentObj = typeof currentContent === 'string' ? JSON.parse(currentContent) : currentContent
@@ -112,14 +121,17 @@ function EditorContent({ onSave, initialContent }: { onSave: (content: any) => P
           (contentObj.ROOT && Object.keys(contentObj.ROOT.nodes || {}).length === 0)
         
         if (isEmpty && initialContent) {
-          actions.deserialize(initialContent)
+          // Deserialize without globalFonts (they're handled separately)
+          const contentToDeserialize = typeof initialContent === 'string' ? JSON.parse(initialContent) : initialContent
+          const { globalFonts: _, ...craftContent } = contentToDeserialize
+          actions.deserialize(JSON.stringify(craftContent))
         }
       } catch (error) {
         console.error('Error loading content:', error)
         // If content is invalid, start fresh - don't prevent editor from working
       }
     }
-  }, []) // Only run once on mount
+  }, [actions, query, setFontFamily, setBaseFontSize, setBaseFontWeight, initialContent])
 
   const handleSave = async () => {
     setSaving(true)
@@ -245,13 +257,23 @@ function EditorContent({ onSave, initialContent }: { onSave: (content: any) => P
               }}
             >
               <Frame>
-                <Element
-                  is="div"
-                  canvas
-                  className="min-h-[600px] w-full"
+                <div
+                  style={{
+                    fontFamily: fontFamily !== 'inherit' ? fontFamily : undefined,
+                    fontSize: baseFontSize,
+                    fontWeight: baseFontWeight,
+                    minHeight: '600px',
+                    width: '100%',
+                  }}
                 >
-                  {/* Start building by dragging components here */}
-                </Element>
+                  <Element
+                    is="div"
+                    canvas
+                    className="min-h-[600px] w-full"
+                  >
+                    {/* Start building by dragging components here */}
+                  </Element>
+                </div>
               </Frame>
             </div>
           </div>
