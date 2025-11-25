@@ -36,8 +36,16 @@ export function FontProvider({ children, initialFonts }: { children: ReactNode, 
 
 export function useFontContext() {
   const context = useContext(FontContext)
+  // Return default values if context is not available (e.g., in settings panel preview)
   if (context === undefined) {
-    throw new Error('useFontContext must be used within a FontProvider')
+    return {
+      fontFamily: 'inherit',
+      baseFontSize: '16px',
+      baseFontWeight: 'normal',
+      setFontFamily: () => {},
+      setBaseFontSize: () => {},
+      setBaseFontWeight: () => {},
+    }
   }
   return context
 }

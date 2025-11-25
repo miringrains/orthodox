@@ -21,18 +21,24 @@ export function SettingsPanel() {
       const Component = resolver[componentType]
       
       // Craft.js stores settings in node.related.settings
-      // If not found there, get from Component.craft.related.settings
+      // First check node.related (populated by Craft.js)
       let settings = node?.related?.settings
       
-      // If not in node.related, get from component definition
+      // If not in node.related, get from Component.craft.related.settings
       if (!settings && Component && typeof Component !== 'string') {
         const componentCraft = (Component as any)?.craft
         settings = componentCraft?.related?.settings
       }
+      
+      // If still not found, try to get it from the component directly
+      if (!settings && Component && typeof Component !== 'string') {
+        // Some components might have settings as a static property
+        settings = (Component as any)?.Settings || (Component as any)?.settings
+      }
 
       const displayName = Component && typeof Component !== 'string'
-        ? (Component as any)?.craft?.displayName || nodeData?.displayName || nodeData?.name || 'Component'
-        : nodeData?.displayName || nodeData?.name || 'Component'
+        ? (Component as any)?.craft?.displayName || nodeData?.displayName || nodeData?.name || componentType || 'Component'
+        : nodeData?.displayName || nodeData?.name || componentType || 'Component'
 
       selected = {
         id: currentlySelectedNodeId,
@@ -148,7 +154,9 @@ export function SettingsPanel() {
             </div>
           </div>
           {selected.settings ? (
-            React.createElement(selected.settings)
+            <div>
+              {React.createElement(selected.settings)}
+            </div>
           ) : (
             <div className="text-sm text-muted-foreground py-4 space-y-2">
               <p className="font-medium">No settings available for this component</p>
@@ -156,6 +164,7 @@ export function SettingsPanel() {
                 <p><strong>Component:</strong> {selected.name}</p>
                 <p><strong>Type:</strong> {selected.componentType || 'unknown'}</p>
                 <p><strong>Settings Function:</strong> {selected.settings ? 'Found' : 'Not found'}</p>
+                <p><strong>Debug:</strong> Check browser console for component resolution details</p>
               </div>
             </div>
           )}

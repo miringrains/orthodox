@@ -80,13 +80,9 @@ export function Toolbox() {
                     ref={(ref) => {
                       if (ref && connectors) {
                         try {
-                          // Create a new instance of the component with default props from craft config
-                          // Use componentName to ensure Craft.js can resolve it correctly
-                          connectors.create(ref, React.createElement(Component as any, {
-                            ...defaultProps,
-                            // Ensure componentName is set for Craft.js resolution
-                            'data-craft-component': componentName,
-                          }))
+                          // Create a draggable component element with default props
+                          // Craft.js will resolve the component from the resolver using componentName
+                          connectors.create(ref, React.createElement(Component as any, defaultProps))
                         } catch (error) {
                           console.error(`Error creating component ${componentName}:`, error)
                         }
