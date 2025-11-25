@@ -27,6 +27,25 @@ export function Navbar({ logoUrl, logoText, menuItems, ctaText, ctaUrl }: Navbar
 
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false)
 
+  // Use a ref to check actual container width for responsive behavior
+  const containerRef = React.useRef<HTMLDivElement>(null)
+  const [isMobile, setIsMobile] = React.useState(false)
+
+  React.useEffect(() => {
+    const checkMobile = () => {
+      if (containerRef.current) {
+        setIsMobile(containerRef.current.offsetWidth < 768)
+      } else {
+        // Fallback: check window width
+        setIsMobile(window.innerWidth < 768)
+      }
+    }
+    
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    return () => window.removeEventListener('resize', checkMobile)
+  }, [])
+
   return (
     <nav
       ref={(ref) => {
@@ -39,7 +58,7 @@ export function Navbar({ logoUrl, logoText, menuItems, ctaText, ctaUrl }: Navbar
         ${isSelected ? 'ring-2 ring-primary' : ''}
       `}
     >
-      <div className="container mx-auto px-4">
+      <div ref={containerRef} className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <div className="flex items-center gap-3">
@@ -51,7 +70,7 @@ export function Navbar({ logoUrl, logoText, menuItems, ctaText, ctaUrl }: Navbar
           </div>
 
           {/* Desktop Menu */}
-          <div className="hidden md:flex items-center gap-6">
+          <div className={`${isMobile ? 'hidden' : 'flex'} items-center gap-6`}>
             {(menuItems || []).map((item, index) => (
               <Link
                 key={index}
@@ -70,9 +89,15 @@ export function Navbar({ logoUrl, logoText, menuItems, ctaText, ctaUrl }: Navbar
 
           {/* Mobile Menu Button */}
           <button
-            className="md:hidden p-2 text-gray-700 hover:text-primary transition-colors"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            type="button"
+            className={`${isMobile ? 'flex' : 'hidden'} p-2 -mr-2 text-gray-700 hover:text-primary transition-colors rounded-md hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2`}
+            onClick={(e) => {
+              e.preventDefault()
+              e.stopPropagation()
+              setMobileMenuOpen(!mobileMenuOpen)
+            }}
             aria-label="Toggle mobile menu"
+            aria-expanded={mobileMenuOpen}
           >
             {mobileMenuOpen ? (
               <X className="h-6 w-6" />
@@ -83,24 +108,50 @@ export function Navbar({ logoUrl, logoText, menuItems, ctaText, ctaUrl }: Navbar
         </div>
 
         {/* Mobile Menu */}
-        {mobileMenuOpen && (
-          <div className="md:hidden border-t bg-white overflow-hidden">
-            <div className="py-4">
-              <div className="flex flex-col gap-4">
+        {mobileMenuOpen && isMobile && (
+          <div 
+            className="border-t bg-white overflow-hidden"
+            onClick={(e) => {
+              // Prevent clicks inside menu from closing it
+              e.stopPropagation()
+            }}
+          >
+            <div className="py-4 px-2">
+              <div className="flex flex-col gap-3">
                 {(menuItems || []).map((item, index) => (
                   <Link
                     key={index}
                     href={item.url}
-                    className="text-gray-700 hover:text-primary transition-colors px-2"
-                    onClick={() => setMobileMenuOpen(false)}
+                    className="text-gray-700 hover:text-primary transition-colors px-3 py-2 rounded-md hover:bg-gray-50"
+                    onClick={(e) => {
+                      e.preventDefault()
+                      setMobileMenuOpen(false)
+                      // In editor, prevent navigation
+                      if (typeof window !== 'undefined' && window.location.pathname.includes('/builder')) {
+                        return
+                      }
+                      window.location.href = item.url
+                    }}
                   >
                     {item.label}
                   </Link>
                 ))}
                 {ctaText && (
-                  <Button asChild size="sm" className="w-full mx-2">
-                    <Link href={ctaUrl || '#'}>{ctaText}</Link>
-                  </Button>
+                  <div className="px-3 pt-2">
+                    <Button 
+                      asChild 
+                      size="sm" 
+                      className="w-full"
+                      onClick={(e) => {
+                        if (typeof window !== 'undefined' && window.location.pathname.includes('/builder')) {
+                          e.preventDefault()
+                          setMobileMenuOpen(false)
+                        }
+                      }}
+                    >
+                      <Link href={ctaUrl || '#'}>{ctaText}</Link>
+                    </Button>
+                  </div>
                 )}
               </div>
             </div>
