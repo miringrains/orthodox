@@ -1,0 +1,30 @@
+name: Update database types
+on:
+  schedule:
+    - cron: '0 0 * * *'  # Daily at midnight
+  workflow_dispatch:  # Allow manual trigger
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    env:
+      PROJECT_REF: trwhosectgaatgkojkiq
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install -g supabase
+      - name: Generate types
+        run: npm run types:generate
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      - name: Commit if changed
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions[bot]@users.noreply.github.com
+          git add lib/database.types.ts
+          git diff --staged --quiet || (git commit -m "Update database types" && git push)
+
