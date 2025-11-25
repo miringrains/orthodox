@@ -47,8 +47,25 @@ export function SettingsPanel() {
           Component = resolver[componentType]
         }
         
-        // Craft.js automatically populates node.related from Component.craft.related
-        // But sometimes we need to manually get it from the component
+        // If not found, try iterating through resolver to find by function name
+        if (!Component && componentType) {
+          for (const [key, value] of Object.entries(resolver)) {
+            const comp = value as any
+            // Check if component name matches
+            if (comp?.name === componentType || comp?.displayName === componentType) {
+              Component = comp
+              break
+            }
+            // Also check craft.displayName
+            if (comp?.craft?.displayName === componentType) {
+              Component = comp
+              break
+            }
+          }
+        }
+        
+        // Craft.js should automatically populate node.related from Component.craft.related
+        // But we need to manually get it if not populated
         let settings = node?.related?.settings
         
         // If not in node.related, get from Component.craft.related.settings
@@ -59,17 +76,23 @@ export function SettingsPanel() {
           }
         }
         
-        // Debug logging to help diagnose issues
-        if (!settings && componentType) {
-          console.warn('SettingsPanel: Could not find settings for component', {
-            nodeId: currentlySelectedNodeId,
-            componentType,
-            resolverKeys: Object.keys(resolver),
-            hasComponent: !!Component,
-            componentCraft: Component ? (Component as any)?.craft : null,
-            nodeRelated: node?.related,
-          })
-        }
+        // Debug logging - always log to help diagnose
+        console.log('SettingsPanel Debug:', {
+          nodeId: currentlySelectedNodeId,
+          componentType,
+          resolverKeys: Object.keys(resolver),
+          hasComponent: !!Component,
+          componentName: Component?.name || Component?.displayName || 'unknown',
+          hasNodeRelated: !!node?.related,
+          nodeRelatedSettings: !!node?.related?.settings,
+          componentCraft: Component ? {
+            hasCraft: !!(Component as any)?.craft,
+            hasRelated: !!(Component as any)?.craft?.related,
+            hasSettings: !!(Component as any)?.craft?.related?.settings,
+            settingsType: typeof (Component as any)?.craft?.related?.settings,
+          } : null,
+          finalSettings: !!settings,
+        })
 
         const displayName = Component && typeof Component !== 'string'
           ? (Component as any)?.craft?.displayName || nodeData?.displayName || nodeData?.name || componentType || 'Component'
