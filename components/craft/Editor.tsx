@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react'
 import { Editor, Frame, Element, useEditor } from '@craftjs/core'
 import { Button } from '@/components/ui/button'
-import { Save, ArrowLeft, CheckCircle2, AlertCircle, Eye, Code } from 'lucide-react'
+import { Save, ArrowLeft, CheckCircle2, AlertCircle, Monitor, Tablet, Smartphone } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { Toolbox } from './Toolbox'
 import { SettingsPanel } from './SettingsPanel'
@@ -101,24 +101,27 @@ function EditorContent({ onSave, initialContent }: { onSave: (content: any) => P
                 size="sm"
                 onClick={() => setViewMode('desktop')}
                 className="h-8 px-3"
+                title="Desktop View"
               >
-                <Code className="h-4 w-4" />
+                <Monitor className="h-4 w-4" />
               </Button>
               <Button
                 variant={viewMode === 'tablet' ? 'default' : 'ghost'}
                 size="sm"
                 onClick={() => setViewMode('tablet')}
                 className="h-8 px-3"
+                title="Tablet View"
               >
-                <Eye className="h-4 w-4" />
+                <Tablet className="h-4 w-4" />
               </Button>
               <Button
                 variant={viewMode === 'mobile' ? 'default' : 'ghost'}
                 size="sm"
                 onClick={() => setViewMode('mobile')}
                 className="h-8 px-3"
+                title="Mobile View"
               >
-                <Eye className="h-4 w-4" />
+                <Smartphone className="h-4 w-4" />
               </Button>
             </div>
             {saveStatus === 'success' && (

@@ -18,17 +18,20 @@ import { TextBlock } from './components/TextBlock'
 import { ImageBlock } from './components/ImageBlock'
 import { ButtonBlock } from './components/ButtonBlock'
 import { HeroSection } from './components/HeroSection'
+import { Navbar } from './components/Navbar'
 import { SchedulePreview } from './components/SchedulePreview'
 import { DonationPanel } from './components/DonationPanel'
 import { NewsList } from './components/NewsList'
 import { SermonCardGrid } from './components/SermonCardGrid'
 import { GalleryGrid } from './components/GalleryGrid'
 import { FeastHighlight } from './components/FeastHighlight'
+import { Navigation } from 'lucide-react'
 
 const components = [
   { name: 'Text Block', icon: Type, component: TextBlock, componentName: 'TextBlock', category: 'Basic' },
   { name: 'Image', icon: Image, component: ImageBlock, componentName: 'ImageBlock', category: 'Basic' },
   { name: 'Button', icon: MousePointerClick, component: ButtonBlock, componentName: 'ButtonBlock', category: 'Basic' },
+  { name: 'Navbar', icon: Navigation, component: Navbar, componentName: 'Navbar', category: 'Layout' },
   { name: 'Hero Section', icon: Layout, component: HeroSection, componentName: 'HeroSection', category: 'Layout' },
   { name: 'Schedule', icon: Calendar, component: SchedulePreview, componentName: 'SchedulePreview', category: 'Content' },
   { name: 'Donation', icon: DollarSign, component: DonationPanel, componentName: 'DonationPanel', category: 'Content' },

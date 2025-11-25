@@ -1,8 +1,10 @@
 'use client'
 
 import { useNode } from '@craftjs/core'
+import React, { useState } from 'react'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 
 interface TextBlockProps {
   content?: string
@@ -14,9 +16,13 @@ export function TextBlock({ content, align, size }: TextBlockProps) {
   const {
     connectors: { connect, drag },
     isSelected,
+    actions: { setProp },
   } = useNode((state) => ({
     isSelected: state.events.selected,
   }))
+
+  const [isEditing, setIsEditing] = useState(false)
+  const [editContent, setEditContent] = useState(content || '')
 
   const sizeClasses = {
     sm: 'text-sm',
@@ -31,6 +37,22 @@ export function TextBlock({ content, align, size }: TextBlockProps) {
     right: 'text-right',
   }
 
+  const handleBlur = () => {
+    setProp((props: any) => (props.content = editContent))
+    setIsEditing(false)
+  }
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault()
+      handleBlur()
+    }
+    if (e.key === 'Escape') {
+      setEditContent(content || '')
+      setIsEditing(false)
+    }
+  }
+
   return (
     <div
       ref={(ref) => {
@@ -42,12 +64,31 @@ export function TextBlock({ content, align, size }: TextBlockProps) {
         ${sizeClasses[size || 'md']} 
         ${alignClasses[align || 'left']} 
         py-4 px-4
-        ${isSelected ? 'ring-2 ring-primary' : ''}
+        ${isSelected ? 'ring-2 ring-primary rounded' : ''}
+        ${isSelected && !isEditing ? 'cursor-text' : ''}
       `}
+      onDoubleClick={() => {
+        if (isSelected) {
+          setIsEditing(true)
+          setEditContent(content || '')
+        }
+      }}
     >
-      <div className="whitespace-pre-wrap max-w-4xl mx-auto">
-        {content || 'Enter your text here'}
-      </div>
+      {isEditing && isSelected ? (
+        <textarea
+          value={editContent}
+          onChange={(e) => setEditContent(e.target.value)}
+          onBlur={handleBlur}
+          onKeyDown={handleKeyDown}
+          className="w-full border-2 border-primary rounded p-2 focus:outline-none resize-none"
+          autoFocus
+          rows={Math.max(3, editContent.split('\n').length)}
+        />
+      ) : (
+        <div className="whitespace-pre-wrap max-w-4xl mx-auto">
+          {content || 'Double-click to edit text'}
+        </div>
+      )}
     </div>
   )
 }
@@ -64,32 +105,41 @@ function TextBlockSettings() {
         <Textarea
           value={props.content || ''}
           onChange={(e) => setProp((props: any) => (props.content = e.target.value))}
+          rows={6}
         />
       </div>
       <div>
         <Label>Alignment</Label>
-        <select
+        <Select
           value={props.align || 'left'}
-          onChange={(e) => setProp((props: any) => (props.align = e.target.value))}
-          className="w-full p-2 border rounded"
+          onValueChange={(value) => setProp((props: any) => (props.align = value))}
         >
-          <option value="left">Left</option>
-          <option value="center">Center</option>
-          <option value="right">Right</option>
-        </select>
+          <SelectTrigger>
+            <SelectValue placeholder="Select alignment" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="left">Left</SelectItem>
+            <SelectItem value="center">Center</SelectItem>
+            <SelectItem value="right">Right</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
       <div>
         <Label>Size</Label>
-        <select
+        <Select
           value={props.size || 'md'}
-          onChange={(e) => setProp((props: any) => (props.size = e.target.value))}
-          className="w-full p-2 border rounded"
+          onValueChange={(value) => setProp((props: any) => (props.size = value))}
         >
-          <option value="sm">Small</option>
-          <option value="md">Medium</option>
-          <option value="lg">Large</option>
-          <option value="xl">Extra Large</option>
-        </select>
+          <SelectTrigger>
+            <SelectValue placeholder="Select size" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="sm">Small</SelectItem>
+            <SelectItem value="md">Medium</SelectItem>
+            <SelectItem value="lg">Large</SelectItem>
+            <SelectItem value="xl">Extra Large</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
     </div>
   )

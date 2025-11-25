@@ -13,7 +13,31 @@ export function getDefaultPageTemplate() {
       displayName: 'div',
       custom: {},
       hidden: false,
-      nodes: ['heroSection', 'contentSection'],
+      nodes: ['navbar', 'heroSection', 'contentSection'],
+      linkedNodes: {},
+    },
+    navbar: {
+      type: {
+        resolvedName: 'Navbar',
+      },
+      isCanvas: false,
+      props: {
+        logoText: 'Parish',
+        logoUrl: '',
+        menuItems: [
+          { label: 'Home', url: '/' },
+          { label: 'About', url: '/about' },
+          { label: 'Services', url: '/schedule' },
+          { label: 'Contact', url: '/contact' },
+        ],
+        ctaText: 'Donate',
+        ctaUrl: '/giving',
+      },
+      displayName: 'Navbar',
+      custom: {},
+      hidden: false,
+      parent: 'ROOT',
+      nodes: [],
       linkedNodes: {},
     },
     heroSection: {
