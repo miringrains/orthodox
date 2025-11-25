@@ -1,12 +1,12 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { Puck, Render } from '@measured/puck'
 import { config } from '@/components/puck/registry'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
-import { Save, Loader2, CheckCircle2, AlertCircle } from 'lucide-react'
+import { Save, Loader2, CheckCircle2, AlertCircle, ArrowLeft } from 'lucide-react'
 
 export default function BuilderPage() {
   const params = useParams()
@@ -14,6 +14,7 @@ export default function BuilderPage() {
   const pageId = params.id as string
   const supabase = createClient()
   const [data, setData] = useState<any>(null)
+  const [initialData, setInitialData] = useState<any>(null) // Track initial state for unsaved changes
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [saveStatus, setSaveStatus] = useState<'idle' | 'success' | 'error'>('idle')
@@ -36,11 +37,9 @@ export default function BuilderPage() {
           return
         }
 
-        if (page?.builder_schema) {
-          setData(page.builder_schema)
-        } else {
-          setData({ content: [], root: {} })
-        }
+        const loadedData = page?.builder_schema || { content: [], root: {} }
+        setData(loadedData)
+        setInitialData(JSON.parse(JSON.stringify(loadedData))) // Deep copy for comparison
         setLoading(false)
       } catch (error) {
         console.error('Error loading page:', error)
@@ -53,10 +52,10 @@ export default function BuilderPage() {
 
   // Track changes to detect unsaved modifications
   useEffect(() => {
-    if (data !== null) {
-      setHasUnsavedChanges(true)
+    if (data !== null && initialData !== null) {
+      setHasUnsavedChanges(JSON.stringify(data) !== JSON.stringify(initialData))
     }
-  }, [data])
+  }, [data, initialData])
 
   // Warn before leaving with unsaved changes
   useEffect(() => {
@@ -97,12 +96,13 @@ export default function BuilderPage() {
       }
 
       setSaveStatus('success')
+      setInitialData(JSON.parse(JSON.stringify(data))) // Update initial data after save
       setHasUnsavedChanges(false)
 
-      // Clear success message after 2 seconds
+      // Clear success message after 3 seconds
       setTimeout(() => {
         setSaveStatus('idle')
-      }, 2000)
+      }, 3000)
 
       // Optionally redirect after successful save
       // router.push('/admin/pages')
@@ -141,9 +141,19 @@ export default function BuilderPage() {
   }
 
   return (
-    <div className="h-screen flex flex-col">
-      <div className="border-b bg-card p-4 flex items-center justify-between">
+    <div className="fixed inset-0 z-50 flex flex-col bg-background">
+      {/* Top bar - outside Puck */}
+      <div className="border-b bg-card p-4 flex items-center justify-between shrink-0">
         <div className="flex items-center gap-4">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => router.push('/admin/pages')}
+            className="mr-2"
+          >
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back to Pages
+          </Button>
           <h1 className="text-xl font-bold">Page Builder</h1>
           {saveStatus === 'success' && (
             <div className="flex items-center gap-2 text-green-600">
@@ -158,10 +168,13 @@ export default function BuilderPage() {
             </div>
           )}
           {hasUnsavedChanges && saveStatus === 'idle' && (
-            <span className="text-xs text-muted-foreground">Unsaved changes</span>
+            <span className="text-xs text-yellow-600 flex items-center gap-1">
+              <AlertCircle className="h-3 w-3" />
+              Unsaved changes
+            </span>
           )}
         </div>
-        <Button onClick={handleSave} disabled={saving || !data}>
+        <Button onClick={handleSave} disabled={saving || !data || !hasUnsavedChanges}>
           {saving ? (
             <>
               <Loader2 className="h-4 w-4 mr-2 animate-spin" />
@@ -175,7 +188,8 @@ export default function BuilderPage() {
           )}
         </Button>
       </div>
-      <div className="flex-1 overflow-hidden">
+      {/* Puck editor - takes remaining space */}
+      <div className="flex-1 overflow-hidden relative">
         {data && <Puck config={config} data={data} onPublish={setData} />}
       </div>
     </div>

@@ -13,7 +13,7 @@ export function TextBlock(props: TextBlockProps) {
     sm: 'text-sm',
     md: 'text-base',
     lg: 'text-lg',
-    xl: 'text-xl',
+    xl: 'text-2xl',
   }
 
   const alignClasses = {
@@ -23,8 +23,8 @@ export function TextBlock(props: TextBlockProps) {
   }
 
   return (
-    <div className={`${sizeClasses[size]} ${alignClasses[align]} py-4`}>
-      <p className="whitespace-pre-wrap">{content}</p>
+    <div className={`${sizeClasses[size]} ${alignClasses[align]} py-4 px-4`}>
+      <div className="whitespace-pre-wrap max-w-4xl mx-auto">{content}</div>
     </div>
   )
 }

@@ -44,7 +44,7 @@ export const config: Config = {
         },
       },
       defaultProps: {
-        content: 'Enter your text here',
+        content: 'This is a text block. Click to edit and add your content here.',
         align: 'left',
         size: 'md',
       },
