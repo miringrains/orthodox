@@ -29,9 +29,10 @@ function EditorContent({ onSave, initialContent }: { onSave: (content: any) => P
       try {
         // Only load if we don't already have content
         const currentContent = query.serialize()
-        const isEmpty = !currentContent || 
-          Object.keys(currentContent).length === 0 || 
-          (currentContent.ROOT && Object.keys(currentContent.ROOT.nodes || {}).length === 0)
+        const contentObj = typeof currentContent === 'string' ? JSON.parse(currentContent) : currentContent
+        const isEmpty = !contentObj || 
+          Object.keys(contentObj).length === 0 || 
+          (contentObj.ROOT && Object.keys(contentObj.ROOT.nodes || {}).length === 0)
         
         if (isEmpty && initialContent) {
           actions.deserialize(initialContent)
