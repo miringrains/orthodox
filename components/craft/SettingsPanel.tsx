@@ -8,20 +8,12 @@ import React from 'react'
 
 export function SettingsPanel() {
   const { selected, actions, query } = useEditor((state, query) => {
-    // Get selected node ID - try multiple methods
-    const selectedEvents = query.getEvent('selected').last() || []
-    const currentlySelectedNodeId = selectedEvents[0] || (state.events.selected as any)?.last() || null
+    // Get selected node ID using Craft.js API
+    // query.getEvent('selected').last() returns the last selected node ID
+    const selectedEvents = query.getEvent('selected').last()
+    const currentlySelectedNodeId = selectedEvents?.[0] || null
     
-    // Debug: Always log selection attempts
-    if (currentlySelectedNodeId) {
-      console.log('SettingsPanel: Component selected', {
-        nodeId: currentlySelectedNodeId,
-        selectedEvents,
-        stateSelected: state.events.selected,
-      })
-    }
-    
-    let selectedNode
+    let selectedNode = null
 
     if (currentlySelectedNodeId) {
       try {
@@ -105,6 +97,15 @@ export function SettingsPanel() {
           } : null,
           finalSettings: !!settings,
         })
+        
+        // If still no settings, log detailed component info
+        if (!settings) {
+          console.warn('SettingsPanel: Settings not found', {
+            componentType,
+            component: Component,
+            craftProperty: (Component as any)?.craft,
+          })
+        }
 
         const displayName = Component && typeof Component !== 'string'
           ? (Component as any)?.craft?.displayName || nodeData?.displayName || nodeData?.name || componentType || 'Component'
