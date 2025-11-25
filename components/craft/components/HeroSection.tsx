@@ -107,12 +107,52 @@ export function HeroSection({
         {(showTitle || showSubtitle) && (
           <div className="text-center mb-8">
             {showTitle && (
-              <h1 className="text-4xl md:text-5xl font-bold mb-4">
+              <h1 
+                className="text-4xl md:text-5xl font-bold mb-4"
+                style={{
+                  color: textColor ? (() => {
+                    if (textColor.startsWith('#')) {
+                      const hex = textColor.slice(1)
+                      const r = parseInt(hex.slice(0, 2), 16)
+                      const g = parseInt(hex.slice(2, 4), 16)
+                      const b = parseInt(hex.slice(4, 6), 16)
+                      return `rgba(${r}, ${g}, ${b}, ${textColorOpacity / 100})`
+                    }
+                    if (textColor.startsWith('rgba')) {
+                      return textColor.replace(/,\s*[\d.]+\)$/, `, ${textColorOpacity / 100})`)
+                    }
+                    if (textColor.startsWith('rgb')) {
+                      return textColor.replace('rgb', 'rgba').replace(')', `, ${textColorOpacity / 100})`)
+                    }
+                    return textColor
+                  })() : undefined,
+                }}
+              >
                 {title || 'Welcome to Our Parish'}
               </h1>
             )}
             {showSubtitle && (
-              <p className="text-xl text-muted-foreground">
+              <p 
+                className="text-xl"
+                style={{
+                  color: textColor ? (() => {
+                    if (textColor.startsWith('#')) {
+                      const hex = textColor.slice(1)
+                      const r = parseInt(hex.slice(0, 2), 16)
+                      const g = parseInt(hex.slice(2, 4), 16)
+                      const b = parseInt(hex.slice(4, 6), 16)
+                      return `rgba(${r}, ${g}, ${b}, ${textColorOpacity / 100})`
+                    }
+                    if (textColor.startsWith('rgba')) {
+                      return textColor.replace(/,\s*[\d.]+\)$/, `, ${textColorOpacity / 100})`)
+                    }
+                    if (textColor.startsWith('rgb')) {
+                      return textColor.replace('rgb', 'rgba').replace(')', `, ${textColorOpacity / 100})`)
+                    }
+                    return textColor
+                  })() : undefined,
+                }}
+              >
                 {subtitle || 'Join us in worship and fellowship'}
               </p>
             )}
@@ -373,6 +413,21 @@ function HeroSectionSettings() {
           onChange={(value) => setProp((props: any) => (props.backgroundImageOpacity = value))}
         />
       )}
+
+      <div>
+        <ColorPicker
+          label="Text Color"
+          value={props.textColor || '#000000'}
+          onChange={(value) => setProp((props: any) => (props.textColor = value))}
+        />
+        {props.textColor && (
+          <OpacityControl
+            label="Text Color Opacity"
+            value={props.textColorOpacity || 100}
+            onChange={(value) => setProp((props: any) => (props.textColorOpacity = value))}
+          />
+        )}
+      </div>
 
       <div>
         <Label>Padding</Label>

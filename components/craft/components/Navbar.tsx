@@ -70,19 +70,27 @@ export function Navbar({ logoUrl, logoText, menuItems, ctaText, ctaUrl }: Navbar
 
           {/* Mobile Menu Button */}
           <button
-            className="md:hidden p-2"
+            className="md:hidden p-2 text-gray-700 hover:text-primary transition-colors"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            aria-label="Toggle mobile menu"
           >
-            {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+            {mobileMenuOpen ? (
+              <X className="h-6 w-6" />
+            ) : (
+              <Menu className="h-6 w-6" />
+            )}
           </button>
         </div>
 
         {/* Mobile Menu */}
         <div 
           className={`
-            md:hidden border-t overflow-hidden transition-all duration-300 ease-in-out
+            md:hidden border-t bg-white overflow-hidden transition-all duration-300 ease-in-out
             ${mobileMenuOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'}
           `}
+          style={{
+            display: mobileMenuOpen ? 'block' : 'none',
+          }}
         >
           <div className="py-4">
             <div className="flex flex-col gap-4">
