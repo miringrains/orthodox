@@ -5,46 +5,24 @@ import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { ColorPicker } from '../controls/ColorPicker'
-import { SpacingControl } from '../controls/SpacingControl'
-import { BorderControl } from '../controls/BorderControl'
-import { ShadowControl } from '../controls/ShadowControl'
+import { SettingsAccordion } from '../controls/SettingsAccordion'
 
 interface ButtonBlockProps {
   text?: string
   url?: string
-  variant?: 'default' | 'outline' | 'secondary' | 'ghost' | 'destructive'
+  variant?: 'default' | 'outline' | 'secondary' | 'ghost'
   size?: 'default' | 'sm' | 'lg'
   fullWidth?: boolean
-  useContainer?: boolean
-  backgroundColor?: string
-  textColor?: string
-  padding?: { top: number; right: number; bottom: number; left: number }
-  margin?: { top: number; right: number; bottom: number; left: number }
-  borderRadius?: number
-  borderWidth?: number
-  borderColor?: string
-  borderStyle?: 'solid' | 'dashed' | 'dotted' | 'none'
-  boxShadow?: string
+  align?: 'left' | 'center' | 'right'
 }
 
 export function ButtonBlock({ 
-  text, 
-  url, 
-  variant, 
-  size, 
-  fullWidth,
-  useContainer = false,
-  backgroundColor,
-  textColor,
-  padding = { top: 0, right: 0, bottom: 0, left: 0 },
-  margin = { top: 0, right: 0, bottom: 0, left: 0 },
-  borderRadius = 6,
-  borderWidth = 0,
-  borderColor = '#000000',
-  borderStyle = 'solid',
-  boxShadow,
+  text = 'Click me', 
+  url = '#', 
+  variant = 'default', 
+  size = 'default', 
+  fullWidth = false,
+  align = 'left',
 }: ButtonBlockProps) {
   const {
     connectors: { connect, drag },
@@ -53,49 +31,40 @@ export function ButtonBlock({
     isSelected: state.events.selected,
   }))
 
-  const paddingStyle = `${padding.top}px ${padding.right}px ${padding.bottom}px ${padding.left}px`
-  const marginStyle = `${margin.top}px ${margin.right}px ${margin.bottom}px ${margin.left}px`
-  const borderStyleStr = borderWidth > 0 ? `${borderWidth}px ${borderStyle} ${borderColor}` : 'none'
-
-  const buttonStyle: React.CSSProperties = {
-    backgroundColor: backgroundColor || undefined,
-    color: textColor || undefined,
-    padding: paddingStyle,
-    margin: marginStyle,
-    borderRadius: `${borderRadius}px`,
-    border: borderStyleStr,
-    boxShadow: boxShadow || undefined,
+  const alignClasses = {
+    left: 'justify-start',
+    center: 'justify-center',
+    right: 'justify-end',
   }
 
   const button = (
     <Button 
-      variant={variant || 'default'} 
-      size={size || 'default'} 
+      variant={variant} 
+      size={size} 
       className={fullWidth ? 'w-full' : ''}
-      style={buttonStyle}
     >
-      {text || 'Click me'}
+      {text}
     </Button>
   )
 
-  const wrapper = (
+  return (
     <div
       ref={(ref) => {
         if (ref) {
           connect(drag(ref))
         }
       }}
-      className={`${isSelected ? 'ring-2 ring-primary rounded' : ''} ${useContainer ? 'container mx-auto px-4 md:px-6' : ''}`}
+      className={`flex ${alignClasses[align]} ${isSelected ? 'ring-2 ring-primary rounded p-1' : ''}`}
     >
       {url && url !== '#' ? (
-        <Link href={url}>{button}</Link>
+        <Link href={url} className={fullWidth ? 'w-full' : ''}>
+          {button}
+        </Link>
       ) : (
         button
       )}
     </div>
   )
-
-  return wrapper
 }
 
 function ButtonBlockSettings() {
@@ -103,133 +72,133 @@ function ButtonBlockSettings() {
     props: node.data.props,
   }))
 
-  return (
-    <div className="space-y-4 p-4">
-      <div>
-        <Label>Button Text</Label>
-        <Input
-          value={props.text || ''}
-          onChange={(e) => setProp((props: any) => (props.text = e.target.value))}
-        />
-      </div>
-      <div>
-        <Label>URL</Label>
-        <Input
-          value={props.url || ''}
-          onChange={(e) => setProp((props: any) => (props.url = e.target.value))}
-        />
-      </div>
-      <div>
-        <Label>Variant</Label>
-        <Select
-          value={props.variant || 'default'}
-          onValueChange={(value) => setProp((props: any) => (props.variant = value))}
-        >
-          <SelectTrigger>
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="default">Default</SelectItem>
-            <SelectItem value="outline">Outline</SelectItem>
-            <SelectItem value="secondary">Secondary</SelectItem>
-            <SelectItem value="ghost">Ghost</SelectItem>
-            <SelectItem value="destructive">Destructive</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-      <div>
-        <Label>Size</Label>
-        <Select
-          value={props.size || 'default'}
-          onValueChange={(value) => setProp((props: any) => (props.size = value))}
-        >
-          <SelectTrigger>
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="sm">Small</SelectItem>
-            <SelectItem value="default">Default</SelectItem>
-            <SelectItem value="lg">Large</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
+  const variantOptions = [
+    { label: 'Primary', value: 'default' },
+    { label: 'Outline', value: 'outline' },
+    { label: 'Secondary', value: 'secondary' },
+    { label: 'Ghost', value: 'ghost' },
+  ]
 
-      <div>
-        <Label>Use Container</Label>
-        <div className="flex items-center space-x-2 mt-2">
+  const sizeOptions = [
+    { label: 'SM', value: 'sm' },
+    { label: 'MD', value: 'default' },
+    { label: 'LG', value: 'lg' },
+  ]
+
+  const alignOptions = [
+    { label: 'Left', value: 'left' },
+    { label: 'Center', value: 'center' },
+    { label: 'Right', value: 'right' },
+  ]
+
+  return (
+    <div className="divide-y divide-gray-100">
+      <SettingsAccordion title="Content" defaultOpen>
+        <div>
+          <Label className="text-sm font-medium">Button Text</Label>
+          <Input
+            value={props.text || ''}
+            onChange={(e) => setProp((p: any) => (p.text = e.target.value))}
+            className="mt-1"
+            placeholder="Click me"
+          />
+        </div>
+        <div>
+          <Label className="text-sm font-medium">Link URL</Label>
+          <Input
+            value={props.url || ''}
+            onChange={(e) => setProp((p: any) => (p.url = e.target.value))}
+            className="mt-1"
+            placeholder="/page or https://..."
+          />
+        </div>
+      </SettingsAccordion>
+
+      <SettingsAccordion title="Style" defaultOpen>
+        <div>
+          <Label className="text-sm font-medium">Variant</Label>
+          <div className="flex flex-wrap gap-2 mt-2">
+            {variantOptions.map((option) => (
+              <button
+                key={option.value}
+                type="button"
+                onClick={() => setProp((p: any) => (p.variant = option.value))}
+                className={`px-3 py-1.5 text-xs rounded-md border transition-colors ${
+                  (props.variant || 'default') === option.value
+                    ? 'bg-primary text-primary-foreground border-primary'
+                    : 'bg-white hover:bg-gray-50 border-gray-200'
+                }`}
+              >
+                {option.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <Label className="text-sm font-medium">Size</Label>
+          <div className="flex gap-2 mt-2">
+            {sizeOptions.map((option) => (
+              <button
+                key={option.value}
+                type="button"
+                onClick={() => setProp((p: any) => (p.size = option.value))}
+                className={`flex-1 px-2 py-1.5 text-xs rounded-md border transition-colors ${
+                  (props.size || 'default') === option.value
+                    ? 'bg-primary text-primary-foreground border-primary'
+                    : 'bg-white hover:bg-gray-50 border-gray-200'
+                }`}
+              >
+                {option.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <Label className="text-sm font-medium">Alignment</Label>
+          <div className="flex gap-2 mt-2">
+            {alignOptions.map((option) => (
+              <button
+                key={option.value}
+                type="button"
+                onClick={() => setProp((p: any) => (p.align = option.value))}
+                className={`flex-1 px-2 py-1.5 text-xs rounded-md border transition-colors ${
+                  (props.align || 'left') === option.value
+                    ? 'bg-primary text-primary-foreground border-primary'
+                    : 'bg-white hover:bg-gray-50 border-gray-200'
+                }`}
+              >
+                {option.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="flex items-center space-x-2">
           <input
             type="checkbox"
-            checked={props.useContainer === true}
-            onChange={(e) => setProp((props: any) => (props.useContainer = e.target.checked))}
-            className="h-4 w-4"
+            id="fullWidth"
+            checked={props.fullWidth === true}
+            onChange={(e) => setProp((p: any) => (p.fullWidth = e.target.checked))}
+            className="h-4 w-4 rounded border-gray-300"
           />
-          <Label className="text-sm">Wrap in container with horizontal padding</Label>
+          <Label htmlFor="fullWidth" className="text-sm">Full Width</Label>
         </div>
-      </div>
-
-      <ColorPicker
-        label="Background Color"
-        value={props.backgroundColor || ''}
-        onChange={(value) => setProp((props: any) => (props.backgroundColor = value))}
-        placeholder="Use variant default"
-      />
-
-      <ColorPicker
-        label="Text Color"
-        value={props.textColor || ''}
-        onChange={(value) => setProp((props: any) => (props.textColor = value))}
-        placeholder="Use variant default"
-      />
-
-      <SpacingControl
-        label="Padding"
-        value={props.padding || { top: 0, right: 0, bottom: 0, left: 0 }}
-        onChange={(value) => setProp((props: any) => (props.padding = value))}
-      />
-
-      <SpacingControl
-        label="Margin"
-        value={props.margin || { top: 0, right: 0, bottom: 0, left: 0 }}
-        onChange={(value) => setProp((props: any) => (props.margin = value))}
-      />
-
-      <BorderControl
-        borderRadius={props.borderRadius || 6}
-        borderWidth={props.borderWidth || 0}
-        borderColor={props.borderColor || '#000000'}
-        borderStyle={props.borderStyle || 'solid'}
-        onBorderRadiusChange={(value) => setProp((props: any) => (props.borderRadius = value))}
-        onBorderWidthChange={(value) => setProp((props: any) => (props.borderWidth = value))}
-        onBorderColorChange={(value) => setProp((props: any) => (props.borderColor = value))}
-        onBorderStyleChange={(value) => setProp((props: any) => (props.borderStyle = value))}
-      />
-
-      <ShadowControl
-        value={props.boxShadow || 'none'}
-        onChange={(value) => setProp((props: any) => (props.boxShadow = value))}
-      />
+      </SettingsAccordion>
     </div>
   )
 }
 
 ButtonBlock.craft = {
-  displayName: 'Button Block',
+  displayName: 'Button',
   props: {
     text: 'Click me',
     url: '#',
     variant: 'default',
     size: 'default',
     fullWidth: false,
-    useContainer: false,
-    backgroundColor: '',
-    textColor: '',
-    padding: { top: 0, right: 0, bottom: 0, left: 0 },
-    margin: { top: 0, right: 0, bottom: 0, left: 0 },
-    borderRadius: 6,
-    borderWidth: 0,
-    borderColor: '#000000',
-    borderStyle: 'solid',
-    boxShadow: 'none',
+    align: 'left',
   },
   related: {
     settings: ButtonBlockSettings,

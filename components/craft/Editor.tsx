@@ -3,8 +3,9 @@
 import React, { useState, useEffect } from 'react'
 import { Editor, Frame, Element, useEditor } from '@craftjs/core'
 import { Button } from '@/components/ui/button'
-import { Save, ArrowLeft, CheckCircle2, AlertCircle, Monitor, Tablet, Smartphone } from 'lucide-react'
+import { Save, ArrowLeft, CheckCircle2, AlertCircle, Monitor, Tablet, Smartphone, ExternalLink } from 'lucide-react'
 import { useRouter } from 'next/navigation'
+import { createClient } from '@/lib/supabase/client'
 import { Toolbox } from './Toolbox'
 import { SettingsPanel } from './SettingsPanel'
 import { GlobalSettings } from './GlobalSettings'
@@ -17,9 +18,11 @@ interface CraftEditorProps {
   pageId: string
 }
 
-function EditorContent({ onSave, initialContent }: { onSave: (content: any) => Promise<void>, initialContent?: any }) {
+function EditorContent({ onSave, initialContent, pageId }: { onSave: (content: any) => Promise<void>, initialContent?: any, pageId: string }) {
   const router = useRouter()
+  const supabase = createClient()
   const [saving, setSaving] = useState(false)
+  const [previewing, setPreviewing] = useState(false)
   const [saveStatus, setSaveStatus] = useState<'idle' | 'success' | 'error'>('idle')
   const [viewMode, setViewMode] = useState<'desktop' | 'tablet' | 'mobile'>('desktop')
   const { query, actions } = useEditor((state) => ({
@@ -150,11 +153,43 @@ function EditorContent({ onSave, initialContent }: { onSave: (content: any) => P
       await onSave(JSON.stringify(contentWithFonts))
       setSaveStatus('success')
       setTimeout(() => setSaveStatus('idle'), 2000)
+      return true
     } catch (error) {
       console.error('Error saving:', error)
       setSaveStatus('error')
+      return false
     } finally {
       setSaving(false)
+    }
+  }
+
+  const handlePreview = async () => {
+    setPreviewing(true)
+    try {
+      // Save first
+      const saved = await handleSave()
+      if (!saved) {
+        setPreviewing(false)
+        return
+      }
+
+      // Fetch page details to get parish slug
+      const { data: page } = await supabase
+        .from('pages')
+        .select('parishes(slug)')
+        .eq('id', pageId)
+        .single()
+
+      const parishSlug = (page?.parishes as any)?.slug
+      if (parishSlug) {
+        window.open(`/p/${parishSlug}`, '_blank')
+      } else {
+        console.error('Could not find parish slug for preview')
+      }
+    } catch (error) {
+      console.error('Error previewing:', error)
+    } finally {
+      setPreviewing(false)
     }
   }
 
@@ -234,11 +269,24 @@ function EditorContent({ onSave, initialContent }: { onSave: (content: any) => P
                 <span className="text-sm">Save failed</span>
               </div>
             )}
-            <Button onClick={handleSave} disabled={saving} className="bg-primary hover:bg-primary/90">
+            <Button onClick={handleSave} disabled={saving || previewing} className="bg-primary hover:bg-primary/90">
               {saving ? 'Saving...' : (
                 <>
                   <Save className="h-4 w-4 mr-2" />
                   Save
+                </>
+              )}
+            </Button>
+            <Button 
+              onClick={handlePreview} 
+              disabled={saving || previewing}
+              variant="outline"
+              title="Save and preview in new tab"
+            >
+              {previewing ? 'Opening...' : (
+                <>
+                  <ExternalLink className="h-4 w-4 mr-2" />
+                  Preview
                 </>
               )}
             </Button>
@@ -306,7 +354,7 @@ export function CraftEditor({ content, onSave, pageId }: CraftEditorProps) {
           return render
         }}
       >
-        <EditorContent onSave={onSave} initialContent={content} />
+        <EditorContent onSave={onSave} initialContent={content} pageId={pageId} />
       </Editor>
     </FontProvider>
   )

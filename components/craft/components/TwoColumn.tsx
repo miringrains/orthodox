@@ -5,16 +5,13 @@ import React from 'react'
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { ColorPicker } from '../controls/ColorPicker'
-import { OpacityControl } from '../controls/OpacityControl'
+import { DropZoneContent } from './shared/DropZone'
 
 interface TwoColumnProps {
   leftWidth?: number
   rightWidth?: number
   gap?: number
   backgroundColor?: string
-  textColor?: string
-  textColorOpacity?: number
   padding?: { top: number; right: number; bottom: number; left: number }
 }
 
@@ -23,8 +20,6 @@ export function TwoColumn({
   rightWidth = 50,
   gap = 20,
   backgroundColor,
-  textColor,
-  textColorOpacity = 100,
   padding = { top: 0, right: 0, bottom: 0, left: 0 },
 }: TwoColumnProps) {
   const {
@@ -55,32 +50,24 @@ export function TwoColumn({
       <div
         className="grid w-full"
         style={{
-          gridTemplateColumns: `${leftWidth}% ${rightWidth}%`,
+          gridTemplateColumns: `${leftWidth}fr ${rightWidth}fr`,
           gap: `${gap}px`,
-          color: textColor ? (() => {
-            if (textColor.startsWith('#')) {
-              const hex = textColor.slice(1)
-              const r = parseInt(hex.slice(0, 2), 16)
-              const g = parseInt(hex.slice(2, 4), 16)
-              const b = parseInt(hex.slice(4, 6), 16)
-              return `rgba(${r}, ${g}, ${b}, ${textColorOpacity / 100})`
-            }
-            if (textColor.startsWith('rgba')) {
-              return textColor.replace(/,\s*[\d.]+\)$/, `, ${textColorOpacity / 100})`)
-            }
-            if (textColor.startsWith('rgb')) {
-              return textColor.replace('rgb', 'rgba').replace(')', `, ${textColorOpacity / 100})`)
-            }
-            return textColor
-          })() : undefined,
         }}
       >
-        <Element is="div" canvas id="left-column">
-          {/* Drop components in left column */}
-        </Element>
-        <Element is="div" canvas id="right-column">
-          {/* Drop components in right column */}
-        </Element>
+        <Element 
+          is={DropZoneContent} 
+          canvas 
+          id="left-column"
+          placeholder="Drop here"
+          minHeight={100}
+        />
+        <Element 
+          is={DropZoneContent} 
+          canvas 
+          id="right-column"
+          placeholder="Drop here"
+          minHeight={100}
+        />
       </div>
     </div>
   )
@@ -91,139 +78,104 @@ function TwoColumnSettings() {
     props: node.data.props,
   }))
 
+  // Preset column ratios
+  const columnPresets = [
+    { label: '50/50', left: 50, right: 50 },
+    { label: '33/67', left: 33, right: 67 },
+    { label: '67/33', left: 67, right: 33 },
+    { label: '25/75', left: 25, right: 75 },
+    { label: '75/25', left: 75, right: 25 },
+  ]
+
   return (
     <div className="space-y-4 p-4">
+      {/* Column Ratio Presets */}
       <div>
-        <Label>Column Widths</Label>
-        <div className="grid grid-cols-2 gap-2 mt-2">
-          <div>
-            <Label className="text-xs">Left (%)</Label>
-            <Input
-              type="number"
-              min="10"
-              max="90"
-              value={props.leftWidth || 50}
-              onChange={(e) => {
-                const left = parseInt(e.target.value) || 50
-                const right = 100 - left
-                setProp((props: any) => {
-                  props.leftWidth = left
-                  props.rightWidth = right
+        <Label className="text-sm font-medium">Column Ratio</Label>
+        <div className="flex flex-wrap gap-2 mt-2">
+          {columnPresets.map((preset) => (
+            <button
+              key={preset.label}
+              type="button"
+              onClick={() => {
+                setProp((p: any) => {
+                  p.leftWidth = preset.left
+                  p.rightWidth = preset.right
                 })
               }}
-            />
-          </div>
-          <div>
-            <Label className="text-xs">Right (%)</Label>
-            <Input
-              type="number"
-              min="10"
-              max="90"
-              value={props.rightWidth || 50}
-              onChange={(e) => {
-                const right = parseInt(e.target.value) || 50
-                const left = 100 - right
-                setProp((props: any) => {
-                  props.leftWidth = left
-                  props.rightWidth = right
-                })
-              }}
-            />
+              className={`px-3 py-1.5 text-xs rounded-md border transition-colors ${
+                props.leftWidth === preset.left && props.rightWidth === preset.right
+                  ? 'bg-primary text-primary-foreground border-primary'
+                  : 'bg-white hover:bg-gray-50 border-gray-200'
+              }`}
+            >
+              {preset.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Gap Slider */}
+      <div>
+        <Label className="text-sm font-medium">Gap</Label>
+        <div className="mt-2">
+          <input
+            type="range"
+            min="0"
+            max="60"
+            value={props.gap || 20}
+            onChange={(e) => setProp((p: any) => (p.gap = parseInt(e.target.value)))}
+            className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-primary"
+          />
+          <div className="flex justify-between text-xs text-gray-500 mt-1">
+            <span>0px</span>
+            <span className="font-medium text-gray-700">{props.gap || 20}px</span>
+            <span>60px</span>
           </div>
         </div>
       </div>
 
+      {/* Background Color */}
       <div>
-        <Label>Gap Between Columns</Label>
-        <Input
-          type="number"
-          value={props.gap || 20}
-          onChange={(e) => setProp((props: any) => (props.gap = parseInt(e.target.value) || 20))}
-        />
-      </div>
-
-      <div>
-        <Label>Background Color</Label>
+        <Label className="text-sm font-medium">Background</Label>
         <div className="flex gap-2 mt-2">
-          <Input
+          <input
             type="color"
             value={props.backgroundColor || '#ffffff'}
-            onChange={(e) => setProp((props: any) => (props.backgroundColor = e.target.value))}
-            className="h-10 w-20"
+            onChange={(e) => setProp((p: any) => (p.backgroundColor = e.target.value))}
+            className="h-9 w-12 rounded border border-gray-200 cursor-pointer"
           />
           <Input
             type="text"
-            value={props.backgroundColor || '#ffffff'}
-            onChange={(e) => setProp((props: any) => (props.backgroundColor = e.target.value))}
-            placeholder="#ffffff"
+            value={props.backgroundColor || ''}
+            onChange={(e) => setProp((p: any) => (p.backgroundColor = e.target.value))}
+            placeholder="transparent"
+            className="flex-1"
           />
         </div>
       </div>
 
+      {/* Padding Slider */}
       <div>
-        <Label>Padding</Label>
-        <div className="grid grid-cols-4 gap-2 mt-2">
-          <div>
-            <Label className="text-xs">Top</Label>
-            <Input
-              type="number"
-              value={props.padding?.top || 0}
-              onChange={(e) => setProp((props: any) => ({
-                ...props,
-                padding: { ...props.padding, top: parseInt(e.target.value) || 0 }
-              }))}
-            />
-          </div>
-          <div>
-            <Label className="text-xs">Right</Label>
-            <Input
-              type="number"
-              value={props.padding?.right || 0}
-              onChange={(e) => setProp((props: any) => ({
-                ...props,
-                padding: { ...props.padding, right: parseInt(e.target.value) || 0 }
-              }))}
-            />
-          </div>
-          <div>
-            <Label className="text-xs">Bottom</Label>
-            <Input
-              type="number"
-              value={props.padding?.bottom || 0}
-              onChange={(e) => setProp((props: any) => ({
-                ...props,
-                padding: { ...props.padding, bottom: parseInt(e.target.value) || 0 }
-              }))}
-            />
-          </div>
-          <div>
-            <Label className="text-xs">Left</Label>
-            <Input
-              type="number"
-              value={props.padding?.left || 0}
-              onChange={(e) => setProp((props: any) => ({
-                ...props,
-                padding: { ...props.padding, left: parseInt(e.target.value) || 0 }
-              }))}
-            />
+        <Label className="text-sm font-medium">Padding</Label>
+        <div className="mt-2">
+          <input
+            type="range"
+            min="0"
+            max="80"
+            value={props.padding?.top || 0}
+            onChange={(e) => {
+              const val = parseInt(e.target.value)
+              setProp((p: any) => (p.padding = { top: val, right: val, bottom: val, left: val }))
+            }}
+            className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-primary"
+          />
+          <div className="flex justify-between text-xs text-gray-500 mt-1">
+            <span>0px</span>
+            <span className="font-medium text-gray-700">{props.padding?.top || 0}px</span>
+            <span>80px</span>
           </div>
         </div>
-      </div>
-
-      <div>
-        <ColorPicker
-          label="Text Color"
-          value={props.textColor || ''}
-          onChange={(value) => setProp((props: any) => (props.textColor = value))}
-          placeholder="Inherit"
-        />
-        {props.textColor && (
-          <OpacityControl
-            label="Text Color Opacity"
-            value={props.textColorOpacity || 100}
-            onChange={(value) => setProp((props: any) => (props.textColorOpacity = value))}
-          />
-        )}
       </div>
     </div>
   )
@@ -235,9 +187,7 @@ TwoColumn.craft = {
     leftWidth: 50,
     rightWidth: 50,
     gap: 20,
-    backgroundColor: '#ffffff',
-    textColor: '',
-    textColorOpacity: 100,
+    backgroundColor: '',
     padding: { top: 0, right: 0, bottom: 0, left: 0 },
   },
   related: {

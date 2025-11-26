@@ -18,6 +18,7 @@ import { NewsList } from './components/NewsList'
 import { SermonCardGrid } from './components/SermonCardGrid'
 import { GalleryGrid } from './components/GalleryGrid'
 import { FeastHighlight } from './components/FeastHighlight'
+import { DropZoneContent } from './components/shared/DropZone'
 
 // Export components for Craft.js resolver
 export const craftComponents = {
@@ -39,5 +40,6 @@ export const craftComponents = {
   SermonCardGrid,
   GalleryGrid,
   FeastHighlight,
+  DropZoneContent,
 }
 

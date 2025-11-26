@@ -2,7 +2,6 @@
 
 import React from 'react'
 import { Label } from '@/components/ui/label'
-import { Input } from '@/components/ui/input'
 
 interface OpacityControlProps {
   label: string
@@ -10,39 +9,28 @@ interface OpacityControlProps {
   onChange: (value: number) => void
 }
 
+/**
+ * Simple opacity slider - no redundant progress bar, just a clean slider.
+ */
 export function OpacityControl({ label, value, onChange }: OpacityControlProps) {
   return (
     <div>
-      <Label>{label}</Label>
-      <div className="flex items-center gap-3 mt-2">
-        <Input
+      <Label className="text-sm font-medium text-gray-700">{label}</Label>
+      <div className="mt-2">
+        <input
           type="range"
-          min="0"
-          max="100"
+          min={0}
+          max={100}
           value={value || 0}
           onChange={(e) => onChange(parseInt(e.target.value) || 0)}
-          className="flex-1"
+          className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-primary"
         />
-        <Input
-          type="number"
-          min="0"
-          max="100"
-          value={value || 0}
-          onChange={(e) => onChange(parseInt(e.target.value) || 0)}
-          className="w-20"
-        />
-        <span className="text-sm text-muted-foreground w-8">%</span>
-      </div>
-      <div className="mt-2 flex items-center gap-2">
-        <div className="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
-          <div
-            className="h-full bg-primary transition-all"
-            style={{ width: `${value || 0}%` }}
-          />
+        <div className="flex justify-between text-xs text-gray-500 mt-1">
+          <span>0%</span>
+          <span className="font-medium text-gray-700">{value || 0}%</span>
+          <span>100%</span>
         </div>
-        <span className="text-xs text-muted-foreground">{value || 0}%</span>
       </div>
     </div>
   )
 }
-

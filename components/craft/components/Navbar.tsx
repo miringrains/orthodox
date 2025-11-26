@@ -3,11 +3,11 @@
 import { useNode } from '@craftjs/core'
 import React from 'react'
 import Link from 'next/link'
-import { Menu, X } from 'lucide-react'
+import { Menu, X, Plus, Trash2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
+import { SettingsAccordion } from '../controls/SettingsAccordion'
 
 interface NavbarProps {
   logoUrl?: string
@@ -26,20 +26,29 @@ export function Navbar({ logoUrl, logoText, menuItems, ctaText, ctaUrl }: Navbar
   }))
 
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false)
+  const [isMobile, setIsMobile] = React.useState(false)
   const navRef = React.useRef<HTMLElement>(null)
 
-  // Use ResizeObserver to detect when navbar container becomes mobile-sized
+  // Use ResizeObserver to detect actual container width (works in editor preview)
   React.useEffect(() => {
     if (!navRef.current) return
 
-    const resizeObserver = new ResizeObserver((entries) => {
-      for (const entry of entries) {
-        const width = entry.contentRect.width
-        // If navbar becomes wider than mobile, close mobile menu
-        if (width >= 768 && mobileMenuOpen) {
+    const checkWidth = () => {
+      if (navRef.current) {
+        const width = navRef.current.getBoundingClientRect().width
+        setIsMobile(width < 640)
+        // Auto-close mobile menu when switching to desktop
+        if (width >= 640 && mobileMenuOpen) {
           setMobileMenuOpen(false)
         }
       }
+    }
+
+    // Initial check
+    checkWidth()
+
+    const resizeObserver = new ResizeObserver(() => {
+      checkWidth()
     })
 
     resizeObserver.observe(navRef.current)
@@ -67,7 +76,7 @@ export function Navbar({ logoUrl, logoText, menuItems, ctaText, ctaUrl }: Navbar
         ${isSelected ? 'ring-2 ring-primary' : ''}
       `}
     >
-      <div className="container mx-auto px-4">
+      <div className="px-4">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <div className="flex items-center gap-3">
@@ -78,44 +87,48 @@ export function Navbar({ logoUrl, logoText, menuItems, ctaText, ctaUrl }: Navbar
             )}
           </div>
 
-          {/* Desktop Menu */}
-          <div className="hidden md:flex items-center gap-6">
-            {(menuItems || []).map((item, index) => (
-              <Link
-                key={index}
-                href={item.url}
-                className="text-gray-700 hover:text-primary transition-colors"
-              >
-                {item.label}
-              </Link>
-            ))}
-            {ctaText && (
-              <Button asChild size="sm">
-                <Link href={ctaUrl || '#'}>{ctaText}</Link>
-              </Button>
-            )}
-          </div>
+          {/* Desktop Menu - shown when not mobile */}
+          {!isMobile && (
+            <div className="flex items-center gap-6">
+              {(menuItems || []).map((item, index) => (
+                <Link
+                  key={index}
+                  href={item.url}
+                  className="text-gray-700 hover:text-primary transition-colors"
+                >
+                  {item.label}
+                </Link>
+              ))}
+              {ctaText && (
+                <Button asChild size="sm">
+                  <Link href={ctaUrl || '#'}>{ctaText}</Link>
+                </Button>
+              )}
+            </div>
+          )}
 
-          {/* Mobile Menu Button */}
-          <button
-            type="button"
-            className="md:hidden p-2 -mr-2 text-gray-700 hover:text-primary transition-colors rounded-md hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
-            onClick={handleToggleMenu}
-            aria-label="Toggle mobile menu"
-            aria-expanded={mobileMenuOpen}
-          >
-            {mobileMenuOpen ? (
-              <X className="h-6 w-6" />
-            ) : (
-              <Menu className="h-6 w-6" />
-            )}
-          </button>
+          {/* Mobile Menu Button - shown when mobile */}
+          {isMobile && (
+            <button
+              type="button"
+              className="p-2 -mr-2 text-gray-700 hover:text-primary transition-colors rounded-md hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+              onClick={handleToggleMenu}
+              aria-label="Toggle mobile menu"
+              aria-expanded={mobileMenuOpen}
+            >
+              {mobileMenuOpen ? (
+                <X className="h-6 w-6" />
+              ) : (
+                <Menu className="h-6 w-6" />
+              )}
+            </button>
+          )}
         </div>
 
-        {/* Mobile Menu */}
-        {mobileMenuOpen && (
-          <div className="md:hidden border-t bg-white">
-            <div className="py-4">
+        {/* Mobile Menu - shown when mobile and menu is open */}
+        {isMobile && mobileMenuOpen && (
+          <div className="border-t bg-white pb-4">
+            <div className="pt-4">
               <div className="flex flex-col gap-2">
                 {(menuItems || []).map((item, index) => (
                   <Link
@@ -154,90 +167,112 @@ function NavbarSettings() {
   }))
 
   const addMenuItem = () => {
-    setProp((props: any) => {
-      props.menuItems = [...(props.menuItems || []), { label: 'New Item', url: '#' }]
+    setProp((p: any) => {
+      p.menuItems = [...(p.menuItems || []), { label: 'New Item', url: '#' }]
     })
   }
 
   const removeMenuItem = (index: number) => {
-    setProp((props: any) => {
-      props.menuItems = props.menuItems.filter((_: any, i: number) => i !== index)
+    setProp((p: any) => {
+      p.menuItems = p.menuItems.filter((_: any, i: number) => i !== index)
     })
   }
 
   const updateMenuItem = (index: number, field: 'label' | 'url', value: string) => {
-    setProp((props: any) => {
-      const newItems = [...(props.menuItems || [])]
+    setProp((p: any) => {
+      const newItems = [...(p.menuItems || [])]
       newItems[index] = { ...newItems[index], [field]: value }
-      props.menuItems = newItems
+      p.menuItems = newItems
     })
   }
 
   return (
-    <div className="space-y-4 p-4">
-      <div>
-        <Label>Logo Text</Label>
-        <Input
-          value={props.logoText || ''}
-          onChange={(e) => setProp((props: any) => (props.logoText = e.target.value))}
-          placeholder="Parish Name"
-        />
-      </div>
-      <div>
-        <Label>Logo URL (optional)</Label>
-        <Input
-          value={props.logoUrl || ''}
-          onChange={(e) => setProp((props: any) => (props.logoUrl = e.target.value))}
-          placeholder="https://example.com/logo.png"
-        />
-      </div>
-      <div>
-        <Label>Menu Items</Label>
-        <div className="space-y-2 mt-2">
+    <div className="divide-y divide-gray-100">
+      {/* Brand Section */}
+      <SettingsAccordion title="Brand" defaultOpen>
+        <div>
+          <Label className="text-sm font-medium">Logo Text</Label>
+          <Input
+            value={props.logoText || ''}
+            onChange={(e) => setProp((p: any) => (p.logoText = e.target.value))}
+            placeholder="Parish Name"
+            className="mt-1"
+          />
+        </div>
+        <div>
+          <Label className="text-sm font-medium">Logo Image URL</Label>
+          <Input
+            value={props.logoUrl || ''}
+            onChange={(e) => setProp((p: any) => (p.logoUrl = e.target.value))}
+            placeholder="https://example.com/logo.png"
+            className="mt-1"
+          />
+          <p className="text-xs text-gray-500 mt-1">Optional - will override logo text</p>
+        </div>
+      </SettingsAccordion>
+
+      {/* Menu Items Section */}
+      <SettingsAccordion title="Menu Items" defaultOpen>
+        <div className="space-y-2">
           {(props.menuItems || []).map((item: { label: string; url: string }, index: number) => (
-            <div key={index} className="flex gap-2 items-center p-2 border rounded">
-              <Input
-                value={item.label}
-                onChange={(e) => updateMenuItem(index, 'label', e.target.value)}
-                placeholder="Label"
-                className="flex-1"
-              />
-              <Input
-                value={item.url}
-                onChange={(e) => updateMenuItem(index, 'url', e.target.value)}
-                placeholder="/url"
-                className="flex-1"
-              />
+            <div key={index} className="flex gap-2 items-center p-2 bg-gray-50 rounded-lg">
+              <div className="flex-1 space-y-1">
+                <Input
+                  value={item.label}
+                  onChange={(e) => updateMenuItem(index, 'label', e.target.value)}
+                  placeholder="Label"
+                  className="h-8 text-sm"
+                />
+                <Input
+                  value={item.url}
+                  onChange={(e) => updateMenuItem(index, 'url', e.target.value)}
+                  placeholder="/url"
+                  className="h-8 text-sm"
+                />
+              </div>
               <Button
                 variant="ghost"
                 size="icon"
                 onClick={() => removeMenuItem(index)}
+                className="h-8 w-8 text-red-500 hover:text-red-600 hover:bg-red-50"
               >
-                <X className="h-4 w-4" />
+                <Trash2 className="h-4 w-4" />
               </Button>
             </div>
           ))}
-          <Button variant="outline" onClick={addMenuItem} className="w-full">
-            Add Menu Item
+          <Button 
+            variant="outline" 
+            onClick={addMenuItem} 
+            className="w-full h-9"
+          >
+            <Plus className="h-4 w-4 mr-1" />
+            Add Item
           </Button>
         </div>
-      </div>
-      <div>
-        <Label>CTA Button Text (optional)</Label>
-        <Input
-          value={props.ctaText || ''}
-          onChange={(e) => setProp((props: any) => (props.ctaText = e.target.value))}
-          placeholder="Donate"
-        />
-      </div>
-      <div>
-        <Label>CTA Button URL</Label>
-        <Input
-          value={props.ctaUrl || ''}
-          onChange={(e) => setProp((props: any) => (props.ctaUrl = e.target.value))}
-          placeholder="/giving"
-        />
-      </div>
+      </SettingsAccordion>
+
+      {/* CTA Button Section */}
+      <SettingsAccordion title="CTA Button">
+        <div>
+          <Label className="text-sm font-medium">Button Text</Label>
+          <Input
+            value={props.ctaText || ''}
+            onChange={(e) => setProp((p: any) => (p.ctaText = e.target.value))}
+            placeholder="Donate"
+            className="mt-1"
+          />
+          <p className="text-xs text-gray-500 mt-1">Leave empty to hide button</p>
+        </div>
+        <div>
+          <Label className="text-sm font-medium">Button URL</Label>
+          <Input
+            value={props.ctaUrl || ''}
+            onChange={(e) => setProp((p: any) => (p.ctaUrl = e.target.value))}
+            placeholder="/giving"
+            className="mt-1"
+          />
+        </div>
+      </SettingsAccordion>
     </div>
   )
 }

@@ -1,37 +1,34 @@
 'use client'
 
 import { useNode, Element } from '@craftjs/core'
-import React from 'react'
+import React, { useRef, useState } from 'react'
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { OpacityControl } from '../controls/OpacityControl'
+import { Button } from '@/components/ui/button'
+import { X, Loader2, Image as ImageIcon } from 'lucide-react'
+import { createClient } from '@/lib/supabase/client'
+import { useParams } from 'next/navigation'
+import { SettingsAccordion } from '../controls/SettingsAccordion'
 import { ColorPicker } from '../controls/ColorPicker'
+import { OpacityControl } from '../controls/OpacityControl'
+import { DropZoneContent } from './shared/DropZone'
 
 interface SectionProps {
-  backgroundColor?: string
-  backgroundColorOpacity?: number
-  backgroundImage?: string
-  backgroundImageOpacity?: number
+  imageUrl?: string
+  overlayColor?: string
+  overlayOpacity?: number
   textColor?: string
-  textColorOpacity?: number
-  padding?: { top: number; right: number; bottom: number; left: number }
-  margin?: { top: number; right: number; bottom: number; left: number }
+  padding?: number
   containerWidth?: string
-  borderRadius?: number
 }
 
 export function Section({
-  backgroundColor,
-  backgroundColorOpacity = 100,
-  backgroundImage,
-  backgroundImageOpacity = 100,
-  textColor,
-  textColorOpacity = 100,
-  padding = { top: 40, right: 0, bottom: 40, left: 0 },
-  margin = { top: 0, right: 0, bottom: 0, left: 0 },
-  containerWidth = '1280px',
-  borderRadius = 0,
+  imageUrl = '',
+  overlayColor = '',
+  overlayOpacity = 0,
+  textColor = '',
+  padding = 60,
+  containerWidth = '1200px',
 }: SectionProps) {
   const {
     connectors: { connect, drag },
@@ -39,9 +36,6 @@ export function Section({
   } = useNode((state) => ({
     isSelected: state.events.selected,
   }))
-
-  const paddingStyle = `${padding.top}px ${padding.right}px ${padding.bottom}px ${padding.left}px`
-  const marginStyle = `${margin.top}px ${margin.right}px ${margin.bottom}px ${margin.left}px`
 
   return (
     <section
@@ -55,56 +49,44 @@ export function Section({
         ${isSelected ? 'ring-2 ring-primary' : ''}
       `}
       style={{
-        padding: paddingStyle,
-        margin: marginStyle,
-        borderRadius: `${borderRadius}px`,
+        paddingTop: `${padding}px`,
+        paddingBottom: `${padding}px`,
       }}
     >
-      {/* Background Image Layer */}
-      {backgroundImage && (
+      {/* Background Image Layer - always full opacity */}
+      {imageUrl && (
         <div
           className="absolute inset-0 bg-cover bg-center"
-          style={{ 
-            backgroundImage: `url(${backgroundImage})`,
-            opacity: backgroundImageOpacity / 100,
-          }}
+          style={{ backgroundImage: `url(${imageUrl})` }}
         />
       )}
-      {/* Background Color Overlay Layer */}
-      {backgroundColor && (
+      
+      {/* Overlay Layer - controls visibility of image */}
+      {(overlayColor || imageUrl) && (
         <div
           className="absolute inset-0"
           style={{ 
-            backgroundColor: backgroundColor,
-            opacity: backgroundColorOpacity / 100,
+            backgroundColor: overlayColor || '#000000',
+            opacity: overlayOpacity / 100,
           }}
         />
       )}
+
+      {/* Content Layer */}
       <div 
-        className="container mx-auto px-4" 
+        className="relative z-10 mx-auto px-4"
         style={{ 
           maxWidth: containerWidth,
-          color: textColor ? (() => {
-            if (textColor.startsWith('#')) {
-              const hex = textColor.slice(1)
-              const r = parseInt(hex.slice(0, 2), 16)
-              const g = parseInt(hex.slice(2, 4), 16)
-              const b = parseInt(hex.slice(4, 6), 16)
-              return `rgba(${r}, ${g}, ${b}, ${textColorOpacity / 100})`
-            }
-            if (textColor.startsWith('rgba')) {
-              return textColor.replace(/,\s*[\d.]+\)$/, `, ${textColorOpacity / 100})`)
-            }
-            if (textColor.startsWith('rgb')) {
-              return textColor.replace('rgb', 'rgba').replace(')', `, ${textColorOpacity / 100})`)
-            }
-            return textColor
-          })() : undefined,
+          color: textColor || undefined,
         }}
       >
-        <Element is="div" canvas id="section-content">
-          {/* Drop components here */}
-        </Element>
+        <Element 
+          is={DropZoneContent} 
+          canvas 
+          id="section-content"
+          placeholder="Drop components here"
+          minHeight={80}
+        />
       </div>
     </section>
   )
@@ -114,193 +96,194 @@ function SectionSettings() {
   const { actions: { setProp }, props } = useNode((node) => ({
     props: node.data.props,
   }))
+  const params = useParams()
+  const pageId = params.id as string
+  const [uploading, setUploading] = useState(false)
+  const [uploadError, setUploadError] = useState<string>('')
+  const fileInputRef = useRef<HTMLInputElement>(null)
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    if (!file.type.startsWith('image/')) {
+      setUploadError('Please select an image file')
+      return
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      setUploadError('Image must be less than 5MB')
+      return
+    }
+
+    setUploading(true)
+    setUploadError('')
+
+    try {
+      const supabase = createClient()
+      
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) {
+        throw new Error('You must be logged in to upload images')
+      }
+
+      const { data: page } = await supabase
+        .from('pages')
+        .select('parish_id')
+        .eq('id', pageId)
+        .single()
+
+      if (!page) {
+        throw new Error('Page not found')
+      }
+
+      const fileExt = file.name.split('.').pop()
+      const fileName = `pages/${page.parish_id}/${pageId}/section/${Date.now()}.${fileExt}`
+
+      const { error: uploadErr } = await supabase.storage
+        .from('media')
+        .upload(fileName, file, {
+          cacheControl: '3600',
+          upsert: false
+        })
+
+      if (uploadErr) throw uploadErr
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('media')
+        .getPublicUrl(fileName)
+
+      setProp((props: any) => {
+        props.imageUrl = publicUrl
+      })
+    } catch (error: any) {
+      console.error('Error uploading image:', error)
+      setUploadError(error.message || 'Failed to upload image')
+    } finally {
+      setUploading(false)
+    }
+  }
+
+  const widthOptions = [
+    { label: 'SM', value: '640px' },
+    { label: 'MD', value: '768px' },
+    { label: 'LG', value: '1024px' },
+    { label: 'XL', value: '1200px' },
+    { label: 'Full', value: '100%' },
+  ]
 
   return (
-    <div className="space-y-4 p-4">
-      <div>
-        <Label>Background Color</Label>
-        <div className="flex gap-2 mt-2">
-          <Input
-            type="color"
-            value={props.backgroundColor || '#ffffff'}
-            onChange={(e) => setProp((props: any) => (props.backgroundColor = e.target.value))}
-            className="h-10 w-20"
-          />
-          <Input
-            type="text"
-            value={props.backgroundColor || '#ffffff'}
-            onChange={(e) => setProp((props: any) => (props.backgroundColor = e.target.value))}
-            placeholder="#ffffff"
-          />
+    <div className="divide-y divide-gray-100">
+      {/* Layout Section */}
+      <SettingsAccordion title="Layout" defaultOpen>
+        <div>
+          <Label className="text-sm font-medium">Content Width</Label>
+          <div className="flex flex-wrap gap-2 mt-2">
+            {widthOptions.map((option) => (
+              <button
+                key={option.value}
+                type="button"
+                onClick={() => setProp((p: any) => (p.containerWidth = option.value))}
+                className={`px-3 py-1.5 text-xs rounded-md border transition-colors ${
+                  (props.containerWidth || '1200px') === option.value
+                    ? 'bg-primary text-primary-foreground border-primary'
+                    : 'bg-white hover:bg-gray-50 border-gray-200'
+                }`}
+              >
+                {option.label}
+              </button>
+            ))}
+          </div>
         </div>
-        {props.backgroundColor && (
-          <OpacityControl
-            label="Background Color Opacity"
-            value={props.backgroundColorOpacity || 100}
-            onChange={(value) => setProp((props: any) => (props.backgroundColorOpacity = value))}
-          />
-        )}
-      </div>
 
-      <div>
-        <Label>Background Image URL</Label>
-        <Input
-          value={props.backgroundImage || ''}
-          onChange={(e) => setProp((props: any) => (props.backgroundImage = e.target.value))}
-          placeholder="https://example.com/image.jpg"
+        <div>
+          <Label className="text-sm font-medium">Vertical Padding</Label>
+          <div className="mt-2">
+            <input
+              type="range"
+              min={0}
+              max={200}
+              value={props.padding ?? 60}
+              onChange={(e) => setProp((p: any) => (p.padding = parseInt(e.target.value)))}
+              className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-primary"
+            />
+            <div className="flex justify-between text-xs text-gray-500 mt-1">
+              <span>0px</span>
+              <span className="font-medium text-gray-700">{props.padding ?? 60}px</span>
+              <span>200px</span>
+            </div>
+          </div>
+        </div>
+      </SettingsAccordion>
+
+      {/* Background Section */}
+      <SettingsAccordion title="Background">
+        <div>
+          <Label className="text-sm font-medium">Background Image</Label>
+          <div
+            className="mt-2 border-2 border-dashed border-gray-200 rounded-lg p-4 text-center hover:border-primary/50 transition-colors cursor-pointer"
+            onClick={() => fileInputRef.current?.click()}
+          >
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handleFileUpload}
+              disabled={uploading}
+              className="hidden"
+            />
+            {uploading ? (
+              <Loader2 className="h-6 w-6 mx-auto animate-spin text-primary" />
+            ) : props.imageUrl ? (
+              <div className="space-y-2">
+                <img src={props.imageUrl} alt="Background" className="max-h-24 mx-auto rounded" />
+                <p className="text-xs text-gray-500">Click to change</p>
+              </div>
+            ) : (
+              <div className="space-y-2 py-2">
+                <ImageIcon className="h-6 w-6 mx-auto text-gray-400" />
+                <p className="text-xs text-gray-500">Click to upload</p>
+              </div>
+            )}
+          </div>
+          {uploadError && (
+            <p className="text-xs text-red-500 mt-1">{uploadError}</p>
+          )}
+          {props.imageUrl && (
+            <Button
+              variant="ghost"
+              size="sm"
+              className="w-full mt-2 text-red-500 hover:text-red-600 hover:bg-red-50"
+              onClick={() => setProp((p: any) => (p.imageUrl = ''))}
+            >
+              <X className="h-4 w-4 mr-1" />
+              Remove Image
+            </Button>
+          )}
+        </div>
+
+        <ColorPicker
+          label="Overlay Color"
+          value={props.overlayColor || ''}
+          onChange={(value) => setProp((p: any) => (p.overlayColor = value))}
+          placeholder="none"
         />
-        {props.backgroundImage && (
+
+        {(props.overlayColor || props.imageUrl) && (
           <OpacityControl
-            label="Background Image Opacity"
-            value={props.backgroundImageOpacity || 100}
-            onChange={(value) => setProp((props: any) => (props.backgroundImageOpacity = value))}
+            label="Overlay Opacity"
+            value={props.overlayOpacity ?? 0}
+            onChange={(value) => setProp((p: any) => (p.overlayOpacity = value))}
           />
         )}
-      </div>
 
-      <div>
         <ColorPicker
           label="Text Color"
           value={props.textColor || ''}
-          onChange={(value) => setProp((props: any) => (props.textColor = value))}
-          placeholder="Inherit"
+          onChange={(value) => setProp((p: any) => (p.textColor = value))}
+          placeholder="inherit"
         />
-        {props.textColor && (
-          <OpacityControl
-            label="Text Color Opacity"
-            value={props.textColorOpacity || 100}
-            onChange={(value) => setProp((props: any) => (props.textColorOpacity = value))}
-          />
-        )}
-      </div>
-
-      <div>
-        <Label>Container Width</Label>
-        <Select
-          value={props.containerWidth || '1280px'}
-          onValueChange={(value) => setProp((props: any) => (props.containerWidth = value))}
-        >
-          <SelectTrigger>
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="100%">Full Width</SelectItem>
-            <SelectItem value="1536px">2XL (1536px)</SelectItem>
-            <SelectItem value="1280px">XL (1280px)</SelectItem>
-            <SelectItem value="1024px">Large (1024px)</SelectItem>
-            <SelectItem value="768px">Medium (768px)</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-
-      <div>
-        <Label>Padding</Label>
-        <div className="grid grid-cols-4 gap-2 mt-2">
-          <div>
-            <Label className="text-xs">Top</Label>
-            <Input
-              type="number"
-              value={props.padding?.top || 40}
-              onChange={(e) => setProp((props: any) => ({
-                ...props,
-                padding: { ...props.padding, top: parseInt(e.target.value) || 0 }
-              }))}
-            />
-          </div>
-          <div>
-            <Label className="text-xs">Right</Label>
-            <Input
-              type="number"
-              value={props.padding?.right || 0}
-              onChange={(e) => setProp((props: any) => ({
-                ...props,
-                padding: { ...props.padding, right: parseInt(e.target.value) || 0 }
-              }))}
-            />
-          </div>
-          <div>
-            <Label className="text-xs">Bottom</Label>
-            <Input
-              type="number"
-              value={props.padding?.bottom || 40}
-              onChange={(e) => setProp((props: any) => ({
-                ...props,
-                padding: { ...props.padding, bottom: parseInt(e.target.value) || 0 }
-              }))}
-            />
-          </div>
-          <div>
-            <Label className="text-xs">Left</Label>
-            <Input
-              type="number"
-              value={props.padding?.left || 0}
-              onChange={(e) => setProp((props: any) => ({
-                ...props,
-                padding: { ...props.padding, left: parseInt(e.target.value) || 0 }
-              }))}
-            />
-          </div>
-        </div>
-      </div>
-
-      <div>
-        <Label>Margin</Label>
-        <div className="grid grid-cols-4 gap-2 mt-2">
-          <div>
-            <Label className="text-xs">Top</Label>
-            <Input
-              type="number"
-              value={props.margin?.top || 0}
-              onChange={(e) => setProp((props: any) => ({
-                ...props,
-                margin: { ...props.margin, top: parseInt(e.target.value) || 0 }
-              }))}
-            />
-          </div>
-          <div>
-            <Label className="text-xs">Right</Label>
-            <Input
-              type="number"
-              value={props.margin?.right || 0}
-              onChange={(e) => setProp((props: any) => ({
-                ...props,
-                margin: { ...props.margin, right: parseInt(e.target.value) || 0 }
-              }))}
-            />
-          </div>
-          <div>
-            <Label className="text-xs">Bottom</Label>
-            <Input
-              type="number"
-              value={props.margin?.bottom || 0}
-              onChange={(e) => setProp((props: any) => ({
-                ...props,
-                margin: { ...props.margin, bottom: parseInt(e.target.value) || 0 }
-              }))}
-            />
-          </div>
-          <div>
-            <Label className="text-xs">Left</Label>
-            <Input
-              type="number"
-              value={props.margin?.left || 0}
-              onChange={(e) => setProp((props: any) => ({
-                ...props,
-                margin: { ...props.margin, left: parseInt(e.target.value) || 0 }
-              }))}
-            />
-          </div>
-        </div>
-      </div>
-
-      <div>
-        <Label>Border Radius</Label>
-        <Input
-          type="number"
-          value={props.borderRadius || 0}
-          onChange={(e) => setProp((props: any) => (props.borderRadius = parseInt(e.target.value) || 0))}
-        />
-      </div>
+      </SettingsAccordion>
     </div>
   )
 }
@@ -308,19 +291,14 @@ function SectionSettings() {
 Section.craft = {
   displayName: 'Section',
   props: {
-    backgroundColor: '#ffffff',
-    backgroundColorOpacity: 100,
-    backgroundImage: '',
-    backgroundImageOpacity: 100,
+    imageUrl: '',
+    overlayColor: '',
+    overlayOpacity: 0,
     textColor: '',
-    textColorOpacity: 100,
-    padding: { top: 40, right: 0, bottom: 40, left: 0 },
-    margin: { top: 0, right: 0, bottom: 0, left: 0 },
-    containerWidth: '1280px',
-    borderRadius: 0,
+    padding: 60,
+    containerWidth: '1200px',
   },
   related: {
     settings: SectionSettings,
   },
 }
-

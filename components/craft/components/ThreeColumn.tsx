@@ -4,22 +4,17 @@ import { useNode, Element } from '@craftjs/core'
 import React from 'react'
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
-import { ColorPicker } from '../controls/ColorPicker'
-import { OpacityControl } from '../controls/OpacityControl'
+import { DropZoneContent } from './shared/DropZone'
 
 interface ThreeColumnProps {
   gap?: number
   backgroundColor?: string
-  textColor?: string
-  textColorOpacity?: number
   padding?: { top: number; right: number; bottom: number; left: number }
 }
 
 export function ThreeColumn({
   gap = 20,
   backgroundColor,
-  textColor,
-  textColorOpacity = 100,
   padding = { top: 0, right: 0, bottom: 0, left: 0 },
 }: ThreeColumnProps) {
   const {
@@ -49,35 +44,29 @@ export function ThreeColumn({
     >
       <div
         className="grid grid-cols-3 w-full"
-        style={{
-          gap: `${gap}px`,
-          color: textColor ? (() => {
-            if (textColor.startsWith('#')) {
-              const hex = textColor.slice(1)
-              const r = parseInt(hex.slice(0, 2), 16)
-              const g = parseInt(hex.slice(2, 4), 16)
-              const b = parseInt(hex.slice(4, 6), 16)
-              return `rgba(${r}, ${g}, ${b}, ${textColorOpacity / 100})`
-            }
-            if (textColor.startsWith('rgba')) {
-              return textColor.replace(/,\s*[\d.]+\)$/, `, ${textColorOpacity / 100})`)
-            }
-            if (textColor.startsWith('rgb')) {
-              return textColor.replace('rgb', 'rgba').replace(')', `, ${textColorOpacity / 100})`)
-            }
-            return textColor
-          })() : undefined,
-        }}
+        style={{ gap: `${gap}px` }}
       >
-        <Element is="div" canvas id="column-1">
-          {/* Drop components in column 1 */}
-        </Element>
-        <Element is="div" canvas id="column-2">
-          {/* Drop components in column 2 */}
-        </Element>
-        <Element is="div" canvas id="column-3">
-          {/* Drop components in column 3 */}
-        </Element>
+        <Element 
+          is={DropZoneContent} 
+          canvas 
+          id="column-1"
+          placeholder="Drop here"
+          minHeight={100}
+        />
+        <Element 
+          is={DropZoneContent} 
+          canvas 
+          id="column-2"
+          placeholder="Drop here"
+          minHeight={100}
+        />
+        <Element 
+          is={DropZoneContent} 
+          canvas 
+          id="column-3"
+          placeholder="Drop here"
+          minHeight={100}
+        />
       </div>
     </div>
   )
@@ -90,97 +79,67 @@ function ThreeColumnSettings() {
 
   return (
     <div className="space-y-4 p-4">
+      {/* Gap Slider */}
       <div>
-        <Label>Gap Between Columns</Label>
-        <Input
-          type="number"
-          value={props.gap || 20}
-          onChange={(e) => setProp((props: any) => (props.gap = parseInt(e.target.value) || 20))}
-        />
+        <Label className="text-sm font-medium">Gap</Label>
+        <div className="mt-2">
+          <input
+            type="range"
+            min="0"
+            max="60"
+            value={props.gap || 20}
+            onChange={(e) => setProp((p: any) => (p.gap = parseInt(e.target.value)))}
+            className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-primary"
+          />
+          <div className="flex justify-between text-xs text-gray-500 mt-1">
+            <span>0px</span>
+            <span className="font-medium text-gray-700">{props.gap || 20}px</span>
+            <span>60px</span>
+          </div>
+        </div>
       </div>
 
+      {/* Background Color */}
       <div>
-        <Label>Background Color</Label>
+        <Label className="text-sm font-medium">Background</Label>
         <div className="flex gap-2 mt-2">
-          <Input
+          <input
             type="color"
             value={props.backgroundColor || '#ffffff'}
-            onChange={(e) => setProp((props: any) => (props.backgroundColor = e.target.value))}
-            className="h-10 w-20"
+            onChange={(e) => setProp((p: any) => (p.backgroundColor = e.target.value))}
+            className="h-9 w-12 rounded border border-gray-200 cursor-pointer"
           />
           <Input
             type="text"
-            value={props.backgroundColor || '#ffffff'}
-            onChange={(e) => setProp((props: any) => (props.backgroundColor = e.target.value))}
-            placeholder="#ffffff"
+            value={props.backgroundColor || ''}
+            onChange={(e) => setProp((p: any) => (p.backgroundColor = e.target.value))}
+            placeholder="transparent"
+            className="flex-1"
           />
         </div>
       </div>
 
+      {/* Padding Slider */}
       <div>
-        <Label>Padding</Label>
-        <div className="grid grid-cols-4 gap-2 mt-2">
-          <div>
-            <Label className="text-xs">Top</Label>
-            <Input
-              type="number"
-              value={props.padding?.top || 0}
-              onChange={(e) => setProp((props: any) => ({
-                ...props,
-                padding: { ...props.padding, top: parseInt(e.target.value) || 0 }
-              }))}
-            />
-          </div>
-          <div>
-            <Label className="text-xs">Right</Label>
-            <Input
-              type="number"
-              value={props.padding?.right || 0}
-              onChange={(e) => setProp((props: any) => ({
-                ...props,
-                padding: { ...props.padding, right: parseInt(e.target.value) || 0 }
-              }))}
-            />
-          </div>
-          <div>
-            <Label className="text-xs">Bottom</Label>
-            <Input
-              type="number"
-              value={props.padding?.bottom || 0}
-              onChange={(e) => setProp((props: any) => ({
-                ...props,
-                padding: { ...props.padding, bottom: parseInt(e.target.value) || 0 }
-              }))}
-            />
-          </div>
-          <div>
-            <Label className="text-xs">Left</Label>
-            <Input
-              type="number"
-              value={props.padding?.left || 0}
-              onChange={(e) => setProp((props: any) => ({
-                ...props,
-                padding: { ...props.padding, left: parseInt(e.target.value) || 0 }
-              }))}
-            />
+        <Label className="text-sm font-medium">Padding</Label>
+        <div className="mt-2">
+          <input
+            type="range"
+            min="0"
+            max="80"
+            value={props.padding?.top || 0}
+            onChange={(e) => {
+              const val = parseInt(e.target.value)
+              setProp((p: any) => (p.padding = { top: val, right: val, bottom: val, left: val }))
+            }}
+            className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-primary"
+          />
+          <div className="flex justify-between text-xs text-gray-500 mt-1">
+            <span>0px</span>
+            <span className="font-medium text-gray-700">{props.padding?.top || 0}px</span>
+            <span>80px</span>
           </div>
         </div>
-      </div>
-
-      <div>
-        <ColorPicker
-          label="Text Color"
-          value={props.textColor || ''}
-          onChange={(value) => setProp((props: any) => (props.textColor = value))}
-          placeholder="Inherit"
-        />
-        {props.textColor && (
-          <OpacityControl
-            label="Text Color Opacity"
-            value={props.textColorOpacity || 100}
-            onChange={(value) => setProp((props: any) => (props.textColorOpacity = value))}
-          />
-        )}
       </div>
     </div>
   )
@@ -190,9 +149,7 @@ ThreeColumn.craft = {
   displayName: 'Three Column',
   props: {
     gap: 20,
-    backgroundColor: '#ffffff',
-    textColor: '',
-    textColorOpacity: 100,
+    backgroundColor: '',
     padding: { top: 0, right: 0, bottom: 0, left: 0 },
   },
   related: {

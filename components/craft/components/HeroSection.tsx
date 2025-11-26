@@ -6,9 +6,10 @@ import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Button } from '@/components/ui/button'
-import { Upload, X, Loader2, Image as ImageIcon } from 'lucide-react'
+import { X, Loader2, Image as ImageIcon } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { useParams } from 'next/navigation'
+import { SettingsAccordion } from '../controls/SettingsAccordion'
 import { OpacityControl } from '../controls/OpacityControl'
 import { ColorPicker } from '../controls/ColorPicker'
 
@@ -16,12 +17,10 @@ interface HeroSectionProps {
   title?: string
   subtitle?: string
   imageUrl?: string
-  backgroundColor?: string
-  backgroundColorOpacity?: number
-  backgroundImageOpacity?: number
+  overlayColor?: string
+  overlayOpacity?: number
   textColor?: string
-  textColorOpacity?: number
-  padding?: { top: number; right: number; bottom: number; left: number }
+  padding?: number
   showTitle?: boolean
   showSubtitle?: boolean
 }
@@ -30,12 +29,10 @@ export function HeroSection({
   title, 
   subtitle, 
   imageUrl, 
-  backgroundColor,
-  backgroundColorOpacity = 100,
-  backgroundImageOpacity = 20,
-  textColor,
-  textColorOpacity = 100,
-  padding = { top: 80, right: 0, bottom: 80, left: 0 },
+  overlayColor = '#000000',
+  overlayOpacity = 40,
+  textColor = '#ffffff',
+  padding = 80,
   showTitle = true,
   showSubtitle = true,
 }: HeroSectionProps) {
@@ -45,8 +42,6 @@ export function HeroSection({
   } = useNode((state) => ({
     isSelected: state.events.selected,
   }))
-
-  const paddingStyle = `${padding.top}px ${padding.right}px ${padding.bottom}px ${padding.left}px`
 
   return (
     <section
@@ -60,99 +55,41 @@ export function HeroSection({
         ${isSelected ? 'ring-2 ring-primary' : ''}
       `}
       style={{
-        padding: paddingStyle,
+        paddingTop: `${padding}px`,
+        paddingBottom: `${padding}px`,
       }}
     >
-      {/* Background Image Layer */}
+      {/* Background Image Layer - always full opacity */}
       {imageUrl && (
         <div
           className="absolute inset-0 bg-cover bg-center"
-          style={{ 
-            backgroundImage: `url(${imageUrl})`,
-            opacity: backgroundImageOpacity / 100,
-          }}
+          style={{ backgroundImage: `url(${imageUrl})` }}
         />
       )}
-      {/* Background Color Overlay Layer */}
-      {backgroundColor && (
-        <div
-          className="absolute inset-0"
-          style={{ 
-            backgroundColor: backgroundColor,
-            opacity: backgroundColorOpacity / 100,
-          }}
-        />
-      )}
+      
+      {/* Overlay Layer - controls how much image shows through */}
+      <div
+        className="absolute inset-0"
+        style={{ 
+          backgroundColor: overlayColor || '#000000',
+          opacity: (overlayOpacity || 0) / 100,
+        }}
+      />
+      
+      {/* Content Layer */}
       <div 
         className="container mx-auto px-4 relative z-10"
-        style={{
-          color: textColor ? (() => {
-            if (textColor.startsWith('#')) {
-              const hex = textColor.slice(1)
-              const r = parseInt(hex.slice(0, 2), 16)
-              const g = parseInt(hex.slice(2, 4), 16)
-              const b = parseInt(hex.slice(4, 6), 16)
-              return `rgba(${r}, ${g}, ${b}, ${textColorOpacity / 100})`
-            }
-            if (textColor.startsWith('rgba')) {
-              return textColor.replace(/,\s*[\d.]+\)$/, `, ${textColorOpacity / 100})`)
-            }
-            if (textColor.startsWith('rgb')) {
-              return textColor.replace('rgb', 'rgba').replace(')', `, ${textColorOpacity / 100})`)
-            }
-            return textColor
-          })() : undefined,
-        }}
+        style={{ color: textColor || '#ffffff' }}
       >
         {(showTitle || showSubtitle) && (
           <div className="text-center mb-8">
             {showTitle && (
-              <h1 
-                className="text-4xl md:text-5xl font-bold mb-4"
-                style={{
-                  color: textColor ? (() => {
-                    if (textColor.startsWith('#')) {
-                      const hex = textColor.slice(1)
-                      const r = parseInt(hex.slice(0, 2), 16)
-                      const g = parseInt(hex.slice(2, 4), 16)
-                      const b = parseInt(hex.slice(4, 6), 16)
-                      return `rgba(${r}, ${g}, ${b}, ${textColorOpacity / 100})`
-                    }
-                    if (textColor.startsWith('rgba')) {
-                      return textColor.replace(/,\s*[\d.]+\)$/, `, ${textColorOpacity / 100})`)
-                    }
-                    if (textColor.startsWith('rgb')) {
-                      return textColor.replace('rgb', 'rgba').replace(')', `, ${textColorOpacity / 100})`)
-                    }
-                    return textColor
-                  })() : undefined,
-                }}
-              >
+              <h1 className="text-4xl md:text-5xl font-bold mb-4">
                 {title || 'Welcome to Our Parish'}
               </h1>
             )}
             {showSubtitle && (
-              <p 
-                className="text-xl"
-                style={{
-                  color: textColor ? (() => {
-                    if (textColor.startsWith('#')) {
-                      const hex = textColor.slice(1)
-                      const r = parseInt(hex.slice(0, 2), 16)
-                      const g = parseInt(hex.slice(2, 4), 16)
-                      const b = parseInt(hex.slice(4, 6), 16)
-                      return `rgba(${r}, ${g}, ${b}, ${textColorOpacity / 100})`
-                    }
-                    if (textColor.startsWith('rgba')) {
-                      return textColor.replace(/,\s*[\d.]+\)$/, `, ${textColorOpacity / 100})`)
-                    }
-                    if (textColor.startsWith('rgb')) {
-                      return textColor.replace('rgb', 'rgba').replace(')', `, ${textColorOpacity / 100})`)
-                    }
-                    return textColor
-                  })() : undefined,
-                }}
-              >
+              <p className="text-xl opacity-90">
                 {subtitle || 'Join us in worship and fellowship'}
               </p>
             )}
@@ -177,7 +114,6 @@ function HeroSectionSettings() {
   const [uploadError, setUploadError] = useState<string>('')
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
-  const dropZoneRef = useRef<HTMLDivElement>(null)
 
   const handleFileSelect = async (file: File) => {
     if (!file.type.startsWith('image/')) {
@@ -225,7 +161,7 @@ function HeroSectionSettings() {
         setUploadProgress((prev) => Math.min(prev + 10, 90))
       }, 100)
 
-      const { data: uploadData, error: uploadError } = await supabase.storage
+      const { error: uploadErr } = await supabase.storage
         .from('media')
         .upload(fileName, file, {
           cacheControl: '3600',
@@ -235,11 +171,11 @@ function HeroSectionSettings() {
       clearInterval(progressInterval)
       setUploadProgress(100)
 
-      if (uploadError) {
-        if (uploadError.message?.includes('not found') || uploadError.message?.includes('bucket')) {
+      if (uploadErr) {
+        if (uploadErr.message?.includes('not found') || uploadErr.message?.includes('bucket')) {
           throw new Error('Storage bucket "media" not found. Please create it in Supabase Storage settings.')
         }
-        throw uploadError
+        throw uploadErr
       }
 
       const { data: { publicUrl } } = supabase.storage
@@ -281,203 +217,147 @@ function HeroSectionSettings() {
   }
 
   return (
-    <div className="space-y-4 p-4">
-      <div className="flex items-center space-x-2">
-        <Checkbox
-          id="showTitle"
-          checked={props.showTitle !== false}
-          onCheckedChange={(checked) => setProp((props: any) => (props.showTitle = checked))}
-        />
-        <Label htmlFor="showTitle">Show Title</Label>
-      </div>
-
-      {props.showTitle !== false && (
-        <div>
-          <Label>Title</Label>
-          <Input
-            value={props.title || ''}
-            onChange={(e) => setProp((props: any) => (props.title = e.target.value))}
+    <div className="divide-y divide-gray-100">
+      {/* Content Section */}
+      <SettingsAccordion title="Content" defaultOpen>
+        <div className="flex items-center space-x-2">
+          <Checkbox
+            id="showTitle"
+            checked={props.showTitle !== false}
+            onCheckedChange={(checked) => setProp((p: any) => (p.showTitle = checked))}
           />
+          <Label htmlFor="showTitle" className="text-sm">Show Title</Label>
         </div>
-      )}
 
-      <div className="flex items-center space-x-2">
-        <Checkbox
-          id="showSubtitle"
-          checked={props.showSubtitle !== false}
-          onCheckedChange={(checked) => setProp((props: any) => (props.showSubtitle = checked))}
-        />
-        <Label htmlFor="showSubtitle">Show Subtitle</Label>
-      </div>
+        {props.showTitle !== false && (
+          <div>
+            <Label className="text-sm font-medium">Title</Label>
+            <Input
+              value={props.title || ''}
+              onChange={(e) => setProp((p: any) => (p.title = e.target.value))}
+              className="mt-1"
+            />
+          </div>
+        )}
 
-      {props.showSubtitle !== false && (
-        <div>
-          <Label>Subtitle</Label>
-          <Input
-            value={props.subtitle || ''}
-            onChange={(e) => setProp((props: any) => (props.subtitle = e.target.value))}
+        <div className="flex items-center space-x-2">
+          <Checkbox
+            id="showSubtitle"
+            checked={props.showSubtitle !== false}
+            onCheckedChange={(checked) => setProp((p: any) => (p.showSubtitle = checked))}
           />
+          <Label htmlFor="showSubtitle" className="text-sm">Show Subtitle</Label>
         </div>
-      )}
 
-      <div>
-        <Label>Background Image</Label>
-        <div
-          ref={dropZoneRef}
-          onDrop={handleDrop}
-          onDragOver={handleDragOver}
-          className="mt-2 border-2 border-dashed border-muted-foreground/25 rounded-lg p-6 text-center hover:border-primary/50 transition-colors cursor-pointer"
-          onClick={() => fileInputRef.current?.click()}
-        >
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="image/*"
-            onChange={handleFileUpload}
-            disabled={uploading}
-            className="hidden"
-          />
-          {previewUrl ? (
-            <div className="space-y-2">
-              <img src={previewUrl} alt="Preview" className="max-h-32 mx-auto rounded" />
-              <p className="text-sm text-muted-foreground">Preview</p>
-            </div>
-          ) : uploading ? (
-            <div className="space-y-2">
-              <Loader2 className="h-8 w-8 mx-auto animate-spin text-primary" />
-              <p className="text-sm">Uploading... {uploadProgress}%</p>
-              <div className="w-full bg-muted rounded-full h-2">
-                <div
-                  className="bg-primary h-2 rounded-full transition-all"
-                  style={{ width: `${uploadProgress}%` }}
-                />
+        {props.showSubtitle !== false && (
+          <div>
+            <Label className="text-sm font-medium">Subtitle</Label>
+            <Input
+              value={props.subtitle || ''}
+              onChange={(e) => setProp((p: any) => (p.subtitle = e.target.value))}
+              className="mt-1"
+            />
+          </div>
+        )}
+      </SettingsAccordion>
+
+      {/* Background Section */}
+      <SettingsAccordion title="Background" defaultOpen>
+        <div>
+          <Label className="text-sm font-medium">Background Image</Label>
+          <div
+            onDrop={handleDrop}
+            onDragOver={handleDragOver}
+            className="mt-2 border-2 border-dashed border-gray-200 rounded-lg p-4 text-center hover:border-primary/50 transition-colors cursor-pointer"
+            onClick={() => fileInputRef.current?.click()}
+          >
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handleFileUpload}
+              disabled={uploading}
+              className="hidden"
+            />
+            {previewUrl ? (
+              <div className="space-y-2">
+                <img src={previewUrl} alt="Preview" className="max-h-24 mx-auto rounded" />
+                <p className="text-xs text-gray-500">Uploading...</p>
               </div>
-            </div>
-          ) : props.imageUrl ? (
-            <div className="space-y-2">
-              <img src={props.imageUrl} alt="Background" className="max-h-32 mx-auto rounded" />
-              <p className="text-sm text-muted-foreground">Click to change image</p>
-            </div>
-          ) : (
-            <div className="space-y-2">
-              <ImageIcon className="h-8 w-8 mx-auto text-muted-foreground" />
-              <p className="text-sm text-muted-foreground">Click or drag image here</p>
-            </div>
+            ) : uploading ? (
+              <div className="space-y-2">
+                <Loader2 className="h-6 w-6 mx-auto animate-spin text-primary" />
+                <p className="text-xs text-gray-500">{uploadProgress}%</p>
+              </div>
+            ) : props.imageUrl ? (
+              <div className="space-y-2">
+                <img src={props.imageUrl} alt="Background" className="max-h-24 mx-auto rounded" />
+                <p className="text-xs text-gray-500">Click to change</p>
+              </div>
+            ) : (
+              <div className="space-y-2 py-2">
+                <ImageIcon className="h-6 w-6 mx-auto text-gray-400" />
+                <p className="text-xs text-gray-500">Click or drag image</p>
+              </div>
+            )}
+          </div>
+          {uploadError && (
+            <p className="text-xs text-red-500 mt-1">{uploadError}</p>
+          )}
+          {props.imageUrl && (
+            <Button
+              variant="ghost"
+              size="sm"
+              className="w-full mt-2 text-red-500 hover:text-red-600 hover:bg-red-50"
+              onClick={() => setProp((p: any) => (p.imageUrl = ''))}
+            >
+              <X className="h-4 w-4 mr-1" />
+              Remove Image
+            </Button>
           )}
         </div>
-        {uploadError && (
-          <p className="text-sm text-destructive mt-2">{uploadError}</p>
-        )}
-        {props.imageUrl && (
-          <Button
-            variant="destructive"
-            size="sm"
-            className="w-full mt-2"
-            onClick={() => setProp((props: any) => (props.imageUrl = ''))}
-          >
-            <X className="h-4 w-4 mr-2" />
-            Remove Background Image
-          </Button>
-        )}
-      </div>
 
-      <div>
-        <Label>Background Color</Label>
-        <div className="flex gap-2 mt-2">
-          <Input
-            type="color"
-            value={props.backgroundColor || '#f0f9ff'}
-            onChange={(e) => setProp((props: any) => (props.backgroundColor = e.target.value))}
-            className="h-10 w-20 cursor-pointer"
-          />
-          <Input
-            type="text"
-            value={props.backgroundColor || '#f0f9ff'}
-            onChange={(e) => setProp((props: any) => (props.backgroundColor = e.target.value))}
-            placeholder="#f0f9ff"
-          />
-        </div>
-        {props.backgroundColor && (
-          <OpacityControl
-            label="Background Color Opacity"
-            value={props.backgroundColorOpacity || 100}
-            onChange={(value) => setProp((props: any) => (props.backgroundColorOpacity = value))}
-          />
-        )}
-      </div>
-
-      {props.imageUrl && (
-        <OpacityControl
-          label="Background Image Opacity"
-          value={props.backgroundImageOpacity || 20}
-          onChange={(value) => setProp((props: any) => (props.backgroundImageOpacity = value))}
+        {/* Overlay controls - the user's mental model */}
+        <ColorPicker
+          label="Overlay Color"
+          value={props.overlayColor || '#000000'}
+          onChange={(value) => setProp((p: any) => (p.overlayColor = value))}
         />
-      )}
 
-      <div>
+        <OpacityControl
+          label="Overlay Opacity"
+          value={props.overlayOpacity ?? 40}
+          onChange={(value) => setProp((p: any) => (p.overlayOpacity = value))}
+        />
+
         <ColorPicker
           label="Text Color"
-          value={props.textColor || '#000000'}
-          onChange={(value) => setProp((props: any) => (props.textColor = value))}
+          value={props.textColor || '#ffffff'}
+          onChange={(value) => setProp((p: any) => (p.textColor = value))}
         />
-        {props.textColor && (
-          <OpacityControl
-            label="Text Color Opacity"
-            value={props.textColorOpacity || 100}
-            onChange={(value) => setProp((props: any) => (props.textColorOpacity = value))}
-          />
-        )}
-      </div>
+      </SettingsAccordion>
 
-      <div>
-        <Label>Padding</Label>
-        <div className="grid grid-cols-4 gap-2 mt-2">
-          <div>
-            <Label className="text-xs">Top</Label>
-            <Input
-              type="number"
-              value={props.padding?.top || 80}
-              onChange={(e) => setProp((props: any) => ({
-                ...props,
-                padding: { ...props.padding, top: parseInt(e.target.value) || 0 }
-              }))}
+      {/* Layout Section */}
+      <SettingsAccordion title="Layout">
+        <div>
+          <Label className="text-sm font-medium">Vertical Padding</Label>
+          <div className="mt-2">
+            <input
+              type="range"
+              min={20}
+              max={200}
+              value={props.padding || 80}
+              onChange={(e) => setProp((p: any) => (p.padding = parseInt(e.target.value)))}
+              className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-primary"
             />
-          </div>
-          <div>
-            <Label className="text-xs">Right</Label>
-            <Input
-              type="number"
-              value={props.padding?.right || 0}
-              onChange={(e) => setProp((props: any) => ({
-                ...props,
-                padding: { ...props.padding, right: parseInt(e.target.value) || 0 }
-              }))}
-            />
-          </div>
-          <div>
-            <Label className="text-xs">Bottom</Label>
-            <Input
-              type="number"
-              value={props.padding?.bottom || 80}
-              onChange={(e) => setProp((props: any) => ({
-                ...props,
-                padding: { ...props.padding, bottom: parseInt(e.target.value) || 0 }
-              }))}
-            />
-          </div>
-          <div>
-            <Label className="text-xs">Left</Label>
-            <Input
-              type="number"
-              value={props.padding?.left || 0}
-              onChange={(e) => setProp((props: any) => ({
-                ...props,
-                padding: { ...props.padding, left: parseInt(e.target.value) || 0 }
-              }))}
-            />
+            <div className="flex justify-between text-xs text-gray-500 mt-1">
+              <span>20px</span>
+              <span className="font-medium text-gray-700">{props.padding || 80}px</span>
+              <span>200px</span>
+            </div>
           </div>
         </div>
-      </div>
+      </SettingsAccordion>
     </div>
   )
 }
@@ -488,12 +368,10 @@ HeroSection.craft = {
     title: 'Welcome to Our Parish',
     subtitle: 'Join us in worship and fellowship',
     imageUrl: '',
-    backgroundColor: '#f0f9ff',
-    backgroundColorOpacity: 100,
-    backgroundImageOpacity: 20,
-    textColor: '',
-    textColorOpacity: 100,
-    padding: { top: 80, right: 0, bottom: 80, left: 0 },
+    overlayColor: '#000000',
+    overlayOpacity: 40,
+    textColor: '#ffffff',
+    padding: 80,
     showTitle: true,
     showSubtitle: true,
   },
