@@ -3,24 +3,24 @@
 import { useNode, Element } from '@craftjs/core'
 import React from 'react'
 import { Label } from '@/components/ui/label'
-import { Input } from '@/components/ui/input'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { DropZoneContent } from './shared/DropZone'
+import { SettingsAccordion } from '../controls/SettingsAccordion'
+import { ColorPicker } from '../controls/ColorPicker'
+import { ColumnCanvas } from './shared/ColumnCanvas'
 
 interface TwoColumnProps {
   leftWidth?: number
   rightWidth?: number
   gap?: number
   backgroundColor?: string
-  padding?: { top: number; right: number; bottom: number; left: number }
+  padding?: number
 }
 
 export function TwoColumn({
   leftWidth = 50,
   rightWidth = 50,
   gap = 20,
-  backgroundColor,
-  padding = { top: 0, right: 0, bottom: 0, left: 0 },
+  backgroundColor = '',
+  padding = 0,
 }: TwoColumnProps) {
   const {
     connectors: { connect, drag },
@@ -29,8 +29,6 @@ export function TwoColumn({
     isSelected: state.events.selected,
   }))
 
-  const paddingStyle = `${padding.top}px ${padding.right}px ${padding.bottom}px ${padding.left}px`
-
   return (
     <div
       ref={(ref) => {
@@ -38,13 +36,10 @@ export function TwoColumn({
           connect(drag(ref))
         }
       }}
-      className={`
-        w-full
-        ${isSelected ? 'ring-2 ring-primary' : ''}
-      `}
+      className={`w-full ${isSelected ? 'ring-2 ring-primary ring-offset-2' : ''}`}
       style={{
-        backgroundColor: backgroundColor || 'transparent',
-        padding: paddingStyle,
+        backgroundColor: backgroundColor || undefined,
+        padding: padding ? `${padding}px` : undefined,
       }}
     >
       <div
@@ -54,20 +49,8 @@ export function TwoColumn({
           gap: `${gap}px`,
         }}
       >
-        <Element 
-          is={DropZoneContent} 
-          canvas 
-          id="left-column"
-          placeholder="Drop here"
-          minHeight={100}
-        />
-        <Element 
-          is={DropZoneContent} 
-          canvas 
-          id="right-column"
-          placeholder="Drop here"
-          minHeight={100}
-        />
+        <Element is={ColumnCanvas} canvas id="left-column" />
+        <Element is={ColumnCanvas} canvas id="right-column" />
       </div>
     </div>
   )
@@ -88,95 +71,83 @@ function TwoColumnSettings() {
   ]
 
   return (
-    <div className="space-y-4 p-4">
-      {/* Column Ratio Presets */}
-      <div>
-        <Label className="text-sm font-medium">Column Ratio</Label>
-        <div className="flex flex-wrap gap-2 mt-2">
-          {columnPresets.map((preset) => (
-            <button
-              key={preset.label}
-              type="button"
-              onClick={() => {
-                setProp((p: any) => {
-                  p.leftWidth = preset.left
-                  p.rightWidth = preset.right
-                })
-              }}
-              className={`px-3 py-1.5 text-xs rounded-md border transition-colors ${
-                props.leftWidth === preset.left && props.rightWidth === preset.right
-                  ? 'bg-primary text-primary-foreground border-primary'
-                  : 'bg-white hover:bg-gray-50 border-gray-200'
-              }`}
-            >
-              {preset.label}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Gap Slider */}
-      <div>
-        <Label className="text-sm font-medium">Gap</Label>
-        <div className="mt-2">
-          <input
-            type="range"
-            min="0"
-            max="60"
-            value={props.gap || 20}
-            onChange={(e) => setProp((p: any) => (p.gap = parseInt(e.target.value)))}
-            className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-primary"
-          />
-          <div className="flex justify-between text-xs text-gray-500 mt-1">
-            <span>0px</span>
-            <span className="font-medium text-gray-700">{props.gap || 20}px</span>
-            <span>60px</span>
+    <div className="divide-y divide-gray-100">
+      <SettingsAccordion title="Layout" defaultOpen>
+        {/* Column Ratio Presets */}
+        <div>
+          <Label className="text-sm font-medium">Column Ratio</Label>
+          <div className="flex flex-wrap gap-2 mt-2">
+            {columnPresets.map((preset) => (
+              <button
+                key={preset.label}
+                type="button"
+                onClick={() => {
+                  setProp((p: any) => {
+                    p.leftWidth = preset.left
+                    p.rightWidth = preset.right
+                  })
+                }}
+                className={`px-3 py-1.5 text-xs rounded-md border transition-colors ${
+                  props.leftWidth === preset.left && props.rightWidth === preset.right
+                    ? 'bg-primary text-primary-foreground border-primary'
+                    : 'bg-white hover:bg-gray-50 border-gray-200'
+                }`}
+              >
+                {preset.label}
+              </button>
+            ))}
           </div>
         </div>
-      </div>
 
-      {/* Background Color */}
-      <div>
-        <Label className="text-sm font-medium">Background</Label>
-        <div className="flex gap-2 mt-2">
-          <input
-            type="color"
-            value={props.backgroundColor || '#ffffff'}
-            onChange={(e) => setProp((p: any) => (p.backgroundColor = e.target.value))}
-            className="h-9 w-12 rounded border border-gray-200 cursor-pointer"
-          />
-          <Input
-            type="text"
-            value={props.backgroundColor || ''}
-            onChange={(e) => setProp((p: any) => (p.backgroundColor = e.target.value))}
-            placeholder="transparent"
-            className="flex-1"
-          />
-        </div>
-      </div>
-
-      {/* Padding Slider */}
-      <div>
-        <Label className="text-sm font-medium">Padding</Label>
-        <div className="mt-2">
-          <input
-            type="range"
-            min="0"
-            max="80"
-            value={props.padding?.top || 0}
-            onChange={(e) => {
-              const val = parseInt(e.target.value)
-              setProp((p: any) => (p.padding = { top: val, right: val, bottom: val, left: val }))
-            }}
-            className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-primary"
-          />
-          <div className="flex justify-between text-xs text-gray-500 mt-1">
-            <span>0px</span>
-            <span className="font-medium text-gray-700">{props.padding?.top || 0}px</span>
-            <span>80px</span>
+        {/* Gap Slider */}
+        <div>
+          <Label className="text-sm font-medium">Gap</Label>
+          <div className="mt-2">
+            <input
+              type="range"
+              min="0"
+              max="60"
+              value={props.gap || 20}
+              onChange={(e) => setProp((p: any) => (p.gap = parseInt(e.target.value)))}
+              className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-primary"
+            />
+            <div className="flex justify-between text-xs text-gray-500 mt-1">
+              <span>0px</span>
+              <span className="font-medium text-gray-700">{props.gap || 20}px</span>
+              <span>60px</span>
+            </div>
           </div>
         </div>
-      </div>
+
+        {/* Padding Slider */}
+        <div>
+          <Label className="text-sm font-medium">Padding</Label>
+          <div className="mt-2">
+            <input
+              type="range"
+              min="0"
+              max="60"
+              value={props.padding || 0}
+              onChange={(e) => setProp((p: any) => (p.padding = parseInt(e.target.value)))}
+              className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-primary"
+            />
+            <div className="flex justify-between text-xs text-gray-500 mt-1">
+              <span>0px</span>
+              <span className="font-medium text-gray-700">{props.padding || 0}px</span>
+              <span>60px</span>
+            </div>
+          </div>
+        </div>
+      </SettingsAccordion>
+
+      <SettingsAccordion title="Appearance">
+        <ColorPicker
+          label="Background"
+          value={props.backgroundColor || ''}
+          onChange={(value) => setProp((p: any) => (p.backgroundColor = value))}
+          placeholder="transparent"
+        />
+      </SettingsAccordion>
     </div>
   )
 }
@@ -188,10 +159,9 @@ TwoColumn.craft = {
     rightWidth: 50,
     gap: 20,
     backgroundColor: '',
-    padding: { top: 0, right: 0, bottom: 0, left: 0 },
+    padding: 0,
   },
   related: {
     settings: TwoColumnSettings,
   },
 }
-

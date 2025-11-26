@@ -11,7 +11,7 @@ import { useParams } from 'next/navigation'
 import { SettingsAccordion } from '../controls/SettingsAccordion'
 import { ColorPicker } from '../controls/ColorPicker'
 import { OpacityControl } from '../controls/OpacityControl'
-import { DropZoneContent } from './shared/DropZone'
+import { ColumnCanvas } from './shared/ColumnCanvas'
 
 interface SectionProps {
   imageUrl?: string
@@ -80,13 +80,7 @@ export function Section({
           color: textColor || undefined,
         }}
       >
-        <Element 
-          is={DropZoneContent} 
-          canvas 
-          id="section-content"
-          placeholder="Drop components here"
-          minHeight={80}
-        />
+        <Element is={ColumnCanvas} canvas id="section-content" />
       </div>
     </section>
   )

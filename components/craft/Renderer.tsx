@@ -20,11 +20,45 @@ export function CraftRenderer({ content }: CraftRendererProps) {
   }
 
   try {
-    // Extract global font settings from content if available
-    const globalFonts = content?.globalFonts || {}
+    // Parse content if it's a string
+    let parsedContent = content
+    if (typeof content === 'string') {
+      try {
+        parsedContent = JSON.parse(content)
+      } catch (e) {
+        console.error('Failed to parse content:', e)
+        return (
+          <div className="container mx-auto px-4 py-12">
+            <div className="text-center text-destructive">
+              <p>Invalid page content format.</p>
+            </div>
+          </div>
+        )
+      }
+    }
+
+    // Extract global font settings (stored at top level)
+    const globalFonts = parsedContent?.globalFonts || {}
     
-    // Extract craft content (without globalFonts)
-    const { globalFonts: _, ...craftContent } = content || {}
+    // Build clean Craft.js content by excluding globalFonts
+    // Craft.js expects only node entries (ROOT, nodeId, etc.)
+    const craftContent: Record<string, any> = {}
+    for (const [key, value] of Object.entries(parsedContent)) {
+      if (key !== 'globalFonts') {
+        craftContent[key] = value
+      }
+    }
+    
+    // If there's no ROOT node, return empty
+    if (!craftContent.ROOT) {
+      return (
+        <div className="container mx-auto px-4 py-12">
+          <div className="text-center text-muted-foreground">
+            <p>This page has no content yet.</p>
+          </div>
+        </div>
+      )
+    }
     
     return (
       <FontProvider initialFonts={globalFonts}>
@@ -36,7 +70,7 @@ export function CraftRenderer({ content }: CraftRendererProps) {
           }}
         >
           <Editor enabled={false} resolver={craftComponents}>
-            <Frame data={craftContent} />
+            <Frame data={JSON.stringify(craftContent)} />
           </Editor>
         </div>
       </FontProvider>
@@ -52,4 +86,3 @@ export function CraftRenderer({ content }: CraftRendererProps) {
     )
   }
 }
-

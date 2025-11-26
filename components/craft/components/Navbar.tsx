@@ -1,23 +1,42 @@
 'use client'
 
 import { useNode } from '@craftjs/core'
-import React from 'react'
+import React, { useRef, useState } from 'react'
 import Link from 'next/link'
-import { Menu, X, Plus, Trash2 } from 'lucide-react'
+import { Menu, X, Plus, Trash2, Loader2, Image as ImageIcon } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
 import { SettingsAccordion } from '../controls/SettingsAccordion'
+import { ColorPicker } from '../controls/ColorPicker'
+import { createClient } from '@/lib/supabase/client'
+import { useParams } from 'next/navigation'
 
 interface NavbarProps {
   logoUrl?: string
   logoText?: string
+  logoHeight?: number
   menuItems?: { label: string; url: string }[]
   ctaText?: string
   ctaUrl?: string
+  backgroundColor?: string
+  textColor?: string
+  ctaBackgroundColor?: string
+  ctaTextColor?: string
 }
 
-export function Navbar({ logoUrl, logoText, menuItems, ctaText, ctaUrl }: NavbarProps) {
+export function Navbar({ 
+  logoUrl, 
+  logoText = 'Parish', 
+  logoHeight = 32,
+  menuItems = [],
+  ctaText = '',
+  ctaUrl = '#',
+  backgroundColor = '#ffffff',
+  textColor = '#1f2937',
+  ctaBackgroundColor = '',
+  ctaTextColor = '',
+}: NavbarProps) {
   const {
     connectors: { connect, drag },
     isSelected,
@@ -72,18 +91,29 @@ export function Navbar({ logoUrl, logoText, menuItems, ctaText, ctaUrl }: Navbar
         }
       }}
       className={`
-        bg-white border-b shadow-sm sticky top-0 z-50
+        border-b shadow-sm sticky top-0 z-50
         ${isSelected ? 'ring-2 ring-primary' : ''}
       `}
+      style={{ backgroundColor }}
     >
       <div className="px-4">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <div className="flex items-center gap-3">
             {logoUrl ? (
-              <img src={logoUrl} alt={logoText || 'Logo'} className="h-8" />
+              <img 
+                src={logoUrl} 
+                alt={logoText || 'Logo'} 
+                style={{ height: `${logoHeight}px` }}
+                className="object-contain"
+              />
             ) : (
-              <span className="text-xl font-bold text-primary">{logoText || 'Parish'}</span>
+              <span 
+                className="text-xl font-bold"
+                style={{ color: textColor }}
+              >
+                {logoText}
+              </span>
             )}
           </div>
 
@@ -94,13 +124,21 @@ export function Navbar({ logoUrl, logoText, menuItems, ctaText, ctaUrl }: Navbar
                 <Link
                   key={index}
                   href={item.url}
-                  className="text-gray-700 hover:text-primary transition-colors"
+                  className="hover:opacity-70 transition-opacity"
+                  style={{ color: textColor }}
                 >
                   {item.label}
                 </Link>
               ))}
               {ctaText && (
-                <Button asChild size="sm">
+                <Button 
+                  asChild 
+                  size="sm"
+                  style={{
+                    backgroundColor: ctaBackgroundColor || undefined,
+                    color: ctaTextColor || undefined,
+                  }}
+                >
                   <Link href={ctaUrl || '#'}>{ctaText}</Link>
                 </Button>
               )}
@@ -111,10 +149,11 @@ export function Navbar({ logoUrl, logoText, menuItems, ctaText, ctaUrl }: Navbar
           {isMobile && (
             <button
               type="button"
-              className="p-2 -mr-2 text-gray-700 hover:text-primary transition-colors rounded-md hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+              className="p-2 -mr-2 hover:opacity-70 transition-opacity rounded-md"
               onClick={handleToggleMenu}
               aria-label="Toggle mobile menu"
               aria-expanded={mobileMenuOpen}
+              style={{ color: textColor }}
             >
               {mobileMenuOpen ? (
                 <X className="h-6 w-6" />
@@ -127,15 +166,16 @@ export function Navbar({ logoUrl, logoText, menuItems, ctaText, ctaUrl }: Navbar
 
         {/* Mobile Menu - shown when mobile and menu is open */}
         {isMobile && mobileMenuOpen && (
-          <div className="border-t bg-white pb-4">
+          <div className="border-t pb-4" style={{ backgroundColor }}>
             <div className="pt-4">
               <div className="flex flex-col gap-2">
                 {(menuItems || []).map((item, index) => (
                   <Link
                     key={index}
                     href={item.url}
-                    className="text-gray-700 hover:text-primary transition-colors px-4 py-2 rounded-md hover:bg-gray-50"
+                    className="px-4 py-2 rounded-md hover:bg-black/5"
                     onClick={handleCloseMenu}
+                    style={{ color: textColor }}
                   >
                     {item.label}
                   </Link>
@@ -147,6 +187,10 @@ export function Navbar({ logoUrl, logoText, menuItems, ctaText, ctaUrl }: Navbar
                       size="sm" 
                       className="w-full"
                       onClick={handleCloseMenu}
+                      style={{
+                        backgroundColor: ctaBackgroundColor || undefined,
+                        color: ctaTextColor || undefined,
+                      }}
                     >
                       <Link href={ctaUrl || '#'}>{ctaText}</Link>
                     </Button>
@@ -165,6 +209,71 @@ function NavbarSettings() {
   const { actions: { setProp }, props } = useNode((node) => ({
     props: node.data.props,
   }))
+  const params = useParams()
+  const pageId = params.id as string
+  const [uploading, setUploading] = useState(false)
+  const [uploadError, setUploadError] = useState<string>('')
+  const fileInputRef = useRef<HTMLInputElement>(null)
+
+  const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    if (!file.type.startsWith('image/')) {
+      setUploadError('Please select an image file')
+      return
+    }
+
+    if (file.size > 2 * 1024 * 1024) {
+      setUploadError('Logo must be less than 2MB')
+      return
+    }
+
+    setUploading(true)
+    setUploadError('')
+
+    try {
+      const supabase = createClient()
+      
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) {
+        throw new Error('You must be logged in to upload')
+      }
+
+      const { data: page } = await supabase
+        .from('pages')
+        .select('parish_id')
+        .eq('id', pageId)
+        .single()
+
+      if (!page) {
+        throw new Error('Page not found')
+      }
+
+      const fileExt = file.name.split('.').pop()
+      const fileName = `pages/${page.parish_id}/${pageId}/logo/${Date.now()}.${fileExt}`
+
+      const { error: uploadErr } = await supabase.storage
+        .from('media')
+        .upload(fileName, file, {
+          cacheControl: '3600',
+          upsert: false
+        })
+
+      if (uploadErr) throw uploadErr
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('media')
+        .getPublicUrl(fileName)
+
+      setProp((p: any) => (p.logoUrl = publicUrl))
+    } catch (error: any) {
+      console.error('Error uploading logo:', error)
+      setUploadError(error.message || 'Failed to upload logo')
+    } finally {
+      setUploading(false)
+    }
+  }
 
   const addMenuItem = () => {
     setProp((p: any) => {
@@ -188,31 +297,120 @@ function NavbarSettings() {
 
   return (
     <div className="divide-y divide-gray-100">
-      {/* Brand Section */}
-      <SettingsAccordion title="Brand" defaultOpen>
+      {/* Logo Section */}
+      <SettingsAccordion title="Logo" defaultOpen>
         <div>
-          <Label className="text-sm font-medium">Logo Text</Label>
-          <Input
-            value={props.logoText || ''}
-            onChange={(e) => setProp((p: any) => (p.logoText = e.target.value))}
-            placeholder="Parish Name"
-            className="mt-1"
-          />
+          <Label className="text-sm font-medium">Logo Image</Label>
+          <div
+            className="mt-2 border-2 border-dashed border-gray-200 rounded-lg p-3 text-center hover:border-primary/50 transition-colors cursor-pointer"
+            onClick={() => fileInputRef.current?.click()}
+          >
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handleLogoUpload}
+              disabled={uploading}
+              className="hidden"
+            />
+            {uploading ? (
+              <Loader2 className="h-5 w-5 mx-auto animate-spin text-primary" />
+            ) : props.logoUrl ? (
+              <div className="space-y-2">
+                <img src={props.logoUrl} alt="Logo" className="max-h-12 mx-auto" />
+                <p className="text-xs text-gray-500">Click to change</p>
+              </div>
+            ) : (
+              <div className="space-y-1 py-1">
+                <ImageIcon className="h-5 w-5 mx-auto text-gray-400" />
+                <p className="text-xs text-gray-500">Upload logo</p>
+              </div>
+            )}
+          </div>
+          {uploadError && (
+            <p className="text-xs text-red-500 mt-1">{uploadError}</p>
+          )}
+          {props.logoUrl && (
+            <Button
+              variant="ghost"
+              size="sm"
+              className="w-full mt-2 text-red-500 hover:text-red-600 hover:bg-red-50"
+              onClick={() => setProp((p: any) => (p.logoUrl = ''))}
+            >
+              <X className="h-4 w-4 mr-1" />
+              Remove Logo
+            </Button>
+          )}
         </div>
-        <div>
-          <Label className="text-sm font-medium">Logo Image URL</Label>
-          <Input
-            value={props.logoUrl || ''}
-            onChange={(e) => setProp((p: any) => (p.logoUrl = e.target.value))}
-            placeholder="https://example.com/logo.png"
-            className="mt-1"
-          />
-          <p className="text-xs text-gray-500 mt-1">Optional - will override logo text</p>
-        </div>
+
+        {props.logoUrl && (
+          <div>
+            <Label className="text-sm font-medium">Logo Height</Label>
+            <div className="mt-2">
+              <input
+                type="range"
+                min="20"
+                max="80"
+                value={props.logoHeight || 32}
+                onChange={(e) => setProp((p: any) => (p.logoHeight = parseInt(e.target.value)))}
+                className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-primary"
+              />
+              <div className="flex justify-between text-xs text-gray-500 mt-1">
+                <span>20px</span>
+                <span className="font-medium text-gray-700">{props.logoHeight || 32}px</span>
+                <span>80px</span>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {!props.logoUrl && (
+          <div>
+            <Label className="text-sm font-medium">Text Logo</Label>
+            <Input
+              value={props.logoText || ''}
+              onChange={(e) => setProp((p: any) => (p.logoText = e.target.value))}
+              placeholder="Parish Name"
+              className="mt-1"
+            />
+          </div>
+        )}
+      </SettingsAccordion>
+
+      {/* Colors Section */}
+      <SettingsAccordion title="Colors" defaultOpen>
+        <ColorPicker
+          label="Background"
+          value={props.backgroundColor || '#ffffff'}
+          onChange={(value) => setProp((p: any) => (p.backgroundColor = value))}
+        />
+
+        <ColorPicker
+          label="Text Color"
+          value={props.textColor || '#1f2937'}
+          onChange={(value) => setProp((p: any) => (p.textColor = value))}
+        />
+
+        {props.ctaText && (
+          <>
+            <ColorPicker
+              label="Button Background"
+              value={props.ctaBackgroundColor || ''}
+              onChange={(value) => setProp((p: any) => (p.ctaBackgroundColor = value))}
+              placeholder="default"
+            />
+            <ColorPicker
+              label="Button Text"
+              value={props.ctaTextColor || ''}
+              onChange={(value) => setProp((p: any) => (p.ctaTextColor = value))}
+              placeholder="default"
+            />
+          </>
+        )}
       </SettingsAccordion>
 
       {/* Menu Items Section */}
-      <SettingsAccordion title="Menu Items" defaultOpen>
+      <SettingsAccordion title="Menu Items">
         <div className="space-y-2">
           {(props.menuItems || []).map((item: { label: string; url: string }, index: number) => (
             <div key={index} className="flex gap-2 items-center p-2 bg-gray-50 rounded-lg">
@@ -282,6 +480,7 @@ Navbar.craft = {
   props: {
     logoText: 'Parish',
     logoUrl: '',
+    logoHeight: 32,
     menuItems: [
       { label: 'Home', url: '/' },
       { label: 'About', url: '/about' },
@@ -290,9 +489,12 @@ Navbar.craft = {
     ],
     ctaText: 'Donate',
     ctaUrl: '/giving',
+    backgroundColor: '#ffffff',
+    textColor: '#1f2937',
+    ctaBackgroundColor: '',
+    ctaTextColor: '',
   },
   related: {
     settings: NavbarSettings,
   },
 }
-

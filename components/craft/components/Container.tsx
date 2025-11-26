@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input'
 import { SettingsAccordion } from '../controls/SettingsAccordion'
 import { ColorPicker } from '../controls/ColorPicker'
 import { OpacityControl } from '../controls/OpacityControl'
-import { DropZoneContent } from './shared/DropZone'
+import { ColumnCanvas } from './shared/ColumnCanvas'
 
 interface ContainerProps {
   backgroundColor?: string
@@ -67,13 +67,7 @@ export function Container({
         borderRadius: borderRadius ? `${borderRadius}px` : undefined,
       }}
     >
-      <Element 
-        is={DropZoneContent} 
-        canvas 
-        id="container-content"
-        placeholder="Drop components here"
-        minHeight={60}
-      />
+      <Element is={ColumnCanvas} canvas id="container-content" />
     </div>
   )
 }
