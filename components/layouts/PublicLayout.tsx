@@ -1,12 +1,21 @@
 import Link from 'next/link'
 
+interface PublicLayoutProps {
+  children: React.ReactNode
+  parish: { name: string; slug: string } | null
+  hideChrome?: boolean
+}
+
 export function PublicLayout({
   children,
   parish,
-}: {
-  children: React.ReactNode
-  parish: { name: string; slug: string } | null
-}) {
+  hideChrome = false,
+}: PublicLayoutProps) {
+  // When hideChrome is true, render just the children (for builder pages)
+  if (hideChrome) {
+    return <div className="min-h-screen flex flex-col">{children}</div>
+  }
+
   return (
     <div className="min-h-screen flex flex-col">
       {/* Header */}
@@ -51,4 +60,3 @@ export function PublicLayout({
     </div>
   )
 }
-

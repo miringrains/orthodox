@@ -1,10 +1,41 @@
 import { createClient } from '@/lib/supabase/server'
-import { getParishIdFromSlug } from '@/lib/tenancy'
+import { getParishIdFromSlug, getParishFromSlug } from '@/lib/tenancy'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { CraftRenderer } from '@/components/craft/Renderer'
 import Link from 'next/link'
 import { Calendar, Megaphone, Headphones, DollarSign } from 'lucide-react'
+
+// Component that hides the layout header/footer when rendered
+function BuilderPageWrapper({ 
+  children, 
+  parishName 
+}: { 
+  children: React.ReactNode
+  parishName: string 
+}) {
+  return (
+    <>
+      {/* Hide the parent layout header and footer */}
+      <style dangerouslySetInnerHTML={{ __html: `
+        header.border-b.bg-card { display: none !important; }
+        footer.border-t.bg-card { display: none !important; }
+        main.flex-1 { padding: 0 !important; }
+      `}} />
+      
+      <div className="min-h-screen flex flex-col">
+        {children}
+        
+        {/* Builder page footer */}
+        <footer className="border-t bg-white mt-auto py-8">
+          <div className="container mx-auto px-4 text-center text-sm text-gray-500">
+            <p>&copy; {new Date().getFullYear()} {parishName}. All rights reserved.</p>
+          </div>
+        </footer>
+      </div>
+    </>
+  )
+}
 
 export default async function ParishHomePage({
   params,
@@ -13,8 +44,9 @@ export default async function ParishHomePage({
 }) {
   const { 'parish-slug': slug } = await params
   const parishId = await getParishIdFromSlug(slug)
+  const parish = await getParishFromSlug(slug)
 
-  if (!parishId) {
+  if (!parishId || !parish) {
     return <div>Parish not found</div>
   }
 
@@ -33,9 +65,9 @@ export default async function ParishHomePage({
     const builderData = homePage.builder_schema as any
     
     return (
-      <div className="container mx-auto px-4 py-12">
+      <BuilderPageWrapper parishName={parish.name}>
         <CraftRenderer content={builderData} />
-      </div>
+      </BuilderPageWrapper>
     )
   }
 
@@ -44,7 +76,7 @@ export default async function ParishHomePage({
     console.error('Error fetching home page:', homePageError)
   }
 
-  // Otherwise, render default content
+  // Otherwise, render default content with normal layout
   // Fetch recent content
   const [announcementsRes, eventsRes, sermonsRes] = await Promise.all([
     supabase
@@ -198,4 +230,3 @@ export default async function ParishHomePage({
     </div>
   )
 }
-
