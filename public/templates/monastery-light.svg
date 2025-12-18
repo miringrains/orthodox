@@ -1,0 +1,28 @@
+<svg width="400" height="300" viewBox="0 0 400 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="400" height="300" fill="#F9F6F2"/>
+  
+  <!-- Navbar -->
+  <rect y="0" width="400" height="40" fill="#F9F6F2"/>
+  <rect x="20" y="14" width="60" height="12" rx="2" fill="#2C3E50"/>
+  <rect x="300" y="12" width="80" height="16" rx="4" fill="#9A7B4F"/>
+  
+  <!-- Hero Section -->
+  <rect y="40" width="400" height="100" fill="#2C3E50"/>
+  <rect x="140" y="70" width="120" height="14" rx="2" fill="#F9F6F2"/>
+  <rect x="160" y="92" width="80" height="8" rx="2" fill="#F9F6F2" opacity="0.7"/>
+  
+  <!-- Gold divider -->
+  <rect x="170" y="155" width="60" height="2" fill="#9A7B4F"/>
+  
+  <!-- Content Section -->
+  <rect x="100" y="170" width="200" height="8" rx="2" fill="#2C3E50" opacity="0.3"/>
+  <rect x="120" y="185" width="160" height="8" rx="2" fill="#2C3E50" opacity="0.3"/>
+  <rect x="110" y="200" width="180" height="8" rx="2" fill="#2C3E50" opacity="0.3"/>
+  
+  <!-- Schedule Section -->
+  <rect y="230" width="400" height="70" fill="#ffffff"/>
+  <rect x="160" y="245" width="80" height="10" rx="2" fill="#2C3E50"/>
+  <rect x="170" y="262" width="60" height="2" fill="#9A7B4F"/>
+</svg>
+

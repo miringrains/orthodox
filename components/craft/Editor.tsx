@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react'
 import { Editor, Frame, Element, useEditor } from '@craftjs/core'
 import { Button } from '@/components/ui/button'
-import { Save, ArrowLeft, CheckCircle2, AlertCircle, Monitor, Tablet, Smartphone, ExternalLink } from 'lucide-react'
+import { Save, ArrowLeft, CheckCircle2, AlertCircle, Monitor, Tablet, Smartphone, ExternalLink, Layout } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { Toolbox } from './Toolbox'
@@ -11,6 +11,8 @@ import { SettingsPanel } from './SettingsPanel'
 import { GlobalSettings } from './GlobalSettings'
 import { FontProvider, useFontContext } from './contexts/FontContext'
 import { craftComponents } from './components'
+import { TemplatePicker } from './TemplatePicker'
+import type { PageTemplate } from '@/lib/templates'
 
 interface CraftEditorProps {
   content?: any
@@ -25,10 +27,40 @@ function EditorContent({ onSave, initialContent, pageId }: { onSave: (content: a
   const [previewing, setPreviewing] = useState(false)
   const [saveStatus, setSaveStatus] = useState<'idle' | 'success' | 'error'>('idle')
   const [viewMode, setViewMode] = useState<'desktop' | 'tablet' | 'mobile'>('desktop')
+  const [showTemplatePicker, setShowTemplatePicker] = useState(false)
+  const [hasCheckedEmpty, setHasCheckedEmpty] = useState(false)
   const { query, actions } = useEditor((state) => ({
     enabled: state.options.enabled,
   }))
   const { fontFamily, baseFontSize, baseFontWeight, setFontFamily, setBaseFontSize, setBaseFontWeight } = useFontContext()
+
+  // Check if editor is empty and show template picker
+  useEffect(() => {
+    if (hasCheckedEmpty) return
+    
+    // Check if there's no initial content
+    if (!initialContent) {
+      setShowTemplatePicker(true)
+      setHasCheckedEmpty(true)
+      return
+    }
+
+    try {
+      const parsed = typeof initialContent === 'string' ? JSON.parse(initialContent) : initialContent
+      // Check if content only has ROOT with empty nodes
+      const { globalFonts: _, ...craftContent } = parsed
+      const isEmpty = !craftContent || 
+        Object.keys(craftContent).length === 0 ||
+        (craftContent.ROOT && (!craftContent.ROOT.nodes || craftContent.ROOT.nodes.length === 0))
+      
+      if (isEmpty) {
+        setShowTemplatePicker(true)
+      }
+    } catch {
+      setShowTemplatePicker(true)
+    }
+    setHasCheckedEmpty(true)
+  }, [initialContent, hasCheckedEmpty])
 
   // Keyboard shortcuts
   React.useEffect(() => {
@@ -193,6 +225,29 @@ function EditorContent({ onSave, initialContent, pageId }: { onSave: (content: a
     }
   }
 
+  const handleTemplateSelect = (template: PageTemplate | null) => {
+    if (!template) {
+      // User chose "Start from scratch"
+      setShowTemplatePicker(false)
+      return
+    }
+
+    try {
+      // Apply template fonts
+      setFontFamily(template.globalFonts.fontFamily)
+      setBaseFontSize(template.globalFonts.baseFontSize)
+      setBaseFontWeight(template.globalFonts.baseFontWeight)
+
+      // Deserialize template content
+      const templateContent = JSON.parse(template.craftSchema)
+      actions.deserialize(JSON.stringify(templateContent))
+      
+      setShowTemplatePicker(false)
+    } catch (error) {
+      console.error('Error applying template:', error)
+    }
+  }
+
   const viewportWidths = {
     desktop: '100%',
     tablet: '768px',
@@ -201,6 +256,13 @@ function EditorContent({ onSave, initialContent, pageId }: { onSave: (content: a
 
   return (
     <div className="flex h-screen bg-gray-100">
+      {/* Template Picker Modal */}
+      <TemplatePicker
+        open={showTemplatePicker}
+        onClose={() => setShowTemplatePicker(false)}
+        onSelectTemplate={handleTemplateSelect}
+      />
+
       {/* Left Sidebar - Toolbox */}
       <div className="w-72 border-r bg-white shadow-sm overflow-y-auto">
         <div className="p-4 border-b bg-gray-50">
@@ -227,6 +289,17 @@ function EditorContent({ onSave, initialContent, pageId }: { onSave: (content: a
             <h1 className="text-lg font-semibold">Page Builder</h1>
           </div>
           <div className="flex items-center gap-3">
+            {/* Template Button */}
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShowTemplatePicker(true)}
+              title="Choose a template"
+            >
+              <Layout className="h-4 w-4 mr-2" />
+              Templates
+            </Button>
+            
             {/* View Mode Toggle */}
             <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
               <Button
@@ -341,9 +414,14 @@ function EditorContent({ onSave, initialContent, pageId }: { onSave: (content: a
 
 export function CraftEditor({ content, onSave, pageId }: CraftEditorProps) {
   // Extract global font settings from content if available
-  const globalFonts = typeof content === 'string' 
-    ? (JSON.parse(content)?.globalFonts || {})
-    : (content?.globalFonts || {})
+  let globalFonts = {}
+  try {
+    globalFonts = typeof content === 'string' 
+      ? (JSON.parse(content)?.globalFonts || {})
+      : (content?.globalFonts || {})
+  } catch {
+    // Invalid content, use default fonts
+  }
   
   return (
     <FontProvider initialFonts={globalFonts}>
