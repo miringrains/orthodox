@@ -24,7 +24,6 @@ export function TemplatePicker({
   showBlankOption = true,
 }: TemplatePickerProps) {
   const [selectedMode, setSelectedMode] = useState<TemplateMode | 'all'>('all')
-  const [selectedTemplate, setSelectedTemplate] = useState<PageTemplate | null>(null)
   const [hoveredTemplate, setHoveredTemplate] = useState<string | null>(null)
 
   const templates = templateRegistry.getAll()
@@ -44,11 +43,6 @@ export function TemplatePicker({
       default:
         return null
     }
-  }
-
-  const handleSelect = () => {
-    onSelectTemplate(selectedTemplate)
-    onClose()
   }
 
   const handleBlankSelect = () => {
@@ -115,14 +109,16 @@ export function TemplatePicker({
             {filteredTemplates.map((template) => (
               <button
                 key={template.id}
-                onClick={() => setSelectedTemplate(template)}
+                onClick={() => {
+                  // Apply template immediately on click
+                  onSelectTemplate(template)
+                  onClose()
+                }}
                 onMouseEnter={() => setHoveredTemplate(template.id)}
                 onMouseLeave={() => setHoveredTemplate(null)}
                 className={`
                   group relative aspect-[4/3] rounded-lg border-2 transition-all overflow-hidden
-                  ${selectedTemplate?.id === template.id 
-                    ? 'border-primary ring-2 ring-primary ring-offset-2' 
-                    : 'border-gray-200 hover:border-primary/50'}
+                  border-gray-200 hover:border-primary hover:ring-2 hover:ring-primary hover:ring-offset-2
                 `}
               >
                 {/* Template Preview Background */}
@@ -177,7 +173,7 @@ export function TemplatePicker({
                 {/* Hover overlay with info */}
                 <div className={`
                   absolute inset-0 bg-black/70 flex flex-col items-center justify-center p-3 transition-opacity
-                  ${hoveredTemplate === template.id || selectedTemplate?.id === template.id ? 'opacity-100' : 'opacity-0'}
+                  ${hoveredTemplate === template.id ? 'opacity-100' : 'opacity-0'}
                 `}>
                   <div className="flex items-center gap-2 text-white mb-1">
                     {getCategoryIcon(template.category)}
@@ -226,12 +222,6 @@ export function TemplatePicker({
         <DialogFooter className="border-t pt-4">
           <Button variant="outline" onClick={onClose}>
             Cancel
-          </Button>
-          <Button 
-            onClick={handleSelect} 
-            disabled={!selectedTemplate}
-          >
-            Use Template
           </Button>
         </DialogFooter>
       </DialogContent>
