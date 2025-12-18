@@ -242,14 +242,85 @@ function EditorContent({ onSave, initialContent, pageId }: { onSave: (content: a
 
       // Parse template content
       const templateContent = JSON.parse(template.craftSchema)
-      console.log('Template content:', templateContent)
+      console.log('Template content keys:', Object.keys(templateContent))
       
-      // Clear current content first by resetting to empty state
-      // Then deserialize the template
-      const serialized = JSON.stringify(templateContent)
-      console.log('Serialized for deserialize:', serialized.substring(0, 200) + '...')
+      // Get current ROOT's children and clear them
+      const currentNodes = query.node('ROOT').get().data.nodes || []
+      console.log('Current ROOT nodes to clear:', currentNodes)
       
-      actions.deserialize(serialized)
+      // Delete existing nodes from ROOT
+      for (const nodeId of currentNodes) {
+        try {
+          actions.delete(nodeId)
+        } catch (e) {
+          console.log('Could not delete node:', nodeId)
+        }
+      }
+      
+      // Add template nodes to ROOT one by one
+      // Get the nodes that should be children of ROOT from the template
+      const templateRoot = templateContent.ROOT
+      const childNodeIds = templateRoot?.nodes || []
+      console.log('Template child nodes to add:', childNodeIds)
+      
+      for (const nodeId of childNodeIds) {
+        const nodeData = templateContent[nodeId]
+        if (nodeData) {
+          try {
+            // Build a node tree for this node and its descendants
+            const buildNodeTree = (id: string, content: any): any => {
+              const node = content[id]
+              if (!node) return null
+              
+              const tree: any = {
+                [id]: {
+                  type: node.type,
+                  props: node.props || {},
+                  custom: node.custom || {},
+                  isCanvas: node.isCanvas || false,
+                  displayName: node.displayName,
+                  hidden: node.hidden || false,
+                  nodes: [],
+                  linkedNodes: {},
+                }
+              }
+              
+              // Add child nodes
+              if (node.nodes && Array.isArray(node.nodes)) {
+                for (const childId of node.nodes) {
+                  const childTree = buildNodeTree(childId, content)
+                  if (childTree) {
+                    Object.assign(tree, childTree)
+                    tree[id].nodes.push(childId)
+                  }
+                }
+              }
+              
+              // Add linked nodes
+              if (node.linkedNodes && typeof node.linkedNodes === 'object') {
+                for (const [key, linkedId] of Object.entries(node.linkedNodes)) {
+                  const linkedTree = buildNodeTree(linkedId as string, content)
+                  if (linkedTree) {
+                    Object.assign(tree, linkedTree)
+                    tree[id].linkedNodes[key] = linkedId
+                  }
+                }
+              }
+              
+              return tree
+            }
+            
+            const nodeTree = buildNodeTree(nodeId, templateContent)
+            console.log('Adding node tree for:', nodeId, nodeTree)
+            
+            if (nodeTree) {
+              actions.addNodeTree(nodeTree, 'ROOT')
+            }
+          } catch (e) {
+            console.error('Error adding node:', nodeId, e)
+          }
+        }
+      }
       
       console.log('Template applied successfully')
       setShowTemplatePicker(false)
