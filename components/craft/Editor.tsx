@@ -225,7 +225,7 @@ function EditorContent({ onSave, initialContent, pageId }: { onSave: (content: a
     }
   }
 
-  const handleTemplateSelect = (template: PageTemplate | null) => {
+  const handleTemplateSelect = async (template: PageTemplate | null) => {
     if (!template) {
       // User chose "Start from scratch"
       setShowTemplatePicker(false)
@@ -233,18 +233,29 @@ function EditorContent({ onSave, initialContent, pageId }: { onSave: (content: a
     }
 
     try {
+      console.log('Applying template:', template.id)
+      
       // Apply template fonts
       setFontFamily(template.globalFonts.fontFamily)
       setBaseFontSize(template.globalFonts.baseFontSize)
       setBaseFontWeight(template.globalFonts.baseFontWeight)
 
-      // Deserialize template content
+      // Parse template content
       const templateContent = JSON.parse(template.craftSchema)
-      actions.deserialize(JSON.stringify(templateContent))
+      console.log('Template content:', templateContent)
       
+      // Clear current content first by resetting to empty state
+      // Then deserialize the template
+      const serialized = JSON.stringify(templateContent)
+      console.log('Serialized for deserialize:', serialized.substring(0, 200) + '...')
+      
+      actions.deserialize(serialized)
+      
+      console.log('Template applied successfully')
       setShowTemplatePicker(false)
     } catch (error) {
       console.error('Error applying template:', error)
+      alert('Failed to apply template. Check console for details.')
     }
   }
 
