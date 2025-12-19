@@ -8,12 +8,14 @@ import type { PageTemplate } from './types'
  * Evokes a scriptorium or quiet chapel.
  * 
  * Typography: Cormorant Garamond (headings) + Source Sans 3 (body)
+ * 
+ * Key Orthodox elements:
+ * - Centered navbar with large icon area
+ * - Contemplative hero with generous vertical space
+ * - Feast banner for liturgical connection
+ * - Triptych layout for icon display
  */
 
-// Craft.js serialized format:
-// - ROOT type should be 'div' (string) since the editor uses <Element is="div" canvas>
-// - HeroSection linkedNodes use 'div' type since it uses <Element is="div" canvas>
-// - Section linkedNodes use { resolvedName: 'ColumnCanvas' } since it uses <Element is={ColumnCanvas} canvas>
 const craftSchema = {
   ROOT: {
     type: 'div',
@@ -24,7 +26,7 @@ const craftSchema = {
     displayName: 'div',
     custom: {},
     hidden: false,
-    nodes: ['node-navbar', 'node-hero', 'node-welcome'],
+    nodes: ['node-navbar', 'node-hero', 'node-feast', 'node-welcome', 'node-schedule'],
     linkedNodes: {},
   },
   'node-navbar': {
@@ -33,7 +35,10 @@ const craftSchema = {
     props: {
       logoText: 'Your Parish',
       logoUrl: '',
-      logoHeight: 32,
+      logoHeight: 64,
+      showParishName: true,
+      parishName: 'Holy Trinity Orthodox Church',
+      layout: 'centered',
       menuItems: [
         { label: 'Home', url: '/' },
         { label: 'Schedule', url: '/schedule' },
@@ -58,15 +63,20 @@ const craftSchema = {
     type: { resolvedName: 'HeroSection' },
     isCanvas: false,
     props: {
-      title: 'Welcome to Our Parish',
-      subtitle: 'A place of prayer, community, and spiritual growth',
+      title: 'Come and See',
+      subtitle: 'Experience the ancient faith of the Orthodox Church in a welcoming community',
       imageUrl: '',
       overlayColor: '#2C3E50',
-      overlayOpacity: 70,
+      overlayOpacity: 75,
       textColor: '#F9F6F2',
-      padding: 100,
+      padding: 140,
+      minHeight: 550,
       showTitle: true,
       showSubtitle: true,
+      titleSize: 'xl',
+      subtitleSize: 'md',
+      contentAlign: 'center',
+      verticalAlign: 'center',
     },
     displayName: 'Hero Section',
     custom: {},
@@ -80,10 +90,48 @@ const craftSchema = {
   'node-hero-content': {
     type: 'div',
     isCanvas: true,
-    props: {},
+    props: {
+      className: 'w-full flex flex-col items-center',
+    },
     displayName: 'div',
     custom: {},
     parent: 'node-hero',
+    hidden: false,
+    nodes: ['node-hero-button'],
+    linkedNodes: {},
+  },
+  'node-hero-button': {
+    type: { resolvedName: 'ButtonBlock' },
+    isCanvas: false,
+    props: {
+      text: 'Plan Your Visit',
+      url: '/contact',
+      variant: 'outline',
+      size: 'lg',
+    },
+    displayName: 'Button Block',
+    custom: {},
+    parent: 'node-hero-content',
+    hidden: false,
+    nodes: [],
+    linkedNodes: {},
+  },
+  'node-feast': {
+    type: { resolvedName: 'FeastBanner' },
+    isCanvas: false,
+    props: {
+      feastTitle: 'Today\'s Commemoration',
+      feastSubtitle: 'The Holy Fathers',
+      troparion: '',
+      showTroparion: false,
+      backgroundColor: '#2C3E50',
+      textColor: '#F9F6F2',
+      accentColor: '#9A7B4F',
+      padding: 28,
+    },
+    displayName: 'Feast Banner',
+    custom: {},
+    parent: 'ROOT',
     hidden: false,
     nodes: [],
     linkedNodes: {},
@@ -168,12 +216,89 @@ const craftSchema = {
     nodes: [],
     linkedNodes: {},
   },
+  'node-schedule': {
+    type: { resolvedName: 'Section' },
+    isCanvas: false,
+    props: {
+      imageUrl: '',
+      overlayColor: '#EDE8E0',
+      overlayOpacity: 100,
+      textColor: '#2C3E50',
+      padding: 80,
+      containerWidth: '768px',
+    },
+    displayName: 'Section',
+    custom: {},
+    parent: 'ROOT',
+    hidden: false,
+    nodes: [],
+    linkedNodes: {
+      'section-content': 'node-schedule-content',
+    },
+  },
+  'node-schedule-content': {
+    type: { resolvedName: 'ColumnCanvas' },
+    isCanvas: true,
+    props: {},
+    displayName: 'Column',
+    custom: {},
+    parent: 'node-schedule',
+    hidden: false,
+    nodes: ['node-schedule-heading', 'node-schedule-divider', 'node-schedule-preview'],
+    linkedNodes: {},
+  },
+  'node-schedule-heading': {
+    type: { resolvedName: 'Heading' },
+    isCanvas: false,
+    props: {
+      text: 'Service Schedule',
+      level: 'h2',
+      align: 'center',
+      textColor: '#2C3E50',
+      fontWeight: 'bold',
+    },
+    displayName: 'Heading',
+    custom: {},
+    parent: 'node-schedule-content',
+    hidden: false,
+    nodes: [],
+    linkedNodes: {},
+  },
+  'node-schedule-divider': {
+    type: { resolvedName: 'Divider' },
+    isCanvas: false,
+    props: {
+      color: '#9A7B4F',
+      width: '60px',
+      thickness: 2,
+      margin: 24,
+    },
+    displayName: 'Divider',
+    custom: {},
+    parent: 'node-schedule-content',
+    hidden: false,
+    nodes: [],
+    linkedNodes: {},
+  },
+  'node-schedule-preview': {
+    type: { resolvedName: 'SchedulePreview' },
+    isCanvas: false,
+    props: {
+      limit: 5,
+    },
+    displayName: 'Schedule Preview',
+    custom: {},
+    parent: 'node-schedule-content',
+    hidden: false,
+    nodes: [],
+    linkedNodes: {},
+  },
 }
 
 export const monasteryLightTemplate: PageTemplate = {
   id: 'monastery-light',
   name: 'Monastery',
-  description: 'Contemplative and minimal. Warm parchment tones with subtle gold accents. Perfect for parishes seeking a serene, focused aesthetic.',
+  description: 'Contemplative and minimal. Warm parchment tones with subtle gold accents. Centered navigation with space for icon logos.',
   category: 'monastery',
   mode: 'light',
   thumbnail: '/templates/monastery-light.svg',
@@ -189,7 +314,7 @@ export const monasteryLightTemplate: PageTemplate = {
   },
   globalFonts: {
     fontFamily: 'Source Sans 3, sans-serif',
-    baseFontSize: '16px',
+    baseFontSize: '17px',
     baseFontWeight: 'normal',
   },
   craftSchema: JSON.stringify(craftSchema),

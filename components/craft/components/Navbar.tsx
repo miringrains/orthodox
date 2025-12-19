@@ -7,6 +7,7 @@ import { Menu, X, Plus, Trash2, Loader2, Image as ImageIcon } from 'lucide-react
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { SettingsAccordion } from '../controls/SettingsAccordion'
 import { ColorPicker } from '../controls/ColorPicker'
 import { createClient } from '@/lib/supabase/client'
@@ -16,6 +17,9 @@ interface NavbarProps {
   logoUrl?: string
   logoText?: string
   logoHeight?: number
+  showParishName?: boolean
+  parishName?: string
+  layout?: 'inline' | 'centered' | 'stacked'
   menuItems?: { label: string; url: string }[]
   ctaText?: string
   ctaUrl?: string
@@ -28,7 +32,10 @@ interface NavbarProps {
 export function Navbar({ 
   logoUrl, 
   logoText = 'Parish', 
-  logoHeight = 32,
+  logoHeight = 48,
+  showParishName = false,
+  parishName = '',
+  layout = 'inline',
   menuItems = [],
   ctaText = '',
   ctaUrl = '#',
@@ -48,7 +55,6 @@ export function Navbar({
   const [isMobile, setIsMobile] = React.useState(false)
   const navRef = React.useRef<HTMLElement>(null)
 
-  // Use ResizeObserver to detect actual container width (works in editor preview)
   React.useEffect(() => {
     if (!navRef.current) return
 
@@ -56,14 +62,12 @@ export function Navbar({
       if (navRef.current) {
         const width = navRef.current.getBoundingClientRect().width
         setIsMobile(width < 640)
-        // Auto-close mobile menu when switching to desktop
         if (width >= 640 && mobileMenuOpen) {
           setMobileMenuOpen(false)
         }
       }
     }
 
-    // Initial check
     checkWidth()
 
     const resizeObserver = new ResizeObserver(() => {
@@ -82,6 +86,160 @@ export function Navbar({
     setMobileMenuOpen(false)
   }
 
+  // Centered layout: icon/logo on top, menu below
+  if (layout === 'centered' && !isMobile) {
+    return (
+      <nav
+        ref={(ref) => {
+          if (ref) {
+            navRef.current = ref
+            connect(drag(ref))
+          }
+        }}
+        className={`
+          border-b shadow-sm sticky top-0 z-50
+          ${isSelected ? 'ring-2 ring-primary' : ''}
+        `}
+        style={{ backgroundColor }}
+      >
+        <div className="px-4 py-4">
+          {/* Centered Logo/Icon */}
+          <div className="flex flex-col items-center mb-4">
+            {logoUrl ? (
+              <img 
+                src={logoUrl} 
+                alt={logoText || 'Logo'} 
+                style={{ height: `${logoHeight}px` }}
+                className="object-contain"
+              />
+            ) : (
+              <span 
+                className="text-2xl font-bold"
+                style={{ color: textColor }}
+              >
+                {logoText}
+              </span>
+            )}
+            {showParishName && parishName && (
+              <span 
+                className="mt-2 text-lg tracking-wide"
+                style={{ color: textColor, fontFamily: 'serif' }}
+              >
+                {parishName}
+              </span>
+            )}
+          </div>
+
+          {/* Centered Menu */}
+          <div className="flex items-center justify-center gap-8">
+            {(menuItems || []).map((item, index) => (
+              <Link
+                key={index}
+                href={item.url}
+                className="hover:opacity-70 transition-opacity text-sm uppercase tracking-wider"
+                style={{ color: textColor }}
+              >
+                {item.label}
+              </Link>
+            ))}
+            {ctaText && (
+              <Button 
+                asChild 
+                size="sm"
+                style={{
+                  backgroundColor: ctaBackgroundColor || undefined,
+                  color: ctaTextColor || undefined,
+                }}
+              >
+                <Link href={ctaUrl || '#'}>{ctaText}</Link>
+              </Button>
+            )}
+          </div>
+        </div>
+      </nav>
+    )
+  }
+
+  // Stacked layout: logo and name on left, stacked
+  if (layout === 'stacked' && !isMobile) {
+    return (
+      <nav
+        ref={(ref) => {
+          if (ref) {
+            navRef.current = ref
+            connect(drag(ref))
+          }
+        }}
+        className={`
+          border-b shadow-sm sticky top-0 z-50
+          ${isSelected ? 'ring-2 ring-primary' : ''}
+        `}
+        style={{ backgroundColor }}
+      >
+        <div className="px-6 py-4">
+          <div className="flex items-center justify-between">
+            {/* Logo and Parish Name stacked */}
+            <div className="flex items-center gap-4">
+              {logoUrl && (
+                <img 
+                  src={logoUrl} 
+                  alt={logoText || 'Logo'} 
+                  style={{ height: `${logoHeight}px` }}
+                  className="object-contain"
+                />
+              )}
+              <div className="flex flex-col">
+                {!logoUrl && (
+                  <span 
+                    className="text-xl font-bold"
+                    style={{ color: textColor }}
+                  >
+                    {logoText}
+                  </span>
+                )}
+                {showParishName && parishName && (
+                  <span 
+                    className="text-lg tracking-wide"
+                    style={{ color: textColor, fontFamily: 'serif' }}
+                  >
+                    {parishName}
+                  </span>
+                )}
+              </div>
+            </div>
+
+            {/* Menu */}
+            <div className="flex items-center gap-6">
+              {(menuItems || []).map((item, index) => (
+                <Link
+                  key={index}
+                  href={item.url}
+                  className="hover:opacity-70 transition-opacity"
+                  style={{ color: textColor }}
+                >
+                  {item.label}
+                </Link>
+              ))}
+              {ctaText && (
+                <Button 
+                  asChild 
+                  size="sm"
+                  style={{
+                    backgroundColor: ctaBackgroundColor || undefined,
+                    color: ctaTextColor || undefined,
+                  }}
+                >
+                  <Link href={ctaUrl || '#'}>{ctaText}</Link>
+                </Button>
+              )}
+            </div>
+          </div>
+        </div>
+      </nav>
+    )
+  }
+
+  // Default inline layout (and mobile fallback)
   return (
     <nav
       ref={(ref) => {
@@ -97,16 +255,29 @@ export function Navbar({
       style={{ backgroundColor }}
     >
       <div className="px-4">
-        <div className="flex items-center justify-between h-16">
+        <div 
+          className="flex items-center justify-between"
+          style={{ minHeight: logoUrl ? `${Math.max(64, logoHeight + 16)}px` : '64px' }}
+        >
           {/* Logo */}
           <div className="flex items-center gap-3">
             {logoUrl ? (
-              <img 
-                src={logoUrl} 
-                alt={logoText || 'Logo'} 
-                style={{ height: `${logoHeight}px` }}
-                className="object-contain"
-              />
+              <div className="flex items-center gap-3">
+                <img 
+                  src={logoUrl} 
+                  alt={logoText || 'Logo'} 
+                  style={{ height: `${logoHeight}px` }}
+                  className="object-contain"
+                />
+                {showParishName && parishName && (
+                  <span 
+                    className="text-lg tracking-wide hidden sm:block"
+                    style={{ color: textColor, fontFamily: 'serif' }}
+                  >
+                    {parishName}
+                  </span>
+                )}
+              </div>
             ) : (
               <span 
                 className="text-xl font-bold"
@@ -117,7 +288,7 @@ export function Navbar({
             )}
           </div>
 
-          {/* Desktop Menu - shown when not mobile */}
+          {/* Desktop Menu */}
           {!isMobile && (
             <div className="flex items-center gap-6">
               {(menuItems || []).map((item, index) => (
@@ -145,7 +316,7 @@ export function Navbar({
             </div>
           )}
 
-          {/* Mobile Menu Button - shown when mobile */}
+          {/* Mobile Menu Button */}
           {isMobile && (
             <button
               type="button"
@@ -164,7 +335,7 @@ export function Navbar({
           )}
         </div>
 
-        {/* Mobile Menu - shown when mobile and menu is open */}
+        {/* Mobile Menu */}
         {isMobile && mobileMenuOpen && (
           <div className="border-t pb-4" style={{ backgroundColor }}>
             <div className="pt-4">
@@ -297,8 +468,31 @@ function NavbarSettings() {
 
   return (
     <div className="divide-y divide-gray-100">
+      {/* Layout Section */}
+      <SettingsAccordion title="Layout" defaultOpen>
+        <div>
+          <Label className="text-sm font-medium">Navbar Style</Label>
+          <Select
+            value={props.layout || 'inline'}
+            onValueChange={(value) => setProp((p: any) => (p.layout = value))}
+          >
+            <SelectTrigger className="mt-1">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="inline">Inline (Logo Left)</SelectItem>
+              <SelectItem value="stacked">Stacked (Icon + Name)</SelectItem>
+              <SelectItem value="centered">Centered (Icon Above Menu)</SelectItem>
+            </SelectContent>
+          </Select>
+          <p className="text-xs text-gray-500 mt-1">
+            Centered and Stacked work best with icon-style logos
+          </p>
+        </div>
+      </SettingsAccordion>
+
       {/* Logo Section */}
-      <SettingsAccordion title="Logo" defaultOpen>
+      <SettingsAccordion title="Logo / Icon" defaultOpen>
         <div>
           <Label className="text-sm font-medium">Logo Image</Label>
           <div
@@ -317,13 +511,13 @@ function NavbarSettings() {
               <Loader2 className="h-5 w-5 mx-auto animate-spin text-primary" />
             ) : props.logoUrl ? (
               <div className="space-y-2">
-                <img src={props.logoUrl} alt="Logo" className="max-h-12 mx-auto" />
+                <img src={props.logoUrl} alt="Logo" className="max-h-16 mx-auto" />
                 <p className="text-xs text-gray-500">Click to change</p>
               </div>
             ) : (
               <div className="space-y-1 py-1">
                 <ImageIcon className="h-5 w-5 mx-auto text-gray-400" />
-                <p className="text-xs text-gray-500">Upload logo</p>
+                <p className="text-xs text-gray-500">Upload icon or logo</p>
               </div>
             )}
           </div>
@@ -345,20 +539,20 @@ function NavbarSettings() {
 
         {props.logoUrl && (
           <div>
-            <Label className="text-sm font-medium">Logo Height</Label>
+            <Label className="text-sm font-medium">Logo/Icon Size</Label>
             <div className="mt-2">
               <input
                 type="range"
-                min="20"
-                max="80"
-                value={props.logoHeight || 32}
+                min="32"
+                max="120"
+                value={props.logoHeight || 48}
                 onChange={(e) => setProp((p: any) => (p.logoHeight = parseInt(e.target.value)))}
                 className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-primary"
               />
               <div className="flex justify-between text-xs text-gray-500 mt-1">
-                <span>20px</span>
-                <span className="font-medium text-gray-700">{props.logoHeight || 32}px</span>
-                <span>80px</span>
+                <span>Small</span>
+                <span className="font-medium text-gray-700">{props.logoHeight || 48}px</span>
+                <span>Large</span>
               </div>
             </div>
           </div>
@@ -375,10 +569,37 @@ function NavbarSettings() {
             />
           </div>
         )}
+
+        {/* Parish Name (shown alongside icon) */}
+        {props.logoUrl && (
+          <>
+            <div className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                id="showParishName"
+                checked={props.showParishName || false}
+                onChange={(e) => setProp((p: any) => (p.showParishName = e.target.checked))}
+                className="rounded"
+              />
+              <Label htmlFor="showParishName" className="text-sm">Show Parish Name</Label>
+            </div>
+            {props.showParishName && (
+              <div>
+                <Label className="text-sm font-medium">Parish Name</Label>
+                <Input
+                  value={props.parishName || ''}
+                  onChange={(e) => setProp((p: any) => (p.parishName = e.target.value))}
+                  placeholder="Holy Trinity Orthodox Church"
+                  className="mt-1"
+                />
+              </div>
+            )}
+          </>
+        )}
       </SettingsAccordion>
 
       {/* Colors Section */}
-      <SettingsAccordion title="Colors" defaultOpen>
+      <SettingsAccordion title="Colors">
         <ColorPicker
           label="Background"
           value={props.backgroundColor || '#ffffff'}
@@ -480,7 +701,10 @@ Navbar.craft = {
   props: {
     logoText: 'Parish',
     logoUrl: '',
-    logoHeight: 32,
+    logoHeight: 48,
+    showParishName: false,
+    parishName: '',
+    layout: 'inline',
     menuItems: [
       { label: 'Home', url: '/' },
       { label: 'About', url: '/about' },

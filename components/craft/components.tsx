@@ -19,6 +19,10 @@ import { SermonCardGrid } from './components/SermonCardGrid'
 import { GalleryGrid } from './components/GalleryGrid'
 import { FeastHighlight } from './components/FeastHighlight'
 import { ColumnCanvas } from './components/shared/ColumnCanvas'
+// Orthodox-specific components
+import { Triptych } from './components/Triptych'
+import { FeastBanner } from './components/FeastBanner'
+import { IconDisplay } from './components/IconDisplay'
 
 // Export components for Craft.js resolver
 export const craftComponents = {
@@ -41,4 +45,8 @@ export const craftComponents = {
   GalleryGrid,
   FeastHighlight,
   ColumnCanvas,
+  // Orthodox-specific components
+  Triptych,
+  FeastBanner,
+  IconDisplay,
 }

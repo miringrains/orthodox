@@ -12,7 +12,10 @@ import {
   Megaphone,
   Headphones,
   Grid3x3,
-  Sparkles
+  Sparkles,
+  Cross,
+  LayoutGrid,
+  Frame
 } from 'lucide-react'
 import { TextBlock } from './components/TextBlock'
 import { ImageBlock } from './components/ImageBlock'
@@ -32,6 +35,10 @@ import { NewsList } from './components/NewsList'
 import { SermonCardGrid } from './components/SermonCardGrid'
 import { GalleryGrid } from './components/GalleryGrid'
 import { FeastHighlight } from './components/FeastHighlight'
+// Orthodox-specific components
+import { Triptych } from './components/Triptych'
+import { FeastBanner } from './components/FeastBanner'
+import { IconDisplay } from './components/IconDisplay'
 import { Navigation, Columns, Heading as HeadingIcon, Minus, Space } from 'lucide-react'
 
 const components = [
@@ -45,17 +52,20 @@ const components = [
   { name: 'Hero Section', icon: Layout, component: HeroSection, componentName: 'HeroSection', category: 'Layout' },
   { name: 'Two Column', icon: Columns, component: TwoColumn, componentName: 'TwoColumn', category: 'Layout' },
   { name: 'Three Column', icon: Columns, component: ThreeColumn, componentName: 'ThreeColumn', category: 'Layout' },
+  { name: 'Triptych', icon: LayoutGrid, component: Triptych, componentName: 'Triptych', category: 'Layout' },
   { name: 'Spacer', icon: Space, component: Spacer, componentName: 'Spacer', category: 'Layout' },
   { name: 'Divider', icon: Minus, component: Divider, componentName: 'Divider', category: 'Layout' },
+  { name: 'Icon Display', icon: Frame, component: IconDisplay, componentName: 'IconDisplay', category: 'Orthodox' },
+  { name: 'Feast Banner', icon: Cross, component: FeastBanner, componentName: 'FeastBanner', category: 'Orthodox' },
+  { name: 'Feast Highlight', icon: Sparkles, component: FeastHighlight, componentName: 'FeastHighlight', category: 'Orthodox' },
   { name: 'Schedule', icon: Calendar, component: SchedulePreview, componentName: 'SchedulePreview', category: 'Content' },
   { name: 'Donation', icon: DollarSign, component: DonationPanel, componentName: 'DonationPanel', category: 'Content' },
   { name: 'News List', icon: Megaphone, component: NewsList, componentName: 'NewsList', category: 'Content' },
   { name: 'Sermons', icon: Headphones, component: SermonCardGrid, componentName: 'SermonCardGrid', category: 'Content' },
   { name: 'Gallery', icon: Grid3x3, component: GalleryGrid, componentName: 'GalleryGrid', category: 'Content' },
-  { name: 'Feast', icon: Sparkles, component: FeastHighlight, componentName: 'FeastHighlight', category: 'Content' },
 ]
 
-const categories = ['Basic', 'Layout', 'Content']
+const categories = ['Basic', 'Layout', 'Orthodox', 'Content']
 
 export function Toolbox() {
   const { connectors } = useEditor()

@@ -23,6 +23,11 @@ interface HeroSectionProps {
   padding?: number
   showTitle?: boolean
   showSubtitle?: boolean
+  titleSize?: 'md' | 'lg' | 'xl' | '2xl'
+  subtitleSize?: 'sm' | 'md' | 'lg'
+  contentAlign?: 'left' | 'center' | 'right'
+  verticalAlign?: 'top' | 'center' | 'bottom'
+  minHeight?: number
 }
 
 export function HeroSection({ 
@@ -32,9 +37,14 @@ export function HeroSection({
   overlayColor = '#000000',
   overlayOpacity = 40,
   textColor = '#ffffff',
-  padding = 80,
+  padding = 120,
   showTitle = true,
   showSubtitle = true,
+  titleSize = 'xl',
+  subtitleSize = 'md',
+  contentAlign = 'center',
+  verticalAlign = 'center',
+  minHeight = 500,
 }: HeroSectionProps) {
   const {
     connectors: { connect, drag },
@@ -42,6 +52,31 @@ export function HeroSection({
   } = useNode((state) => ({
     isSelected: state.events.selected,
   }))
+
+  const titleSizeClasses = {
+    md: 'text-3xl md:text-4xl',
+    lg: 'text-4xl md:text-5xl',
+    xl: 'text-5xl md:text-6xl',
+    '2xl': 'text-6xl md:text-7xl',
+  }
+
+  const subtitleSizeClasses = {
+    sm: 'text-base md:text-lg',
+    md: 'text-lg md:text-xl',
+    lg: 'text-xl md:text-2xl',
+  }
+
+  const alignClasses = {
+    left: 'text-left items-start',
+    center: 'text-center items-center',
+    right: 'text-right items-end',
+  }
+
+  const verticalAlignClasses = {
+    top: 'justify-start',
+    center: 'justify-center',
+    bottom: 'justify-end',
+  }
 
   return (
     <section
@@ -51,15 +86,16 @@ export function HeroSection({
         }
       }}
       className={`
-        relative
+        relative flex
         ${isSelected ? 'ring-2 ring-primary' : ''}
       `}
       style={{
+        minHeight: `${minHeight}px`,
         paddingTop: `${padding}px`,
         paddingBottom: `${padding}px`,
       }}
     >
-      {/* Background Image Layer - always full opacity */}
+      {/* Background Image Layer */}
       {imageUrl && (
         <div
           className="absolute inset-0 bg-cover bg-center"
@@ -67,7 +103,7 @@ export function HeroSection({
         />
       )}
       
-      {/* Overlay Layer - controls how much image shows through */}
+      {/* Overlay Layer */}
       <div
         className="absolute inset-0"
         style={{ 
@@ -78,24 +114,27 @@ export function HeroSection({
       
       {/* Content Layer */}
       <div 
-        className="container mx-auto px-4 relative z-10"
+        className={`container mx-auto px-4 relative z-10 flex flex-col ${verticalAlignClasses[verticalAlign]} ${alignClasses[contentAlign]}`}
         style={{ color: textColor || '#ffffff' }}
       >
         {(showTitle || showSubtitle) && (
-          <div className="text-center mb-8">
+          <div className={`mb-8 max-w-4xl ${alignClasses[contentAlign]}`}>
             {showTitle && (
-              <h1 className="text-4xl md:text-5xl font-bold mb-4">
+              <h1 
+                className={`${titleSizeClasses[titleSize]} font-bold mb-6 leading-tight`}
+                style={{ fontFamily: 'serif' }}
+              >
                 {title || 'Welcome to Our Parish'}
               </h1>
             )}
             {showSubtitle && (
-              <p className="text-xl opacity-90">
+              <p className={`${subtitleSizeClasses[subtitleSize]} opacity-90 leading-relaxed max-w-2xl ${contentAlign === 'center' ? 'mx-auto' : ''}`}>
                 {subtitle || 'Join us in worship and fellowship'}
               </p>
             )}
           </div>
         )}
-        <Element is="div" canvas id="hero-content">
+        <Element is="div" canvas id="hero-content" className={`w-full flex flex-col ${alignClasses[contentAlign]}`}>
           {/* Drop components here (buttons, images, etc.) */}
         </Element>
       </div>
@@ -337,22 +376,142 @@ function HeroSectionSettings() {
         />
       </SettingsAccordion>
 
+      {/* Typography Section */}
+      <SettingsAccordion title="Typography">
+        <div>
+          <Label className="text-sm font-medium">Title Size</Label>
+          <div className="flex gap-2 mt-2">
+            {[
+              { label: 'M', value: 'md' },
+              { label: 'L', value: 'lg' },
+              { label: 'XL', value: 'xl' },
+              { label: '2XL', value: '2xl' },
+            ].map((option) => (
+              <button
+                key={option.value}
+                type="button"
+                onClick={() => setProp((p: any) => (p.titleSize = option.value))}
+                className={`flex-1 px-2 py-1.5 text-xs rounded-md border transition-colors ${
+                  (props.titleSize || 'xl') === option.value
+                    ? 'bg-primary text-primary-foreground border-primary'
+                    : 'bg-white hover:bg-gray-50 border-gray-200'
+                }`}
+              >
+                {option.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <Label className="text-sm font-medium">Subtitle Size</Label>
+          <div className="flex gap-2 mt-2">
+            {[
+              { label: 'S', value: 'sm' },
+              { label: 'M', value: 'md' },
+              { label: 'L', value: 'lg' },
+            ].map((option) => (
+              <button
+                key={option.value}
+                type="button"
+                onClick={() => setProp((p: any) => (p.subtitleSize = option.value))}
+                className={`flex-1 px-2 py-1.5 text-xs rounded-md border transition-colors ${
+                  (props.subtitleSize || 'md') === option.value
+                    ? 'bg-primary text-primary-foreground border-primary'
+                    : 'bg-white hover:bg-gray-50 border-gray-200'
+                }`}
+              >
+                {option.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      </SettingsAccordion>
+
       {/* Layout Section */}
       <SettingsAccordion title="Layout">
+        <div>
+          <Label className="text-sm font-medium">Content Alignment</Label>
+          <div className="flex gap-2 mt-2">
+            {[
+              { label: 'Left', value: 'left' },
+              { label: 'Center', value: 'center' },
+              { label: 'Right', value: 'right' },
+            ].map((option) => (
+              <button
+                key={option.value}
+                type="button"
+                onClick={() => setProp((p: any) => (p.contentAlign = option.value))}
+                className={`flex-1 px-2 py-1.5 text-xs rounded-md border transition-colors ${
+                  (props.contentAlign || 'center') === option.value
+                    ? 'bg-primary text-primary-foreground border-primary'
+                    : 'bg-white hover:bg-gray-50 border-gray-200'
+                }`}
+              >
+                {option.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <Label className="text-sm font-medium">Vertical Position</Label>
+          <div className="flex gap-2 mt-2">
+            {[
+              { label: 'Top', value: 'top' },
+              { label: 'Center', value: 'center' },
+              { label: 'Bottom', value: 'bottom' },
+            ].map((option) => (
+              <button
+                key={option.value}
+                type="button"
+                onClick={() => setProp((p: any) => (p.verticalAlign = option.value))}
+                className={`flex-1 px-2 py-1.5 text-xs rounded-md border transition-colors ${
+                  (props.verticalAlign || 'center') === option.value
+                    ? 'bg-primary text-primary-foreground border-primary'
+                    : 'bg-white hover:bg-gray-50 border-gray-200'
+                }`}
+              >
+                {option.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <Label className="text-sm font-medium">Minimum Height</Label>
+          <div className="mt-2">
+            <input
+              type="range"
+              min={300}
+              max={800}
+              step={50}
+              value={props.minHeight || 500}
+              onChange={(e) => setProp((p: any) => (p.minHeight = parseInt(e.target.value)))}
+              className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-primary"
+            />
+            <div className="flex justify-between text-xs text-gray-500 mt-1">
+              <span>300px</span>
+              <span className="font-medium text-gray-700">{props.minHeight || 500}px</span>
+              <span>800px</span>
+            </div>
+          </div>
+        </div>
+
         <div>
           <Label className="text-sm font-medium">Vertical Padding</Label>
           <div className="mt-2">
             <input
               type="range"
-              min={20}
+              min={40}
               max={200}
-              value={props.padding || 80}
+              value={props.padding || 120}
               onChange={(e) => setProp((p: any) => (p.padding = parseInt(e.target.value)))}
               className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-primary"
             />
             <div className="flex justify-between text-xs text-gray-500 mt-1">
-              <span>20px</span>
-              <span className="font-medium text-gray-700">{props.padding || 80}px</span>
+              <span>40px</span>
+              <span className="font-medium text-gray-700">{props.padding || 120}px</span>
               <span>200px</span>
             </div>
           </div>
@@ -371,9 +530,14 @@ HeroSection.craft = {
     overlayColor: '#000000',
     overlayOpacity: 40,
     textColor: '#ffffff',
-    padding: 80,
+    padding: 120,
     showTitle: true,
     showSubtitle: true,
+    titleSize: 'xl',
+    subtitleSize: 'md',
+    contentAlign: 'center',
+    verticalAlign: 'center',
+    minHeight: 500,
   },
   related: {
     settings: HeroSectionSettings,

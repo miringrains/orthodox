@@ -8,12 +8,14 @@ import type { PageTemplate } from './types'
  * Evokes evening prayer by candlelight.
  * 
  * Typography: Cormorant Garamond (headings) + Source Sans 3 (body)
+ * 
+ * Key Orthodox elements:
+ * - Centered navbar with large icon area
+ * - Contemplative hero with generous vertical space
+ * - Feast banner for liturgical connection
+ * - Deep, reverent color palette
  */
 
-// Craft.js serialized format:
-// - ROOT type should be 'div' (string) since the editor uses <Element is="div" canvas>
-// - HeroSection linkedNodes use 'div' type since it uses <Element is="div" canvas>
-// - Section linkedNodes use { resolvedName: 'ColumnCanvas' } since it uses <Element is={ColumnCanvas} canvas>
 const craftSchema = {
   ROOT: {
     type: 'div',
@@ -24,7 +26,7 @@ const craftSchema = {
     displayName: 'div',
     custom: {},
     hidden: false,
-    nodes: ['navbar', 'hero', 'welcome-section', 'schedule-section', 'footer-section'],
+    nodes: ['navbar', 'hero', 'feast', 'welcome-section', 'schedule-section', 'footer-section'],
     linkedNodes: {},
   },
   navbar: {
@@ -33,7 +35,10 @@ const craftSchema = {
     props: {
       logoText: 'Your Parish',
       logoUrl: '',
-      logoHeight: 32,
+      logoHeight: 64,
+      showParishName: true,
+      parishName: 'Holy Trinity Orthodox Church',
+      layout: 'centered',
       menuItems: [
         { label: 'Home', url: '/' },
         { label: 'Schedule', url: '/schedule' },
@@ -58,15 +63,20 @@ const craftSchema = {
     type: { resolvedName: 'HeroSection' },
     isCanvas: false,
     props: {
-      title: 'Welcome to Our Parish',
-      subtitle: 'A place of prayer, community, and spiritual growth',
+      title: 'Come and See',
+      subtitle: 'Experience the ancient faith of the Orthodox Church in a welcoming community',
       imageUrl: '',
       overlayColor: '#0D0D0D',
-      overlayOpacity: 80,
+      overlayOpacity: 85,
       textColor: '#F5F0E8',
-      padding: 100,
+      padding: 140,
+      minHeight: 550,
       showTitle: true,
       showSubtitle: true,
+      titleSize: 'xl',
+      subtitleSize: 'md',
+      contentAlign: 'center',
+      verticalAlign: 'center',
     },
     displayName: 'Hero Section',
     custom: {},
@@ -80,10 +90,48 @@ const craftSchema = {
   'hero-content-canvas': {
     type: 'div',
     isCanvas: true,
-    props: {},
+    props: {
+      className: 'w-full flex flex-col items-center',
+    },
     displayName: 'div',
     custom: {},
     parent: 'hero',
+    hidden: false,
+    nodes: ['hero-button'],
+    linkedNodes: {},
+  },
+  'hero-button': {
+    type: { resolvedName: 'ButtonBlock' },
+    isCanvas: false,
+    props: {
+      text: 'Plan Your Visit',
+      url: '/contact',
+      variant: 'outline',
+      size: 'lg',
+    },
+    displayName: 'Button Block',
+    custom: {},
+    parent: 'hero-content-canvas',
+    hidden: false,
+    nodes: [],
+    linkedNodes: {},
+  },
+  feast: {
+    type: { resolvedName: 'FeastBanner' },
+    isCanvas: false,
+    props: {
+      feastTitle: 'Today\'s Commemoration',
+      feastSubtitle: 'The Holy Fathers',
+      troparion: '',
+      showTroparion: false,
+      backgroundColor: '#0D0D0D',
+      textColor: '#F5F0E8',
+      accentColor: '#C9A962',
+      padding: 28,
+    },
+    displayName: 'Feast Banner',
+    custom: {},
+    parent: 'ROOT',
     hidden: false,
     nodes: [],
     linkedNodes: {},
@@ -297,7 +345,7 @@ const craftSchema = {
 export const monasteryDarkTemplate: PageTemplate = {
   id: 'monastery-dark',
   name: 'Monastery Dark',
-  description: 'Contemplative and minimal in deep charcoal. Antique gold accents evoke evening prayer by candlelight.',
+  description: 'Contemplative and minimal in deep charcoal. Antique gold accents evoke evening prayer by candlelight. Centered navigation.',
   category: 'monastery',
   mode: 'dark',
   thumbnail: '/templates/monastery-dark.svg',
@@ -313,7 +361,7 @@ export const monasteryDarkTemplate: PageTemplate = {
   },
   globalFonts: {
     fontFamily: 'Source Sans 3, sans-serif',
-    baseFontSize: '16px',
+    baseFontSize: '17px',
     baseFontWeight: 'normal',
   },
   craftSchema: JSON.stringify(craftSchema),
