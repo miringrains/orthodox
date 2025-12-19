@@ -233,22 +233,39 @@ function EditorContent({ onSave, initialContent, pageId }: { onSave: (content: a
     }
 
     try {
-      console.log('Applying template:', template.id)
+      console.log('=== APPLYING TEMPLATE ===')
+      console.log('Template ID:', template.id)
+      console.log('Template craftSchema (raw):', template.craftSchema)
+      
+      // Parse to verify structure
+      const parsed = JSON.parse(template.craftSchema)
+      console.log('Template craftSchema (parsed):', parsed)
+      console.log('Template craftSchema keys:', Object.keys(parsed))
+      console.log('ROOT node:', parsed.ROOT)
       
       // Apply template fonts
       setFontFamily(template.globalFonts.fontFamily)
       setBaseFontSize(template.globalFonts.baseFontSize)
       setBaseFontWeight(template.globalFonts.baseFontWeight)
 
+      // Get current state before deserialize
+      const currentState = query.serialize()
+      console.log('Current editor state before deserialize:', currentState)
+
       // The craftSchema is already in Craft.js serialized format
       // Just deserialize it directly - this replaces ALL content
-      console.log('Deserializing template schema...')
+      console.log('Calling actions.deserialize...')
       actions.deserialize(template.craftSchema)
       
-      console.log('Template applied successfully')
+      // Verify state after deserialize
+      const newState = query.serialize()
+      console.log('New editor state after deserialize:', newState)
+      
+      console.log('=== TEMPLATE APPLIED ===')
       setShowTemplatePicker(false)
     } catch (error) {
       console.error('Error applying template:', error)
+      console.error('Error stack:', (error as Error).stack)
       alert('Failed to apply template. Check console for details.')
     }
   }
@@ -347,6 +364,20 @@ function EditorContent({ onSave, initialContent, pageId }: { onSave: (content: a
                 <span className="text-sm">Save failed</span>
               </div>
             )}
+            <Button 
+              variant="ghost"
+              size="sm"
+              onClick={() => {
+                const serialized = query.serialize()
+                console.log('=== CRAFT.JS SERIALIZED STATE ===')
+                console.log(JSON.stringify(JSON.parse(serialized), null, 2))
+                console.log('=================================')
+                navigator.clipboard?.writeText(serialized)
+                alert('Serialized state logged to console and copied to clipboard!')
+              }}
+            >
+              Debug
+            </Button>
             <Button onClick={handleSave} disabled={saving || previewing} className="bg-primary hover:bg-primary/90">
               {saving ? 'Saving...' : (
                 <>
