@@ -10,12 +10,18 @@ import type { PageTemplate } from './types'
  * Typography: Playfair Display (headings) + Inter (body)
  */
 
+// Craft.js serialized format:
+// - ROOT type should be 'div' (string) since the editor uses <Element is="div" canvas>
+// - HeroSection linkedNodes use 'div' type since it uses <Element is="div" canvas>
+// - Section linkedNodes use { resolvedName: 'ColumnCanvas' } since it uses <Element is={ColumnCanvas} canvas>
 const craftSchema = {
   ROOT: {
-    type: { resolvedName: 'Container' },
+    type: 'div',
     isCanvas: true,
-    props: {},
-    displayName: 'Root',
+    props: {
+      className: 'min-h-[600px] w-full',
+    },
+    displayName: 'div',
     custom: {},
     hidden: false,
     nodes: ['navbar', 'hero', 'welcome-section', 'news-section', 'schedule-section', 'footer-section'],
@@ -51,7 +57,7 @@ const craftSchema = {
   },
   hero: {
     type: { resolvedName: 'HeroSection' },
-    isCanvas: true,
+    isCanvas: false,
     props: {
       title: 'Welcome to Our Cathedral',
       subtitle: 'Experience the beauty of Orthodox worship',
@@ -73,10 +79,10 @@ const craftSchema = {
     },
   },
   'hero-content-canvas': {
-    type: { resolvedName: 'ColumnCanvas' },
+    type: 'div',
     isCanvas: true,
     props: {},
-    displayName: 'Column',
+    displayName: 'div',
     custom: {},
     parent: 'hero',
     hidden: false,
@@ -91,8 +97,6 @@ const craftSchema = {
       url: '/contact',
       variant: 'default',
       size: 'lg',
-      backgroundColor: '#D4AF37',
-      textColor: '#1A1A2E',
     },
     displayName: 'Button Block',
     custom: {},
@@ -103,7 +107,7 @@ const craftSchema = {
   },
   'welcome-section': {
     type: { resolvedName: 'Section' },
-    isCanvas: true,
+    isCanvas: false,
     props: {
       imageUrl: '',
       overlayColor: '#ffffff',
@@ -183,7 +187,7 @@ const craftSchema = {
   },
   'news-section': {
     type: { resolvedName: 'Section' },
-    isCanvas: true,
+    isCanvas: false,
     props: {
       imageUrl: '',
       overlayColor: '#F8F9FA',
@@ -261,7 +265,7 @@ const craftSchema = {
   },
   'schedule-section': {
     type: { resolvedName: 'Section' },
-    isCanvas: true,
+    isCanvas: false,
     props: {
       imageUrl: '',
       overlayColor: '#1E3A5F',
@@ -338,7 +342,7 @@ const craftSchema = {
   },
   'footer-section': {
     type: { resolvedName: 'Section' },
-    isCanvas: true,
+    isCanvas: false,
     props: {
       imageUrl: '',
       overlayColor: '#1A1A2E',
@@ -410,4 +414,3 @@ export const cathedralLightTemplate: PageTemplate = {
   },
   craftSchema: JSON.stringify(craftSchema),
 }
-

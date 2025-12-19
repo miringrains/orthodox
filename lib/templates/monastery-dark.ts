@@ -10,12 +10,18 @@ import type { PageTemplate } from './types'
  * Typography: Cormorant Garamond (headings) + Source Sans 3 (body)
  */
 
+// Craft.js serialized format:
+// - ROOT type should be 'div' (string) since the editor uses <Element is="div" canvas>
+// - HeroSection linkedNodes use 'div' type since it uses <Element is="div" canvas>
+// - Section linkedNodes use { resolvedName: 'ColumnCanvas' } since it uses <Element is={ColumnCanvas} canvas>
 const craftSchema = {
   ROOT: {
-    type: { resolvedName: 'Container' },
+    type: 'div',
     isCanvas: true,
-    props: {},
-    displayName: 'Root',
+    props: {
+      className: 'min-h-[600px] w-full',
+    },
+    displayName: 'div',
     custom: {},
     hidden: false,
     nodes: ['navbar', 'hero', 'welcome-section', 'schedule-section', 'footer-section'],
@@ -50,7 +56,7 @@ const craftSchema = {
   },
   hero: {
     type: { resolvedName: 'HeroSection' },
-    isCanvas: true,
+    isCanvas: false,
     props: {
       title: 'Welcome to Our Parish',
       subtitle: 'A place of prayer, community, and spiritual growth',
@@ -72,10 +78,10 @@ const craftSchema = {
     },
   },
   'hero-content-canvas': {
-    type: { resolvedName: 'ColumnCanvas' },
+    type: 'div',
     isCanvas: true,
     props: {},
-    displayName: 'Column',
+    displayName: 'div',
     custom: {},
     parent: 'hero',
     hidden: false,
@@ -84,7 +90,7 @@ const craftSchema = {
   },
   'welcome-section': {
     type: { resolvedName: 'Section' },
-    isCanvas: true,
+    isCanvas: false,
     props: {
       imageUrl: '',
       overlayColor: '#1A1A1A',
@@ -164,7 +170,7 @@ const craftSchema = {
   },
   'schedule-section': {
     type: { resolvedName: 'Section' },
-    isCanvas: true,
+    isCanvas: false,
     props: {
       imageUrl: '',
       overlayColor: '#242424',
@@ -241,7 +247,7 @@ const craftSchema = {
   },
   'footer-section': {
     type: { resolvedName: 'Section' },
-    isCanvas: true,
+    isCanvas: false,
     props: {
       imageUrl: '',
       overlayColor: '#0D0D0D',
@@ -312,4 +318,3 @@ export const monasteryDarkTemplate: PageTemplate = {
   },
   craftSchema: JSON.stringify(craftSchema),
 }
-

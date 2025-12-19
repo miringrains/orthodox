@@ -10,11 +10,13 @@ import type { PageTemplate } from './types'
  * Typography: Cormorant Garamond (headings) + Source Sans 3 (body)
  */
 
-// Craft.js expects a flat structure where all nodes are at the root level
-// Each node has: type, isCanvas, props, displayName, custom, hidden, nodes (array of child IDs), linkedNodes, parent
+// Craft.js serialized format:
+// - ROOT type should be 'div' (string) since the editor uses <Element is="div" canvas>
+// - HeroSection linkedNodes use 'div' type since it uses <Element is="div" canvas>
+// - Section linkedNodes use { resolvedName: 'ColumnCanvas' } since it uses <Element is={ColumnCanvas} canvas>
 const craftSchema = {
   ROOT: {
-    type: { resolvedName: 'div' },
+    type: 'div',
     isCanvas: true,
     props: {
       className: 'min-h-[600px] w-full',
@@ -54,7 +56,7 @@ const craftSchema = {
   },
   'node-hero': {
     type: { resolvedName: 'HeroSection' },
-    isCanvas: true,
+    isCanvas: false,
     props: {
       title: 'Welcome to Our Parish',
       subtitle: 'A place of prayer, community, and spiritual growth',
@@ -71,11 +73,24 @@ const craftSchema = {
     parent: 'ROOT',
     hidden: false,
     nodes: [],
+    linkedNodes: {
+      'hero-content': 'node-hero-content',
+    },
+  },
+  'node-hero-content': {
+    type: 'div',
+    isCanvas: true,
+    props: {},
+    displayName: 'div',
+    custom: {},
+    parent: 'node-hero',
+    hidden: false,
+    nodes: [],
     linkedNodes: {},
   },
   'node-welcome': {
     type: { resolvedName: 'Section' },
-    isCanvas: true,
+    isCanvas: false,
     props: {
       imageUrl: '',
       overlayColor: '#F9F6F2',
@@ -87,6 +102,68 @@ const craftSchema = {
     displayName: 'Section',
     custom: {},
     parent: 'ROOT',
+    hidden: false,
+    nodes: [],
+    linkedNodes: {
+      'section-content': 'node-welcome-content',
+    },
+  },
+  'node-welcome-content': {
+    type: { resolvedName: 'ColumnCanvas' },
+    isCanvas: true,
+    props: {},
+    displayName: 'Column',
+    custom: {},
+    parent: 'node-welcome',
+    hidden: false,
+    nodes: ['node-welcome-heading', 'node-welcome-divider', 'node-welcome-text'],
+    linkedNodes: {},
+  },
+  'node-welcome-heading': {
+    type: { resolvedName: 'Heading' },
+    isCanvas: false,
+    props: {
+      text: 'About Our Community',
+      level: 'h2',
+      align: 'center',
+      textColor: '#2C3E50',
+      fontWeight: 'bold',
+    },
+    displayName: 'Heading',
+    custom: {},
+    parent: 'node-welcome-content',
+    hidden: false,
+    nodes: [],
+    linkedNodes: {},
+  },
+  'node-welcome-divider': {
+    type: { resolvedName: 'Divider' },
+    isCanvas: false,
+    props: {
+      color: '#9A7B4F',
+      width: '60px',
+      thickness: 2,
+      margin: 24,
+    },
+    displayName: 'Divider',
+    custom: {},
+    parent: 'node-welcome-content',
+    hidden: false,
+    nodes: [],
+    linkedNodes: {},
+  },
+  'node-welcome-text': {
+    type: { resolvedName: 'TextBlock' },
+    isCanvas: false,
+    props: {
+      content: 'Our parish is a welcoming community rooted in the Orthodox Christian tradition. We gather for Divine Liturgy, fellowship, and service to one another. Whether you are exploring Orthodoxy for the first time or looking for a spiritual home, we invite you to join us.',
+      align: 'center',
+      size: 'lg',
+      textColor: '#4A5568',
+    },
+    displayName: 'Text Block',
+    custom: {},
+    parent: 'node-welcome-content',
     hidden: false,
     nodes: [],
     linkedNodes: {},
