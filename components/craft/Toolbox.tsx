@@ -39,7 +39,8 @@ import { FeastHighlight } from './components/FeastHighlight'
 import { Triptych } from './components/Triptych'
 import { FeastBanner } from './components/FeastBanner'
 import { IconDisplay } from './components/IconDisplay'
-import { Navigation, Columns, Heading as HeadingIcon, Minus, Space } from 'lucide-react'
+import { CallToActionBar } from './components/CallToActionBar'
+import { Navigation, Columns, Heading as HeadingIcon, Minus, Space, LayoutList } from 'lucide-react'
 
 const components = [
   { name: 'Heading', icon: HeadingIcon, component: Heading, componentName: 'Heading', category: 'Basic' },
@@ -63,6 +64,7 @@ const components = [
   { name: 'News List', icon: Megaphone, component: NewsList, componentName: 'NewsList', category: 'Content' },
   { name: 'Sermons', icon: Headphones, component: SermonCardGrid, componentName: 'SermonCardGrid', category: 'Content' },
   { name: 'Gallery', icon: Grid3x3, component: GalleryGrid, componentName: 'GalleryGrid', category: 'Content' },
+  { name: 'CTA Bar', icon: LayoutList, component: CallToActionBar, componentName: 'CallToActionBar', category: 'Layout' },
 ]
 
 const categories = ['Basic', 'Layout', 'Orthodox', 'Content']

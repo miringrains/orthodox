@@ -23,6 +23,7 @@ import { ColumnCanvas } from './components/shared/ColumnCanvas'
 import { Triptych } from './components/Triptych'
 import { FeastBanner } from './components/FeastBanner'
 import { IconDisplay } from './components/IconDisplay'
+import { CallToActionBar } from './components/CallToActionBar'
 
 // Export components for Craft.js resolver
 export const craftComponents = {
@@ -49,4 +50,5 @@ export const craftComponents = {
   Triptych,
   FeastBanner,
   IconDisplay,
+  CallToActionBar,
 }

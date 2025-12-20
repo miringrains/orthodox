@@ -20,6 +20,12 @@ interface SectionProps {
   textColor?: string
   padding?: number
   containerWidth?: string
+  // Border styling (inspired by illuminated manuscripts)
+  borderTop?: boolean
+  borderBottom?: boolean
+  borderColor?: string
+  borderThickness?: number
+  borderStyle?: 'single' | 'double' | 'ornate'
 }
 
 export function Section({
@@ -29,6 +35,11 @@ export function Section({
   textColor = '',
   padding = 60,
   containerWidth = '1200px',
+  borderTop = false,
+  borderBottom = false,
+  borderColor = '#C9A227',
+  borderThickness = 2,
+  borderStyle = 'single',
 }: SectionProps) {
   const {
     connectors: { connect, drag },
@@ -36,6 +47,34 @@ export function Section({
   } = useNode((state) => ({
     isSelected: state.events.selected,
   }))
+
+  // Render border based on style
+  const renderBorder = () => {
+    if (borderStyle === 'single') {
+      return <div style={{ borderTop: `${borderThickness}px solid ${borderColor}` }} />
+    }
+    if (borderStyle === 'double') {
+      return (
+        <div>
+          <div style={{ borderTop: `${borderThickness}px solid ${borderColor}` }} />
+          <div style={{ height: '4px' }} />
+          <div style={{ borderTop: `${borderThickness}px solid ${borderColor}` }} />
+        </div>
+      )
+    }
+    if (borderStyle === 'ornate') {
+      return (
+        <div>
+          <div style={{ borderTop: `1px solid ${borderColor}`, opacity: 0.5 }} />
+          <div style={{ height: '4px' }} />
+          <div style={{ borderTop: `${Math.max(2, borderThickness)}px solid ${borderColor}` }} />
+          <div style={{ height: '4px' }} />
+          <div style={{ borderTop: `1px solid ${borderColor}`, opacity: 0.5 }} />
+        </div>
+      )
+    }
+    return null
+  }
 
   return (
     <section
@@ -48,40 +87,44 @@ export function Section({
         relative
         ${isSelected ? 'ring-2 ring-primary' : ''}
       `}
-      style={{
-        paddingTop: `${padding}px`,
-        paddingBottom: `${padding}px`,
-      }}
     >
-      {/* Background Image Layer - always full opacity */}
-      {imageUrl && (
-        <div
-          className="absolute inset-0 bg-cover bg-center"
-          style={{ backgroundImage: `url(${imageUrl})` }}
-        />
-      )}
-      
-      {/* Overlay Layer - controls visibility of image */}
-      {(overlayColor || imageUrl) && (
-        <div
-          className="absolute inset-0"
-          style={{ 
-            backgroundColor: overlayColor || '#000000',
-            opacity: overlayOpacity / 100,
-          }}
-        />
-      )}
+      {/* Top Border */}
+      {borderTop && renderBorder()}
 
-      {/* Content Layer */}
-      <div 
-        className="relative z-10 mx-auto px-4"
-        style={{ 
-          maxWidth: containerWidth,
-          color: textColor || undefined,
-        }}
-      >
-        <Element is={ColumnCanvas} canvas id="section-content" />
+      <div style={{ paddingTop: `${padding}px`, paddingBottom: `${padding}px` }}>
+        {/* Background Image Layer - always full opacity */}
+        {imageUrl && (
+          <div
+            className="absolute inset-0 bg-cover bg-center"
+            style={{ backgroundImage: `url(${imageUrl})` }}
+          />
+        )}
+        
+        {/* Overlay Layer - controls visibility of image */}
+        {(overlayColor || imageUrl) && (
+          <div
+            className="absolute inset-0"
+            style={{ 
+              backgroundColor: overlayColor || '#000000',
+              opacity: overlayOpacity / 100,
+            }}
+          />
+        )}
+
+        {/* Content Layer */}
+        <div 
+          className="relative z-10 mx-auto px-4"
+          style={{ 
+            maxWidth: containerWidth,
+            color: textColor || undefined,
+          }}
+        >
+          <Element is={ColumnCanvas} canvas id="section-content" />
+        </div>
       </div>
+
+      {/* Bottom Border */}
+      {borderBottom && renderBorder()}
     </section>
   )
 }
@@ -278,6 +321,82 @@ function SectionSettings() {
           placeholder="inherit"
         />
       </SettingsAccordion>
+
+      {/* Border Section */}
+      <SettingsAccordion title="Borders">
+        <p className="text-xs text-muted-foreground mb-3">
+          Add decorative borders inspired by illuminated manuscripts
+        </p>
+        
+        <div className="flex gap-4">
+          <div className="flex items-center space-x-2">
+            <input
+              type="checkbox"
+              id="borderTop"
+              checked={props.borderTop === true}
+              onChange={(e) => setProp((p: any) => (p.borderTop = e.target.checked))}
+              className="h-4 w-4 rounded border-gray-300"
+            />
+            <Label htmlFor="borderTop" className="text-sm">Top Border</Label>
+          </div>
+          <div className="flex items-center space-x-2">
+            <input
+              type="checkbox"
+              id="borderBottom"
+              checked={props.borderBottom === true}
+              onChange={(e) => setProp((p: any) => (p.borderBottom = e.target.checked))}
+              className="h-4 w-4 rounded border-gray-300"
+            />
+            <Label htmlFor="borderBottom" className="text-sm">Bottom Border</Label>
+          </div>
+        </div>
+
+        {(props.borderTop || props.borderBottom) && (
+          <>
+            <div className="mt-3">
+              <Label className="text-sm font-medium">Border Style</Label>
+              <div className="flex gap-2 mt-2">
+                {[
+                  { label: 'Single', value: 'single' },
+                  { label: 'Double', value: 'double' },
+                  { label: 'Ornate', value: 'ornate' },
+                ].map((option) => (
+                  <button
+                    key={option.value}
+                    type="button"
+                    onClick={() => setProp((p: any) => (p.borderStyle = option.value))}
+                    className={`flex-1 px-2 py-1.5 text-xs rounded-md border transition-colors ${
+                      (props.borderStyle || 'single') === option.value
+                        ? 'bg-primary text-primary-foreground border-primary'
+                        : 'bg-white hover:bg-gray-50 border-gray-200'
+                    }`}
+                  >
+                    {option.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <ColorPicker
+              label="Border Color"
+              value={props.borderColor || '#C9A227'}
+              onChange={(value) => setProp((p: any) => (p.borderColor = value))}
+            />
+
+            <div>
+              <Label className="text-sm font-medium">Thickness</Label>
+              <Input
+                type="number"
+                value={props.borderThickness || 2}
+                onChange={(e) => setProp((p: any) => (p.borderThickness = parseInt(e.target.value) || 2))}
+                className="mt-1"
+                min={1}
+                max={8}
+              />
+            </div>
+          </>
+        )}
+      </SettingsAccordion>
     </div>
   )
 }
@@ -291,6 +410,11 @@ Section.craft = {
     textColor: '',
     padding: 60,
     containerWidth: '1200px',
+    borderTop: false,
+    borderBottom: false,
+    borderColor: '#C9A227',
+    borderThickness: 2,
+    borderStyle: 'single',
   },
   related: {
     settings: SectionSettings,

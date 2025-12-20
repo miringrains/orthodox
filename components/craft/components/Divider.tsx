@@ -14,6 +14,8 @@ interface DividerProps {
   margin?: { top: number; right: number; bottom: number; left: number }
   width?: string // e.g., '60px', '100%', '50%'
   align?: 'left' | 'center' | 'right'
+  variant?: 'single' | 'double' | 'triple' | 'ornate'
+  gap?: number // Gap between lines for double/triple
 }
 
 export function Divider({
@@ -23,6 +25,8 @@ export function Divider({
   margin = { top: 20, right: 0, bottom: 20, left: 0 },
   width = '100%',
   align = 'center',
+  variant = 'single',
+  gap = 4,
 }: DividerProps) {
   const {
     connectors: { connect, drag },
@@ -39,24 +43,99 @@ export function Divider({
     right: 'ml-auto',
   }
 
-  return (
-    <div
-      ref={(ref) => {
-        if (ref) {
-          connect(drag(ref))
-        }
-      }}
-      className={`
-        ${alignClasses[align]}
-        ${isSelected ? 'ring-2 ring-primary rounded' : ''}
-      `}
-      style={{
-        width,
-        margin: marginStyle,
-        borderTop: `${thickness}px ${style} ${color}`,
-      }}
-    />
-  )
+  // Single line divider
+  if (variant === 'single') {
+    return (
+      <div
+        ref={(ref) => {
+          if (ref) {
+            connect(drag(ref))
+          }
+        }}
+        className={`
+          ${alignClasses[align]}
+          ${isSelected ? 'ring-2 ring-primary rounded' : ''}
+        `}
+        style={{
+          width,
+          margin: marginStyle,
+          borderTop: `${thickness}px ${style} ${color}`,
+        }}
+      />
+    )
+  }
+
+  // Double line divider
+  if (variant === 'double') {
+    return (
+      <div
+        ref={(ref) => {
+          if (ref) {
+            connect(drag(ref))
+          }
+        }}
+        className={`
+          ${alignClasses[align]}
+          ${isSelected ? 'ring-2 ring-primary rounded p-1' : ''}
+        `}
+        style={{ width, margin: marginStyle }}
+      >
+        <div style={{ borderTop: `${thickness}px ${style} ${color}` }} />
+        <div style={{ height: `${gap}px` }} />
+        <div style={{ borderTop: `${thickness}px ${style} ${color}` }} />
+      </div>
+    )
+  }
+
+  // Triple line divider
+  if (variant === 'triple') {
+    return (
+      <div
+        ref={(ref) => {
+          if (ref) {
+            connect(drag(ref))
+          }
+        }}
+        className={`
+          ${alignClasses[align]}
+          ${isSelected ? 'ring-2 ring-primary rounded p-1' : ''}
+        `}
+        style={{ width, margin: marginStyle }}
+      >
+        <div style={{ borderTop: `${thickness}px ${style} ${color}` }} />
+        <div style={{ height: `${gap}px` }} />
+        <div style={{ borderTop: `${Math.max(1, thickness - 1)}px ${style} ${color}` }} />
+        <div style={{ height: `${gap}px` }} />
+        <div style={{ borderTop: `${thickness}px ${style} ${color}` }} />
+      </div>
+    )
+  }
+
+  // Ornate divider (thick center with thin outer lines)
+  if (variant === 'ornate') {
+    return (
+      <div
+        ref={(ref) => {
+          if (ref) {
+            connect(drag(ref))
+          }
+        }}
+        className={`
+          ${alignClasses[align]}
+          ${isSelected ? 'ring-2 ring-primary rounded p-1' : ''}
+        `}
+        style={{ width, margin: marginStyle }}
+      >
+        <div style={{ borderTop: `1px ${style} ${color}`, opacity: 0.5 }} />
+        <div style={{ height: `${gap}px` }} />
+        <div style={{ borderTop: `${Math.max(2, thickness)}px ${style} ${color}` }} />
+        <div style={{ height: `${gap}px` }} />
+        <div style={{ borderTop: `1px ${style} ${color}`, opacity: 0.5 }} />
+      </div>
+    )
+  }
+
+  return null
 }
 
 function DividerSettings() {
@@ -64,8 +143,36 @@ function DividerSettings() {
     props: node.data.props,
   }))
 
+  const variantOptions = [
+    { label: 'Single', value: 'single' },
+    { label: 'Double', value: 'double' },
+    { label: 'Triple', value: 'triple' },
+    { label: 'Ornate', value: 'ornate' },
+  ]
+
   return (
     <div className="space-y-4 p-4">
+      <div>
+        <Label className="text-sm font-medium">Pattern</Label>
+        <div className="flex flex-wrap gap-2 mt-2">
+          {variantOptions.map((option) => (
+            <button
+              key={option.value}
+              type="button"
+              onClick={() => setProp((p: any) => (p.variant = option.value))}
+              className={`px-3 py-1.5 text-xs rounded-md border transition-colors ${
+                (props.variant || 'single') === option.value
+                  ? 'bg-primary text-primary-foreground border-primary'
+                  : 'bg-white hover:bg-gray-50 border-gray-200'
+              }`}
+            >
+              {option.label}
+            </button>
+          ))}
+        </div>
+        <p className="text-xs text-muted-foreground mt-1">Double/Triple create elegant multi-line dividers</p>
+      </div>
+
       <div>
         <Label>Width</Label>
         <Input
@@ -74,7 +181,6 @@ function DividerSettings() {
           onChange={(e) => setProp((props: any) => (props.width = e.target.value))}
           placeholder="e.g., 60px, 50%, 100%"
         />
-        <p className="text-xs text-muted-foreground mt-1">Use 60px for decorative accent lines</p>
       </div>
 
       <div>
@@ -102,6 +208,17 @@ function DividerSettings() {
           onChange={(e) => setProp((props: any) => (props.thickness = parseInt(e.target.value) || 1))}
         />
       </div>
+
+      {(props.variant === 'double' || props.variant === 'triple' || props.variant === 'ornate') && (
+        <div>
+          <Label>Line Gap (px)</Label>
+          <Input
+            type="number"
+            value={props.gap || 4}
+            onChange={(e) => setProp((props: any) => (props.gap = parseInt(e.target.value) || 4))}
+          />
+        </div>
+      )}
 
       <ColorPicker
         label="Color"
@@ -176,6 +293,8 @@ Divider.craft = {
     margin: { top: 20, right: 0, bottom: 20, left: 0 },
     width: '100%',
     align: 'center',
+    variant: 'single',
+    gap: 4,
   },
   related: {
     settings: DividerSettings,
