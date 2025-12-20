@@ -67,13 +67,25 @@ export default function BuilderPage() {
   }, [pageId, supabase])
 
   const handleSave = async (json: any) => {
-    const { error } = await supabase
+    console.log('=== SAVING PAGE ===')
+    console.log('Page ID:', pageId)
+    console.log('JSON to save type:', typeof json)
+    console.log('JSON to save keys:', json ? Object.keys(json) : 'null')
+    console.log('JSON has ROOT:', json?.ROOT ? 'yes' : 'no')
+    console.log('ROOT nodes count:', json?.ROOT?.nodes?.length)
+    
+    const { error, data } = await supabase
       .from('pages')
       .update({
         builder_schema: json,
         builder_enabled: true,
       })
       .eq('id', pageId)
+      .select()
+
+    console.log('Save response - error:', error)
+    console.log('Save response - data:', data)
+    console.log('=== END SAVING PAGE ===')
 
     if (error) {
       console.error('Error saving page:', error)

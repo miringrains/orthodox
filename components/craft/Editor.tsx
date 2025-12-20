@@ -109,21 +109,33 @@ function EditorContent({
   }, [query, fontFamily, baseFontSize, baseFontWeight])
 
   const handleSave = async () => {
+    console.log('=== EDITOR handleSave CALLED ===')
     setSaving(true)
     setSaveStatus('idle')
     try {
       const serialized = query.serialize()
+      console.log('query.serialize() type:', typeof serialized)
+      console.log('query.serialize() (first 300 chars):', typeof serialized === 'string' ? serialized.substring(0, 300) : JSON.stringify(serialized).substring(0, 300))
+      
       // Include global font settings in saved content
       // Pass as object, not string - Supabase jsonb column handles it
+      const parsed = typeof serialized === 'string' ? JSON.parse(serialized) : serialized
+      console.log('Parsed keys:', Object.keys(parsed))
+      console.log('Parsed ROOT exists:', !!parsed.ROOT)
+      console.log('Parsed ROOT nodes:', parsed.ROOT?.nodes)
+      
       const contentWithFonts = {
-        ...(typeof serialized === 'string' ? JSON.parse(serialized) : serialized),
+        ...parsed,
         globalFonts: {
           fontFamily,
           baseFontSize,
           baseFontWeight,
         },
       }
+      console.log('contentWithFonts keys:', Object.keys(contentWithFonts))
+      
       await onSave(contentWithFonts)
+      console.log('onSave completed successfully')
       setSaveStatus('success')
       setTimeout(() => setSaveStatus('idle'), 2000)
       return true
@@ -133,6 +145,7 @@ function EditorContent({
       return false
     } finally {
       setSaving(false)
+      console.log('=== END EDITOR handleSave ===')
     }
   }
 
