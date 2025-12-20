@@ -139,42 +139,45 @@ function EditorContent({ onSave, initialContent, pageId }: { onSave: (content: a
     return () => window.removeEventListener('keydown', handleKeyDown)
   }, [query, actions])
 
+  // Track if we've already loaded content
+  const [hasLoadedContent, setHasLoadedContent] = React.useState(false)
+
   // Load content when available - only once on mount
   useEffect(() => {
-    if (initialContent && actions) {
-      try {
-        // Parse initial content, handling double-encoded legacy data
-        let parsedContent = typeof initialContent === 'string' ? JSON.parse(initialContent) : initialContent
-        // Handle double-encoded JSON (legacy bug fix)
-        if (typeof parsedContent === 'string') {
-          parsedContent = JSON.parse(parsedContent)
-        }
-        
-        if (parsedContent?.globalFonts) {
-          // Update font context with saved fonts
-          if (parsedContent.globalFonts.fontFamily) setFontFamily(parsedContent.globalFonts.fontFamily)
-          if (parsedContent.globalFonts.baseFontSize) setBaseFontSize(parsedContent.globalFonts.baseFontSize)
-          if (parsedContent.globalFonts.baseFontWeight) setBaseFontWeight(parsedContent.globalFonts.baseFontWeight)
-        }
-        
-        // Only load if we don't already have content
-        const currentContent = query.serialize()
-        const contentObj = typeof currentContent === 'string' ? JSON.parse(currentContent) : currentContent
-        const isEmpty = !contentObj || 
-          Object.keys(contentObj).length === 0 || 
-          (contentObj.ROOT && Object.keys(contentObj.ROOT.nodes || {}).length === 0)
-        
-        if (isEmpty && parsedContent) {
-          // Deserialize without globalFonts (they're handled separately)
-          const { globalFonts: _, ...craftContent } = parsedContent
-          actions.deserialize(JSON.stringify(craftContent))
-        }
-      } catch (error) {
-        console.error('Error loading content:', error)
-        // If content is invalid, start fresh - don't prevent editor from working
+    if (hasLoadedContent || !initialContent || !actions) return
+    
+    try {
+      // Parse initial content, handling double-encoded legacy data
+      let parsedContent = typeof initialContent === 'string' ? JSON.parse(initialContent) : initialContent
+      // Handle double-encoded JSON (legacy bug fix)
+      if (typeof parsedContent === 'string') {
+        parsedContent = JSON.parse(parsedContent)
       }
+      
+      if (parsedContent?.globalFonts) {
+        // Update font context with saved fonts
+        if (parsedContent.globalFonts.fontFamily) setFontFamily(parsedContent.globalFonts.fontFamily)
+        if (parsedContent.globalFonts.baseFontSize) setBaseFontSize(parsedContent.globalFonts.baseFontSize)
+        if (parsedContent.globalFonts.baseFontWeight) setBaseFontWeight(parsedContent.globalFonts.baseFontWeight)
+      }
+      
+      // Check if the parsed content has actual nodes (not just empty ROOT)
+      const { globalFonts: _, ...craftContent } = parsedContent
+      const hasNodes = craftContent.ROOT?.nodes && 
+        Array.isArray(craftContent.ROOT.nodes) && 
+        craftContent.ROOT.nodes.length > 0
+      
+      if (hasNodes) {
+        // Deserialize the saved content
+        actions.deserialize(JSON.stringify(craftContent))
+      }
+      
+      setHasLoadedContent(true)
+    } catch (error) {
+      console.error('Error loading content:', error)
+      setHasLoadedContent(true) // Mark as loaded to prevent retry
     }
-  }, [actions, query, setFontFamily, setBaseFontSize, setBaseFontWeight, initialContent])
+  }, [hasLoadedContent, actions, setFontFamily, setBaseFontSize, setBaseFontWeight, initialContent])
 
   const handleSave = async () => {
     setSaving(true)
