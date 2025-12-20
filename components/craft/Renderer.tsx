@@ -20,11 +20,15 @@ export function CraftRenderer({ content }: CraftRendererProps) {
   }
 
   try {
-    // Parse content if it's a string
+    // Parse content if it's a string (handles double-encoded legacy data)
     let parsedContent = content
     if (typeof content === 'string') {
       try {
         parsedContent = JSON.parse(content)
+        // Handle double-encoded JSON (legacy bug fix)
+        if (typeof parsedContent === 'string') {
+          parsedContent = JSON.parse(parsedContent)
+        }
       } catch (e) {
         console.error('Failed to parse content:', e)
         return (

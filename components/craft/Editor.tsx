@@ -46,7 +46,11 @@ function EditorContent({ onSave, initialContent, pageId }: { onSave: (content: a
     }
 
     try {
-      const parsed = typeof initialContent === 'string' ? JSON.parse(initialContent) : initialContent
+      let parsed = typeof initialContent === 'string' ? JSON.parse(initialContent) : initialContent
+      // Handle double-encoded JSON (legacy bug fix)
+      if (typeof parsed === 'string') {
+        parsed = JSON.parse(parsed)
+      }
       // Check if content only has ROOT with empty nodes
       const { globalFonts: _, ...craftContent } = parsed
       const isEmpty = !craftContent || 
@@ -139,8 +143,13 @@ function EditorContent({ onSave, initialContent, pageId }: { onSave: (content: a
   useEffect(() => {
     if (initialContent && actions) {
       try {
-        // Parse initial content to extract global fonts
-        const parsedContent = typeof initialContent === 'string' ? JSON.parse(initialContent) : initialContent
+        // Parse initial content, handling double-encoded legacy data
+        let parsedContent = typeof initialContent === 'string' ? JSON.parse(initialContent) : initialContent
+        // Handle double-encoded JSON (legacy bug fix)
+        if (typeof parsedContent === 'string') {
+          parsedContent = JSON.parse(parsedContent)
+        }
+        
         if (parsedContent?.globalFonts) {
           // Update font context with saved fonts
           if (parsedContent.globalFonts.fontFamily) setFontFamily(parsedContent.globalFonts.fontFamily)
@@ -155,10 +164,9 @@ function EditorContent({ onSave, initialContent, pageId }: { onSave: (content: a
           Object.keys(contentObj).length === 0 || 
           (contentObj.ROOT && Object.keys(contentObj.ROOT.nodes || {}).length === 0)
         
-        if (isEmpty && initialContent) {
+        if (isEmpty && parsedContent) {
           // Deserialize without globalFonts (they're handled separately)
-          const contentToDeserialize = typeof initialContent === 'string' ? JSON.parse(initialContent) : initialContent
-          const { globalFonts: _, ...craftContent } = contentToDeserialize
+          const { globalFonts: _, ...craftContent } = parsedContent
           actions.deserialize(JSON.stringify(craftContent))
         }
       } catch (error) {
@@ -174,6 +182,7 @@ function EditorContent({ onSave, initialContent, pageId }: { onSave: (content: a
     try {
       const serialized = query.serialize()
       // Include global font settings in saved content
+      // Pass as object, not string - Supabase jsonb column handles it
       const contentWithFonts = {
         ...(typeof serialized === 'string' ? JSON.parse(serialized) : serialized),
         globalFonts: {
@@ -182,7 +191,7 @@ function EditorContent({ onSave, initialContent, pageId }: { onSave: (content: a
           baseFontWeight,
         },
       }
-      await onSave(JSON.stringify(contentWithFonts))
+      await onSave(contentWithFonts)
       setSaveStatus('success')
       setTimeout(() => setSaveStatus('idle'), 2000)
       return true
@@ -452,9 +461,12 @@ export function CraftEditor({ content, onSave, pageId }: CraftEditorProps) {
   // Extract global font settings from content if available
   let globalFonts = {}
   try {
-    globalFonts = typeof content === 'string' 
-      ? (JSON.parse(content)?.globalFonts || {})
-      : (content?.globalFonts || {})
+    let parsed = typeof content === 'string' ? JSON.parse(content) : content
+    // Handle double-encoded JSON (legacy bug fix)
+    if (typeof parsed === 'string') {
+      parsed = JSON.parse(parsed)
+    }
+    globalFonts = parsed?.globalFonts || {}
   } catch {
     // Invalid content, use default fonts
   }

@@ -49,3 +49,4 @@ export interface TemplateRegistry {
   getAll: () => PageTemplate[]
 }
 
+
