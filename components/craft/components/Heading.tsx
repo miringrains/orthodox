@@ -78,13 +78,24 @@ export function Heading({
     right: 'text-right',
   }
 
+  // Default sizes with proper line-height for headings
   const defaultSizes = {
-    h1: 'text-4xl md:text-5xl',
-    h2: 'text-3xl md:text-4xl',
-    h3: 'text-2xl md:text-3xl',
-    h4: 'text-xl md:text-2xl',
-    h5: 'text-lg md:text-xl',
-    h6: 'text-base md:text-lg',
+    h1: 'text-4xl md:text-5xl leading-tight',   // 1.25
+    h2: 'text-3xl md:text-4xl leading-tight',   // 1.25
+    h3: 'text-2xl md:text-3xl leading-snug',    // 1.375
+    h4: 'text-xl md:text-2xl leading-snug',     // 1.375
+    h5: 'text-lg md:text-xl leading-normal',    // 1.5
+    h6: 'text-base md:text-lg leading-normal',  // 1.5
+  }
+
+  // Subtle letter-spacing for headings (-0.025em looks more refined)
+  const letterSpacingDefaults: Record<string, string> = {
+    h1: '-0.025em',
+    h2: '-0.02em',
+    h3: '-0.015em',
+    h4: '-0.01em',
+    h5: '0',
+    h6: '0',
   }
 
   const paddingStyle = `${padding.top}px ${padding.right}px ${padding.bottom}px ${padding.left}px`
@@ -132,7 +143,7 @@ export function Heading({
       border: borderStyleStr,
       boxShadow: boxShadow || undefined,
       lineHeight: lineHeight || undefined,
-      letterSpacing: letterSpacing || undefined,
+      letterSpacing: letterSpacing || letterSpacingDefaults[level] || undefined,
       maxWidth: useContainer && contentMaxWidth !== 'full' 
         ? contentMaxWidth === 'sm' ? '640px'
         : contentMaxWidth === 'md' ? '768px'

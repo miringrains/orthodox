@@ -1,28 +1,37 @@
 'use client'
 
 import { useNode } from '@craftjs/core'
-import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
 import { SettingsAccordion } from '../controls/SettingsAccordion'
+import { ColorPicker } from '../controls/ColorPicker'
+import { getContrastTextColor } from '@/lib/color-utils'
 
 interface ButtonBlockProps {
   text?: string
   url?: string
-  variant?: 'default' | 'outline' | 'secondary' | 'ghost'
-  size?: 'default' | 'sm' | 'lg'
+  variant?: 'solid' | 'outline' | 'ghost'
+  size?: 'sm' | 'md' | 'lg'
   fullWidth?: boolean
   align?: 'left' | 'center' | 'right'
+  // Custom colors (solid variant)
+  backgroundColor?: string
+  textColor?: string
+  // Border/outline settings
+  borderColor?: string
 }
 
 export function ButtonBlock({ 
-  text = 'Click me', 
+  text = 'Learn More', 
   url = '#', 
-  variant = 'default', 
-  size = 'default', 
+  variant = 'solid', 
+  size = 'md', 
   fullWidth = false,
-  align = 'left',
+  align = 'center',
+  backgroundColor = '#1a1a1a',
+  textColor = '',
+  borderColor = '',
 }: ButtonBlockProps) {
   const {
     connectors: { connect, drag },
@@ -37,14 +46,56 @@ export function ButtonBlock({
     right: 'justify-end',
   }
 
-  const button = (
-    <Button 
-      variant={variant} 
-      size={size} 
-      className={fullWidth ? 'w-full' : ''}
+  // Size classes with proper letter-spacing for buttons
+  const sizeClasses = {
+    sm: 'px-4 py-2 text-sm',
+    md: 'px-6 py-2.5 text-base',
+    lg: 'px-8 py-3 text-lg',
+  }
+
+  // Compute effective text color based on variant and background
+  const effectiveTextColor = textColor || (
+    variant === 'solid' 
+      ? getContrastTextColor(backgroundColor) 
+      : backgroundColor
+  )
+
+  const effectiveBorderColor = borderColor || backgroundColor
+
+  // Build button styles
+  const buttonStyles: React.CSSProperties = {
+    fontWeight: 500,
+    letterSpacing: '0.025em',
+    borderRadius: '6px',
+    transition: 'all 0.15s ease',
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    cursor: 'pointer',
+    textDecoration: 'none',
+  }
+
+  if (variant === 'solid') {
+    buttonStyles.backgroundColor = backgroundColor
+    buttonStyles.color = effectiveTextColor
+    buttonStyles.border = 'none'
+  } else if (variant === 'outline') {
+    buttonStyles.backgroundColor = 'transparent'
+    buttonStyles.color = effectiveTextColor
+    buttonStyles.border = `2px solid ${effectiveBorderColor}`
+  } else if (variant === 'ghost') {
+    buttonStyles.backgroundColor = 'transparent'
+    buttonStyles.color = effectiveTextColor
+    buttonStyles.border = 'none'
+  }
+
+  const buttonContent = (
+    <span
+      className={`${sizeClasses[size]} ${fullWidth ? 'w-full' : ''}`}
+      style={buttonStyles}
     >
       {text}
-    </Button>
+    </span>
   )
 
   return (
@@ -58,10 +109,10 @@ export function ButtonBlock({
     >
       {url && url !== '#' ? (
         <Link href={url} className={fullWidth ? 'w-full' : ''}>
-          {button}
+          {buttonContent}
         </Link>
       ) : (
-        button
+        buttonContent
       )}
     </div>
   )
@@ -73,15 +124,14 @@ function ButtonBlockSettings() {
   }))
 
   const variantOptions = [
-    { label: 'Primary', value: 'default' },
+    { label: 'Solid', value: 'solid' },
     { label: 'Outline', value: 'outline' },
-    { label: 'Secondary', value: 'secondary' },
     { label: 'Ghost', value: 'ghost' },
   ]
 
   const sizeOptions = [
     { label: 'SM', value: 'sm' },
-    { label: 'MD', value: 'default' },
+    { label: 'MD', value: 'md' },
     { label: 'LG', value: 'lg' },
   ]
 
@@ -100,7 +150,7 @@ function ButtonBlockSettings() {
             value={props.text || ''}
             onChange={(e) => setProp((p: any) => (p.text = e.target.value))}
             className="mt-1"
-            placeholder="Click me"
+            placeholder="Learn More"
           />
         </div>
         <div>
@@ -109,7 +159,7 @@ function ButtonBlockSettings() {
             value={props.url || ''}
             onChange={(e) => setProp((p: any) => (p.url = e.target.value))}
             className="mt-1"
-            placeholder="/page or https://..."
+            placeholder="/contact or https://..."
           />
         </div>
       </SettingsAccordion>
@@ -124,7 +174,7 @@ function ButtonBlockSettings() {
                 type="button"
                 onClick={() => setProp((p: any) => (p.variant = option.value))}
                 className={`px-3 py-1.5 text-xs rounded-md border transition-colors ${
-                  (props.variant || 'default') === option.value
+                  (props.variant || 'solid') === option.value
                     ? 'bg-primary text-primary-foreground border-primary'
                     : 'bg-white hover:bg-gray-50 border-gray-200'
                 }`}
@@ -144,7 +194,7 @@ function ButtonBlockSettings() {
                 type="button"
                 onClick={() => setProp((p: any) => (p.size = option.value))}
                 className={`flex-1 px-2 py-1.5 text-xs rounded-md border transition-colors ${
-                  (props.size || 'default') === option.value
+                  (props.size || 'md') === option.value
                     ? 'bg-primary text-primary-foreground border-primary'
                     : 'bg-white hover:bg-gray-50 border-gray-200'
                 }`}
@@ -164,7 +214,7 @@ function ButtonBlockSettings() {
                 type="button"
                 onClick={() => setProp((p: any) => (p.align = option.value))}
                 className={`flex-1 px-2 py-1.5 text-xs rounded-md border transition-colors ${
-                  (props.align || 'left') === option.value
+                  (props.align || 'center') === option.value
                     ? 'bg-primary text-primary-foreground border-primary'
                     : 'bg-white hover:bg-gray-50 border-gray-200'
                 }`}
@@ -186,6 +236,33 @@ function ButtonBlockSettings() {
           <Label htmlFor="fullWidth" className="text-sm">Full Width</Label>
         </div>
       </SettingsAccordion>
+
+      <SettingsAccordion title="Colors">
+        <ColorPicker
+          label={props.variant === 'solid' ? 'Button Color' : 'Accent Color'}
+          value={props.backgroundColor || '#1a1a1a'}
+          onChange={(value) => setProp((p: any) => (p.backgroundColor = value))}
+        />
+        <p className="text-xs text-gray-500 mt-1">
+          Text color auto-adjusts for contrast
+        </p>
+
+        {props.variant === 'outline' && (
+          <ColorPicker
+            label="Border Color"
+            value={props.borderColor || ''}
+            onChange={(value) => setProp((p: any) => (p.borderColor = value))}
+            placeholder="Same as accent"
+          />
+        )}
+
+        <ColorPicker
+          label="Text Color Override"
+          value={props.textColor || ''}
+          onChange={(value) => setProp((p: any) => (p.textColor = value))}
+          placeholder="Auto (contrast)"
+        />
+      </SettingsAccordion>
     </div>
   )
 }
@@ -193,12 +270,15 @@ function ButtonBlockSettings() {
 ButtonBlock.craft = {
   displayName: 'Button',
   props: {
-    text: 'Click me',
+    text: 'Learn More',
     url: '#',
-    variant: 'default',
-    size: 'default',
+    variant: 'solid',
+    size: 'md',
     fullWidth: false,
-    align: 'left',
+    align: 'center',
+    backgroundColor: '#1a1a1a',
+    textColor: '',
+    borderColor: '',
   },
   related: {
     settings: ButtonBlockSettings,

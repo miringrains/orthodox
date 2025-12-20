@@ -103,8 +103,11 @@ const craftSchema = {
     props: {
       text: 'Plan Your Visit',
       url: '/contact',
-      variant: 'default',
+      variant: 'solid',
       size: 'lg',
+      align: 'center',
+      backgroundColor: '#C9A962',
+      textColor: '#0A1628',
     },
     displayName: 'Button Block',
     custom: {},

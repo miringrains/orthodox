@@ -136,8 +136,11 @@ export function Navbar({
               <Link
                 key={index}
                 href={item.url}
-                className="hover:opacity-70 transition-opacity text-sm uppercase tracking-wider"
-                style={{ color: textColor }}
+                className="hover:opacity-70 transition-opacity text-sm font-medium"
+                style={{ 
+                  color: textColor,
+                  letterSpacing: '0.05em',
+                }}
               >
                 {item.label}
               </Link>
@@ -214,8 +217,11 @@ export function Navbar({
                 <Link
                   key={index}
                   href={item.url}
-                  className="hover:opacity-70 transition-opacity"
-                  style={{ color: textColor }}
+                  className="hover:opacity-70 transition-opacity text-sm font-medium"
+                  style={{ 
+                    color: textColor,
+                    letterSpacing: '0.025em',
+                  }}
                 >
                   {item.label}
                 </Link>
@@ -295,8 +301,11 @@ export function Navbar({
                 <Link
                   key={index}
                   href={item.url}
-                  className="hover:opacity-70 transition-opacity"
-                  style={{ color: textColor }}
+                  className="hover:opacity-70 transition-opacity text-sm font-medium"
+                  style={{ 
+                    color: textColor,
+                    letterSpacing: '0.025em',
+                  }}
                 >
                   {item.label}
                 </Link>

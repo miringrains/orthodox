@@ -88,8 +88,11 @@ export function FeastBanner({
         {/* Subtitle (e.g., date or type of feast) */}
         {feastSubtitle && (
           <p 
-            className="text-center text-sm uppercase tracking-widest mb-4"
-            style={{ color: accentColor }}
+            className="text-center text-xs uppercase font-medium mb-4"
+            style={{ 
+              color: accentColor,
+              letterSpacing: '0.15em',
+            }}
           >
             {feastSubtitle}
           </p>

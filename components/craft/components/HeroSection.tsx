@@ -53,17 +53,26 @@ export function HeroSection({
     isSelected: state.events.selected,
   }))
 
+  // Title sizes with tight line-height and negative letter-spacing for refinement
   const titleSizeClasses = {
-    md: 'text-3xl md:text-4xl',
-    lg: 'text-4xl md:text-5xl',
-    xl: 'text-5xl md:text-6xl',
-    '2xl': 'text-6xl md:text-7xl',
+    md: 'text-3xl md:text-4xl leading-tight',
+    lg: 'text-4xl md:text-5xl leading-tight',
+    xl: 'text-5xl md:text-6xl leading-tight',
+    '2xl': 'text-6xl md:text-7xl leading-none',
+  }
+
+  // Negative letter-spacing for large titles looks more refined
+  const titleLetterSpacing = {
+    md: '-0.015em',
+    lg: '-0.02em',
+    xl: '-0.025em',
+    '2xl': '-0.03em',
   }
 
   const subtitleSizeClasses = {
-    sm: 'text-base md:text-lg',
-    md: 'text-lg md:text-xl',
-    lg: 'text-xl md:text-2xl',
+    sm: 'text-base md:text-lg leading-relaxed',
+    md: 'text-lg md:text-xl leading-relaxed',
+    lg: 'text-xl md:text-2xl leading-relaxed',
   }
 
   const alignClasses = {
@@ -121,8 +130,11 @@ export function HeroSection({
           <div className={`mb-8 max-w-4xl ${alignClasses[contentAlign]}`}>
             {showTitle && (
               <h1 
-                className={`${titleSizeClasses[titleSize]} font-bold mb-6 leading-tight`}
-                style={{ fontFamily: 'serif' }}
+                className={`${titleSizeClasses[titleSize]} font-bold mb-6`}
+                style={{ 
+                  fontFamily: 'serif',
+                  letterSpacing: titleLetterSpacing[titleSize],
+                }}
               >
                 {title || 'Welcome to Our Parish'}
               </h1>

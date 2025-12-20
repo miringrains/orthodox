@@ -36,11 +36,12 @@ export function TextBlock({
   const [isEditing, setIsEditing] = useState(false)
   const [editContent, setEditContent] = useState(content || '')
 
+  // Size classes with proper line-height for readability
   const sizeClasses = {
-    sm: 'text-sm',
-    md: 'text-base',
-    lg: 'text-lg',
-    xl: 'text-2xl',
+    sm: 'text-sm leading-relaxed',      // 1.625
+    md: 'text-base leading-relaxed',    // 1.625
+    lg: 'text-lg leading-relaxed',      // 1.625
+    xl: 'text-xl leading-relaxed',      // 1.625
   }
 
   const alignClasses = {

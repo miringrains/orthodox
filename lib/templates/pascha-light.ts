@@ -103,8 +103,11 @@ const craftSchema = {
     props: {
       text: 'Join Us This Sunday',
       url: '/schedule',
-      variant: 'default',
+      variant: 'solid',
       size: 'lg',
+      align: 'center',
+      backgroundColor: '#B91C1C',
+      textColor: '#FFFFFF',
     },
     displayName: 'Button Block',
     custom: {},
