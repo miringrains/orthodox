@@ -66,8 +66,12 @@ export function Heading({
   // Use global font settings if component doesn't override
   const globalFonts = useFontContext()
   const effectiveFontFamily = fontFamily && fontFamily !== 'inherit' ? fontFamily : globalFonts.fontFamily
-  const effectiveFontSize = fontSize || globalFonts.baseFontSize
-  const effectiveFontWeight = fontWeight && fontWeight !== 'normal' ? fontWeight : globalFonts.baseFontWeight
+  // IMPORTANT: Only use explicit fontSize if set - don't fall back to global base size
+  // This allows Tailwind size classes (text-3xl, text-4xl, etc.) to work properly
+  const effectiveFontSize = fontSize && fontSize.trim() !== '' ? fontSize : undefined
+  const effectiveFontWeight = fontWeight && fontWeight !== 'normal' && fontWeight !== 'bold' 
+    ? fontWeight 
+    : undefined // Let the 'font-bold' or default class handle it
 
   const [isEditing, setIsEditing] = useState(false)
   const [editText, setEditText] = useState(text || '')
@@ -79,13 +83,14 @@ export function Heading({
   }
 
   // Default sizes with proper line-height for headings
+  // These Tailwind classes provide sensible defaults that can be overridden with inline fontSize
   const defaultSizes = {
-    h1: 'text-4xl md:text-5xl leading-tight',   // 1.25
-    h2: 'text-3xl md:text-4xl leading-tight',   // 1.25
-    h3: 'text-2xl md:text-3xl leading-snug',    // 1.375
-    h4: 'text-xl md:text-2xl leading-snug',     // 1.375
-    h5: 'text-lg md:text-xl leading-normal',    // 1.5
-    h6: 'text-base md:text-lg leading-normal',  // 1.5
+    h1: 'text-4xl md:text-5xl leading-tight font-bold',   // 1.25
+    h2: 'text-3xl md:text-4xl leading-tight font-bold',   // 1.25
+    h3: 'text-2xl md:text-3xl leading-snug font-semibold',    // 1.375
+    h4: 'text-xl md:text-2xl leading-snug font-semibold',     // 1.375
+    h5: 'text-lg md:text-xl leading-normal font-medium',    // 1.5
+    h6: 'text-base md:text-lg leading-normal font-medium',  // 1.5
   }
 
   // Subtle letter-spacing for headings (-0.025em looks more refined)
