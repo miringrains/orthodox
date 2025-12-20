@@ -13,6 +13,30 @@ import { FontProvider, useFontContext } from './contexts/FontContext'
 import { craftComponents } from './components'
 import { TemplatePicker } from './TemplatePicker'
 import type { PageTemplate } from '@/lib/templates'
+import { AVAILABLE_FONTS, generateFontUrl } from '@/lib/fonts'
+
+/**
+ * Load a font from Google Fonts
+ */
+function loadGoogleFont(fontFamily: string) {
+  if (!fontFamily || fontFamily === 'inherit') return
+  
+  const font = AVAILABLE_FONTS.find(f => f.family === fontFamily)
+  if (!font) return
+  
+  const url = generateFontUrl(fontFamily)
+  if (!url) return
+  
+  // Check if already loaded
+  const existingLink = document.querySelector(`link[href="${url}"]`)
+  if (existingLink) return
+  
+  // Create and append link element
+  const link = document.createElement('link')
+  link.rel = 'stylesheet'
+  link.href = url
+  document.head.appendChild(link)
+}
 
 interface CraftEditorProps {
   content?: any
@@ -76,6 +100,12 @@ function EditorContent({
     enabled: state.options.enabled,
   }))
   const { fontFamily, baseFontSize, baseFontWeight, setFontFamily, setBaseFontSize, setBaseFontWeight } = useFontContext()
+
+  // Load font from Google Fonts when fontFamily changes
+  useEffect(() => {
+    console.log('Font family changed to:', fontFamily)
+    loadGoogleFont(fontFamily)
+  }, [fontFamily])
 
   // Debug: log what Frame received
   useEffect(() => {

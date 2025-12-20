@@ -39,6 +39,11 @@ export function FontSelector({ label, value, onChange }: FontSelectorProps) {
   const [previewFonts, setPreviewFonts] = useState<Set<string>>(new Set())
   const fontsByCategory = getFontsByCategory()
 
+  const handleFontChange = (newValue: string) => {
+    console.log('FontSelector: changing font from', value, 'to', newValue)
+    onChange(newValue)
+  }
+
   // Load the currently selected font
   useEffect(() => {
     if (value && value !== 'inherit') {
@@ -61,7 +66,7 @@ export function FontSelector({ label, value, onChange }: FontSelectorProps) {
   return (
     <div>
       <Label>{label}</Label>
-      <Select value={value || 'inherit'} onValueChange={onChange}>
+      <Select value={value || 'inherit'} onValueChange={handleFontChange}>
         <SelectTrigger className="mt-2">
           <SelectValue>
             {value === 'inherit' ? 'System Default' : 
