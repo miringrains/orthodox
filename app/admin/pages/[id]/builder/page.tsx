@@ -17,12 +17,20 @@ export default function BuilderPage() {
 
   useEffect(() => {
     async function loadPage() {
+      console.log('=== BUILDER PAGE LOADING ===')
+      console.log('Page ID:', pageId)
+      
       try {
         const { data: page, error } = await supabase
           .from('pages')
           .select('*')
           .eq('id', pageId)
           .single()
+
+        console.log('Supabase response - error:', error)
+        console.log('Supabase response - page:', page)
+        console.log('builder_schema type:', typeof page?.builder_schema)
+        console.log('builder_schema:', page?.builder_schema)
 
         if (error) {
           console.error('Error loading page:', error)
@@ -35,14 +43,20 @@ export default function BuilderPage() {
         // Craft.js stores content as JSON, we can load it directly
         const builderData = page?.builder_schema as any
         
+        console.log('builderData to pass to editor:', builderData)
+        
         // If no content exists and builder is enabled, load default template
         if (!builderData && page?.builder_enabled) {
           const { getDefaultPageTemplate } = await import('@/lib/page-templates')
-          setContent(getDefaultPageTemplate())
+          const defaultTemplate = getDefaultPageTemplate()
+          console.log('Using default template:', defaultTemplate)
+          setContent(defaultTemplate)
         } else {
+          console.log('Using saved builderData')
           setContent(builderData || null)
         }
         setLoading(false)
+        console.log('=== END BUILDER PAGE LOADING ===')
       } catch (error) {
         console.error('Error loading page:', error)
         setErrorMessage('Failed to load page. Please refresh the page.')

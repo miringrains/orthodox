@@ -320,6 +320,7 @@ function EditorContent({
                 KEY FIX: Pass initial data directly to Frame via the `data` prop.
                 This is the correct Craft.js pattern - no useEffect/deserialize needed!
               */}
+              {console.log('Rendering Frame with data:', !!initialCraftData, initialCraftData?.substring(0, 100))}
               <Frame data={initialCraftData || undefined}>
                 <div
                   style={{
@@ -356,17 +357,34 @@ function EditorContent({
 }
 
 export function CraftEditor({ content, onSave, pageId }: CraftEditorProps) {
+  // Debug: log what we receive
+  console.log('=== CraftEditor MOUNT ===')
+  console.log('Raw content type:', typeof content)
+  console.log('Raw content:', content)
+  
   // Parse content once, before rendering
-  const parsed = useMemo(() => parseContent(content), [content])
+  const parsed = useMemo(() => {
+    const result = parseContent(content)
+    console.log('Parsed result:', result)
+    return result
+  }, [content])
   
   // Extract values for providers
   const globalFonts = parsed?.globalFonts || {}
   
   // Serialize craft content for Frame's data prop (must be a string)
   const initialCraftData = useMemo(() => {
-    if (!parsed?.craftContent) return null
-    return JSON.stringify(parsed.craftContent)
+    if (!parsed?.craftContent) {
+      console.log('No craft content to serialize')
+      return null
+    }
+    const serialized = JSON.stringify(parsed.craftContent)
+    console.log('Serialized craft data (first 200 chars):', serialized.substring(0, 200))
+    return serialized
   }, [parsed])
+  
+  console.log('initialCraftData exists:', !!initialCraftData)
+  console.log('=== END CraftEditor MOUNT ===')
   
   return (
     <FontProvider initialFonts={globalFonts}>
