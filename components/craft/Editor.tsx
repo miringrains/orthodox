@@ -354,7 +354,7 @@ function EditorContent({
                 Per Craft.js docs: Always provide children as the default structure.
                 The `json` prop overrides children when present.
               */}
-              <Frame json={initialCraftData}>
+              <Frame json={initialCraftData ?? undefined}>
                 <Element
                   is="div"
                   canvas
