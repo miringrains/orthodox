@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import { Editor, Frame, Element, useEditor } from '@craftjs/core'
 import { Button } from '@/components/ui/button'
 import { Save, ArrowLeft, CheckCircle2, AlertCircle, Monitor, Tablet, Smartphone, ExternalLink, Layout } from 'lucide-react'
@@ -20,164 +20,76 @@ interface CraftEditorProps {
   pageId: string
 }
 
-function EditorContent({ onSave, initialContent, pageId }: { onSave: (content: any) => Promise<void>, initialContent?: any, pageId: string }) {
+/**
+ * Parse and normalize content from database
+ * Handles: null, object, string, double-encoded string
+ */
+function parseContent(content: any): { craftContent: any; globalFonts: any } | null {
+  if (!content) return null
+  
+  try {
+    let parsed = content
+    
+    // Parse if string
+    if (typeof parsed === 'string') {
+      parsed = JSON.parse(parsed)
+    }
+    
+    // Handle double-encoded JSON (legacy bug)
+    if (typeof parsed === 'string') {
+      parsed = JSON.parse(parsed)
+    }
+    
+    // Extract globalFonts and craft content
+    const { globalFonts, ...craftContent } = parsed
+    
+    // Verify we have actual content
+    if (!craftContent.ROOT?.nodes?.length) {
+      return null
+    }
+    
+    return { craftContent, globalFonts: globalFonts || {} }
+  } catch (error) {
+    console.error('Error parsing content:', error)
+    return null
+  }
+}
+
+function EditorContent({ 
+  onSave, 
+  pageId,
+  initialCraftData,
+}: { 
+  onSave: (content: any) => Promise<void>
+  pageId: string
+  initialCraftData: string | null
+}) {
   const router = useRouter()
   const supabase = createClient()
   const [saving, setSaving] = useState(false)
   const [previewing, setPreviewing] = useState(false)
   const [saveStatus, setSaveStatus] = useState<'idle' | 'success' | 'error'>('idle')
   const [viewMode, setViewMode] = useState<'desktop' | 'tablet' | 'mobile'>('desktop')
-  const [showTemplatePicker, setShowTemplatePicker] = useState(false)
-  const [hasCheckedEmpty, setHasCheckedEmpty] = useState(false)
+  const [showTemplatePicker, setShowTemplatePicker] = useState(!initialCraftData)
+  
   const { query, actions } = useEditor((state) => ({
     enabled: state.options.enabled,
   }))
   const { fontFamily, baseFontSize, baseFontWeight, setFontFamily, setBaseFontSize, setBaseFontWeight } = useFontContext()
 
-  // Check if editor is empty and show template picker
-  useEffect(() => {
-    if (hasCheckedEmpty) return
-    
-    // Check if there's no initial content
-    if (!initialContent) {
-      setShowTemplatePicker(true)
-      setHasCheckedEmpty(true)
-      return
-    }
-
-    try {
-      let parsed = typeof initialContent === 'string' ? JSON.parse(initialContent) : initialContent
-      // Handle double-encoded JSON (legacy bug fix)
-      if (typeof parsed === 'string') {
-        parsed = JSON.parse(parsed)
-      }
-      // Check if content only has ROOT with empty nodes
-      const { globalFonts: _, ...craftContent } = parsed
-      const isEmpty = !craftContent || 
-        Object.keys(craftContent).length === 0 ||
-        (craftContent.ROOT && (!craftContent.ROOT.nodes || craftContent.ROOT.nodes.length === 0))
-      
-      if (isEmpty) {
-        setShowTemplatePicker(true)
-      }
-    } catch {
-      setShowTemplatePicker(true)
-    }
-    setHasCheckedEmpty(true)
-  }, [initialContent, hasCheckedEmpty])
-
   // Keyboard shortcuts
-  React.useEffect(() => {
+  useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      // Cmd/Ctrl+D to duplicate
-      if ((e.metaKey || e.ctrlKey) && e.key === 'd') {
+      // Cmd/Ctrl+S to save
+      if ((e.metaKey || e.ctrlKey) && e.key === 's') {
         e.preventDefault()
-        const [selected] = query.getEvent('selected').last() || []
-        if (selected) {
-          try {
-            // Serialize entire editor and extract node tree
-            const serialized = query.serialize()
-            const content = typeof serialized === 'string' ? JSON.parse(serialized) : serialized
-            
-            // Extract the node tree starting from selected
-            const extractNodeTree = (nodeId: string, tree: any): any => {
-              if (!tree || !tree[nodeId]) return null
-              
-              const node = tree[nodeId]
-              const result: any = {
-                type: node.type,
-                props: { ...node.props },
-                nodes: {},
-                custom: { ...node.custom },
-              }
-              
-              if (node.nodes && Array.isArray(node.nodes)) {
-                node.nodes.forEach((childId: string) => {
-                  const childTree = extractNodeTree(childId, tree)
-                  if (childTree) {
-                    result.nodes[childId] = childTree
-                  }
-                })
-              }
-              
-              return result
-            }
-            
-            const nodeTree = extractNodeTree(selected, content)
-            if (nodeTree) {
-              const newNodeId = `node_${Date.now()}`
-              const newTree: any = { [newNodeId]: nodeTree }
-              
-              // Find parent by searching through the tree
-              let parentId = 'ROOT'
-              const findParent = (tree: any, targetId: string, currentParent: string = 'ROOT'): string | null => {
-                if (!tree || typeof tree !== 'object') return null
-                
-                for (const [id, node] of Object.entries(tree)) {
-                  if (id === targetId) return currentParent
-                  if (node && typeof node === 'object' && (node as any).nodes) {
-                    const found = findParent((node as any).nodes, targetId, id)
-                    if (found) return found
-                  }
-                }
-                return null
-              }
-              
-              const foundParent = findParent(content, selected)
-              if (foundParent) parentId = foundParent
-              
-              actions.addNodeTree(newTree, parentId)
-            }
-          } catch (error) {
-            console.error('Error duplicating:', error)
-          }
-        }
+        handleSave()
       }
     }
 
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [query, actions])
-
-  // Track if we've already loaded content
-  const [hasLoadedContent, setHasLoadedContent] = React.useState(false)
-
-  // Load content when available - only once on mount
-  useEffect(() => {
-    if (hasLoadedContent || !initialContent || !actions) return
-    
-    try {
-      // Parse initial content, handling double-encoded legacy data
-      let parsedContent = typeof initialContent === 'string' ? JSON.parse(initialContent) : initialContent
-      // Handle double-encoded JSON (legacy bug fix)
-      if (typeof parsedContent === 'string') {
-        parsedContent = JSON.parse(parsedContent)
-      }
-      
-      if (parsedContent?.globalFonts) {
-        // Update font context with saved fonts
-        if (parsedContent.globalFonts.fontFamily) setFontFamily(parsedContent.globalFonts.fontFamily)
-        if (parsedContent.globalFonts.baseFontSize) setBaseFontSize(parsedContent.globalFonts.baseFontSize)
-        if (parsedContent.globalFonts.baseFontWeight) setBaseFontWeight(parsedContent.globalFonts.baseFontWeight)
-      }
-      
-      // Check if the parsed content has actual nodes (not just empty ROOT)
-      const { globalFonts: _, ...craftContent } = parsedContent
-      const hasNodes = craftContent.ROOT?.nodes && 
-        Array.isArray(craftContent.ROOT.nodes) && 
-        craftContent.ROOT.nodes.length > 0
-      
-      if (hasNodes) {
-        // Deserialize the saved content
-        actions.deserialize(JSON.stringify(craftContent))
-      }
-      
-      setHasLoadedContent(true)
-    } catch (error) {
-      console.error('Error loading content:', error)
-      setHasLoadedContent(true) // Mark as loaded to prevent retry
-    }
-  }, [hasLoadedContent, actions, setFontFamily, setBaseFontSize, setBaseFontWeight, initialContent])
+  }, [query, fontFamily, baseFontSize, baseFontWeight])
 
   const handleSave = async () => {
     setSaving(true)
@@ -245,40 +157,19 @@ function EditorContent({ onSave, initialContent, pageId }: { onSave: (content: a
     }
 
     try {
-      console.log('=== APPLYING TEMPLATE ===')
-      console.log('Template ID:', template.id)
-      console.log('Template craftSchema (raw):', template.craftSchema)
-      
-      // Parse to verify structure
-      const parsed = JSON.parse(template.craftSchema)
-      console.log('Template craftSchema (parsed):', parsed)
-      console.log('Template craftSchema keys:', Object.keys(parsed))
-      console.log('ROOT node:', parsed.ROOT)
-      
       // Apply template fonts
       setFontFamily(template.globalFonts.fontFamily)
       setBaseFontSize(template.globalFonts.baseFontSize)
       setBaseFontWeight(template.globalFonts.baseFontWeight)
 
-      // Get current state before deserialize
-      const currentState = query.serialize()
-      console.log('Current editor state before deserialize:', currentState)
-
       // The craftSchema is already in Craft.js serialized format
       // Just deserialize it directly - this replaces ALL content
-      console.log('Calling actions.deserialize...')
       actions.deserialize(template.craftSchema)
       
-      // Verify state after deserialize
-      const newState = query.serialize()
-      console.log('New editor state after deserialize:', newState)
-      
-      console.log('=== TEMPLATE APPLIED ===')
       setShowTemplatePicker(false)
     } catch (error) {
       console.error('Error applying template:', error)
-      console.error('Error stack:', (error as Error).stack)
-      alert('Failed to apply template. Check console for details.')
+      alert('Failed to apply template. Please try again.')
     }
   }
 
@@ -425,7 +316,11 @@ function EditorContent({ onSave, initialContent, pageId }: { onSave: (content: a
                 minHeight: '600px',
               }}
             >
-              <Frame>
+              {/* 
+                KEY FIX: Pass initial data directly to Frame via the `data` prop.
+                This is the correct Craft.js pattern - no useEffect/deserialize needed!
+              */}
+              <Frame data={initialCraftData || undefined}>
                 <div
                   style={{
                     fontFamily: fontFamily !== 'inherit' ? fontFamily : undefined,
@@ -440,7 +335,7 @@ function EditorContent({ onSave, initialContent, pageId }: { onSave: (content: a
                     canvas
                     className="min-h-[600px] w-full"
                   >
-                    {/* Start building by dragging components here */}
+                    {/* Default empty canvas - only used if no data prop */}
                   </Element>
                 </div>
               </Frame>
@@ -461,29 +356,26 @@ function EditorContent({ onSave, initialContent, pageId }: { onSave: (content: a
 }
 
 export function CraftEditor({ content, onSave, pageId }: CraftEditorProps) {
-  // Extract global font settings from content if available
-  let globalFonts = {}
-  try {
-    let parsed = typeof content === 'string' ? JSON.parse(content) : content
-    // Handle double-encoded JSON (legacy bug fix)
-    if (typeof parsed === 'string') {
-      parsed = JSON.parse(parsed)
-    }
-    globalFonts = parsed?.globalFonts || {}
-  } catch {
-    // Invalid content, use default fonts
-  }
+  // Parse content once, before rendering
+  const parsed = useMemo(() => parseContent(content), [content])
+  
+  // Extract values for providers
+  const globalFonts = parsed?.globalFonts || {}
+  
+  // Serialize craft content for Frame's data prop (must be a string)
+  const initialCraftData = useMemo(() => {
+    if (!parsed?.craftContent) return null
+    return JSON.stringify(parsed.craftContent)
+  }, [parsed])
   
   return (
     <FontProvider initialFonts={globalFonts}>
-      <Editor 
-        resolver={craftComponents}
-        onRender={({ render }) => {
-          // Ensure related settings are populated on nodes
-          return render
-        }}
-      >
-        <EditorContent onSave={onSave} initialContent={content} pageId={pageId} />
+      <Editor resolver={craftComponents}>
+        <EditorContent 
+          onSave={onSave} 
+          pageId={pageId} 
+          initialCraftData={initialCraftData}
+        />
       </Editor>
     </FontProvider>
   )
