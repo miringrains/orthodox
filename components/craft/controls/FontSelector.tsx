@@ -1,8 +1,9 @@
 'use client'
 
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { Label } from '@/components/ui/label'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { AVAILABLE_FONTS, getFontsByCategory, generateFontUrl, type FontDefinition } from '@/lib/fonts'
 
 interface FontSelectorProps {
   label: string
@@ -10,35 +11,117 @@ interface FontSelectorProps {
   onChange: (value: string) => void
 }
 
-const fontFamilies = [
-  { value: 'inherit', label: 'Inherit' },
-  { value: 'Arial, sans-serif', label: 'Arial' },
-  { value: 'Georgia, serif', label: 'Georgia' },
-  { value: 'Times New Roman, serif', label: 'Times New Roman' },
-  { value: 'Courier New, monospace', label: 'Courier New' },
-  { value: 'Verdana, sans-serif', label: 'Verdana' },
-  { value: 'Helvetica, sans-serif', label: 'Helvetica' },
-  { value: 'system-ui, sans-serif', label: 'System UI' },
-  { value: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif', label: 'System Default' },
-]
+// Track loaded fonts to avoid duplicate loading
+const loadedFonts = new Set<string>()
+
+function loadFont(font: FontDefinition) {
+  if (loadedFonts.has(font.family)) return
+  
+  const url = generateFontUrl(font.family)
+  if (!url) return
+  
+  // Check if already loaded in DOM
+  const existingLink = document.querySelector(`link[href="${url}"]`)
+  if (existingLink) {
+    loadedFonts.add(font.family)
+    return
+  }
+  
+  // Create and append link element
+  const link = document.createElement('link')
+  link.rel = 'stylesheet'
+  link.href = url
+  document.head.appendChild(link)
+  loadedFonts.add(font.family)
+}
 
 export function FontSelector({ label, value, onChange }: FontSelectorProps) {
+  const [previewFonts, setPreviewFonts] = useState<Set<string>>(new Set())
+  const fontsByCategory = getFontsByCategory()
+
+  // Load the currently selected font
+  useEffect(() => {
+    if (value && value !== 'inherit') {
+      const font = AVAILABLE_FONTS.find(f => f.family === value)
+      if (font) {
+        loadFont(font)
+      }
+    }
+  }, [value])
+
+  // Load font on hover for preview
+  const handleFontHover = (fontFamily: string) => {
+    const font = AVAILABLE_FONTS.find(f => f.family === fontFamily)
+    if (font && !previewFonts.has(fontFamily)) {
+      loadFont(font)
+      setPreviewFonts(prev => new Set(prev).add(fontFamily))
+    }
+  }
+
   return (
     <div>
       <Label>{label}</Label>
       <Select value={value || 'inherit'} onValueChange={onChange}>
         <SelectTrigger className="mt-2">
-          <SelectValue />
+          <SelectValue>
+            {value === 'inherit' ? 'System Default' : 
+              AVAILABLE_FONTS.find(f => f.family === value)?.name || value}
+          </SelectValue>
         </SelectTrigger>
-        <SelectContent>
-          {fontFamilies.map((font) => (
-            <SelectItem key={font.value} value={font.value}>
-              {font.label}
-            </SelectItem>
-          ))}
+        <SelectContent className="max-h-[400px]">
+          <SelectItem value="inherit">
+            <span className="font-medium">System Default</span>
+          </SelectItem>
+          
+          <SelectGroup>
+            <SelectLabel className="text-xs text-muted-foreground uppercase tracking-wide">
+              Serif (Traditional)
+            </SelectLabel>
+            {fontsByCategory.serif.map((font) => (
+              <SelectItem 
+                key={font.family} 
+                value={font.family}
+                onMouseEnter={() => handleFontHover(font.family)}
+              >
+                <span style={{ fontFamily: font.family }}>{font.name}</span>
+              </SelectItem>
+            ))}
+          </SelectGroup>
+
+          <SelectGroup>
+            <SelectLabel className="text-xs text-muted-foreground uppercase tracking-wide">
+              Sans-Serif (Modern)
+            </SelectLabel>
+            {fontsByCategory['sans-serif'].map((font) => (
+              <SelectItem 
+                key={font.family} 
+                value={font.family}
+                onMouseEnter={() => handleFontHover(font.family)}
+              >
+                <span style={{ fontFamily: font.family }}>{font.name}</span>
+              </SelectItem>
+            ))}
+          </SelectGroup>
+
+          <SelectGroup>
+            <SelectLabel className="text-xs text-muted-foreground uppercase tracking-wide">
+              Display (Headlines)
+            </SelectLabel>
+            {fontsByCategory.display.map((font) => (
+              <SelectItem 
+                key={font.family} 
+                value={font.family}
+                onMouseEnter={() => handleFontHover(font.family)}
+              >
+                <span style={{ fontFamily: font.family }}>{font.name}</span>
+              </SelectItem>
+            ))}
+          </SelectGroup>
         </SelectContent>
       </Select>
+      <p className="text-xs text-muted-foreground mt-1">
+        Powered by Google Fonts (free for commercial use)
+      </p>
     </div>
   )
 }
-
