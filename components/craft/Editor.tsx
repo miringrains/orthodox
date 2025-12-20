@@ -77,6 +77,23 @@ function EditorContent({
   }))
   const { fontFamily, baseFontSize, baseFontWeight, setFontFamily, setBaseFontSize, setBaseFontWeight } = useFontContext()
 
+  // Debug: log what Frame received
+  useEffect(() => {
+    console.log('=== EditorContent MOUNTED ===')
+    console.log('initialCraftData exists:', !!initialCraftData)
+    console.log('initialCraftData (first 200 chars):', initialCraftData?.substring(0, 200))
+    
+    // Check current editor state after mount
+    setTimeout(() => {
+      try {
+        const currentState = query.serialize()
+        console.log('Editor state after mount:', currentState.substring(0, 300))
+      } catch (e) {
+        console.log('Error getting editor state:', e)
+      }
+    }, 500)
+  }, [])
+
   // Keyboard shortcuts
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -320,7 +337,6 @@ function EditorContent({
                 KEY FIX: Pass initial data directly to Frame via the `data` prop.
                 This is the correct Craft.js pattern - no useEffect/deserialize needed!
               */}
-              {console.log('Rendering Frame with data:', !!initialCraftData, initialCraftData?.substring(0, 100))}
               <Frame data={initialCraftData || undefined}>
                 <div
                   style={{
