@@ -338,22 +338,18 @@ function EditorContent({
               }}
             >
               {/* 
-                When we have saved data, use it directly via data prop (no children needed).
-                When starting fresh, provide default Element as children.
+                Per Craft.js docs: Always provide children as the default structure.
+                The `json` prop overrides children when present.
               */}
-              {initialCraftData ? (
-                <Frame data={initialCraftData} />
-              ) : (
-                <Frame>
-                  <Element
-                    is="div"
-                    canvas
-                    className="min-h-[600px] w-full"
-                  >
-                    {/* Empty canvas for new pages */}
-                  </Element>
-                </Frame>
-              )}
+              <Frame json={initialCraftData}>
+                <Element
+                  is="div"
+                  canvas
+                  className="min-h-[600px] w-full"
+                >
+                  {/* Default empty canvas - overridden by json when present */}
+                </Element>
+              </Frame>
             </div>
           </div>
         </div>
