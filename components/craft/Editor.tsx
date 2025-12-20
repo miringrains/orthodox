@@ -331,31 +331,29 @@ function EditorContent({
                 width: viewportWidths[viewMode],
                 maxWidth: '100%',
                 minHeight: '600px',
+                // Apply global fonts to the entire canvas area
+                fontFamily: fontFamily !== 'inherit' ? fontFamily : undefined,
+                fontSize: baseFontSize,
+                fontWeight: baseFontWeight,
               }}
             >
               {/* 
-                KEY FIX: Pass initial data directly to Frame via the `data` prop.
-                This is the correct Craft.js pattern - no useEffect/deserialize needed!
+                When we have saved data, use it directly via data prop (no children needed).
+                When starting fresh, provide default Element as children.
               */}
-              <Frame data={initialCraftData || undefined}>
-                <div
-                  style={{
-                    fontFamily: fontFamily !== 'inherit' ? fontFamily : undefined,
-                    fontSize: baseFontSize,
-                    fontWeight: baseFontWeight,
-                    minHeight: '600px',
-                    width: '100%',
-                  }}
-                >
+              {initialCraftData ? (
+                <Frame data={initialCraftData} />
+              ) : (
+                <Frame>
                   <Element
                     is="div"
                     canvas
                     className="min-h-[600px] w-full"
                   >
-                    {/* Default empty canvas - only used if no data prop */}
+                    {/* Empty canvas for new pages */}
                   </Element>
-                </div>
-              </Frame>
+                </Frame>
+              )}
             </div>
           </div>
         </div>
