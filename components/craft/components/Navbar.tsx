@@ -12,6 +12,7 @@ import { SettingsAccordion } from '../controls/SettingsAccordion'
 import { ColorPicker } from '../controls/ColorPicker'
 import { createClient } from '@/lib/supabase/client'
 import { useParams } from 'next/navigation'
+import { useFontContext } from '../contexts/FontContext'
 
 interface NavbarProps {
   logoUrl?: string
@@ -54,6 +55,8 @@ export function Navbar({
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false)
   const [isMobile, setIsMobile] = React.useState(false)
   const navRef = React.useRef<HTMLElement>(null)
+  const globalFonts = useFontContext()
+  const effectiveFontFamily = globalFonts.fontFamily !== 'inherit' ? globalFonts.fontFamily : undefined
 
   React.useEffect(() => {
     if (!navRef.current) return
@@ -123,7 +126,7 @@ export function Navbar({
             {showParishName && parishName && (
               <span 
                 className="mt-2 text-lg tracking-wide"
-                style={{ color: textColor, fontFamily: 'serif' }}
+                style={{ color: textColor, fontFamily: effectiveFontFamily }}
               >
                 {parishName}
               </span>
@@ -203,7 +206,7 @@ export function Navbar({
                 {showParishName && parishName && (
                   <span 
                     className="text-lg tracking-wide"
-                    style={{ color: textColor, fontFamily: 'serif' }}
+                    style={{ color: textColor, fontFamily: effectiveFontFamily }}
                   >
                     {parishName}
                   </span>
@@ -278,7 +281,7 @@ export function Navbar({
                 {showParishName && parishName && (
                   <span 
                     className="text-lg tracking-wide hidden sm:block"
-                    style={{ color: textColor, fontFamily: 'serif' }}
+                    style={{ color: textColor, fontFamily: effectiveFontFamily }}
                   >
                     {parishName}
                   </span>

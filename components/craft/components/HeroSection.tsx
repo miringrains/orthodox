@@ -12,6 +12,7 @@ import { useParams } from 'next/navigation'
 import { SettingsAccordion } from '../controls/SettingsAccordion'
 import { OpacityControl } from '../controls/OpacityControl'
 import { ColorPicker } from '../controls/ColorPicker'
+import { useFontContext } from '../contexts/FontContext'
 
 interface HeroSectionProps {
   title?: string
@@ -28,6 +29,47 @@ interface HeroSectionProps {
   contentAlign?: 'left' | 'center' | 'right'
   verticalAlign?: 'top' | 'center' | 'bottom'
   minHeight?: number
+  heroStyle?: 'centered' | 'fullImage' | 'split' | 'minimal' | 'circularImage'
+  circularImageUrl?: string
+}
+
+// Preset configurations
+const HERO_PRESETS = {
+  centered: {
+    contentAlign: 'center' as const,
+    verticalAlign: 'center' as const,
+    minHeight: 500,
+    padding: 120,
+    overlayOpacity: 40,
+  },
+  fullImage: {
+    contentAlign: 'center' as const,
+    verticalAlign: 'bottom' as const,
+    minHeight: 600,
+    padding: 80,
+    overlayOpacity: 60,
+  },
+  split: {
+    contentAlign: 'left' as const,
+    verticalAlign: 'center' as const,
+    minHeight: 500,
+    padding: 100,
+    overlayOpacity: 30,
+  },
+  minimal: {
+    contentAlign: 'center' as const,
+    verticalAlign: 'center' as const,
+    minHeight: 400,
+    padding: 160,
+    overlayOpacity: 0,
+  },
+  circularImage: {
+    contentAlign: 'center' as const,
+    verticalAlign: 'center' as const,
+    minHeight: 550,
+    padding: 100,
+    overlayOpacity: 40,
+  },
 }
 
 export function HeroSection({ 
@@ -45,6 +87,8 @@ export function HeroSection({
   contentAlign = 'center',
   verticalAlign = 'center',
   minHeight = 500,
+  heroStyle = 'centered',
+  circularImageUrl = '',
 }: HeroSectionProps) {
   const {
     connectors: { connect, drag },
@@ -52,6 +96,18 @@ export function HeroSection({
   } = useNode((state) => ({
     isSelected: state.events.selected,
   }))
+
+  // Use global font context instead of hardcoded serif
+  const globalFonts = useFontContext()
+  const effectiveFontFamily = globalFonts.fontFamily !== 'inherit' ? globalFonts.fontFamily : undefined
+
+  // Apply preset values (user can still override)
+  const preset = HERO_PRESETS[heroStyle] || HERO_PRESETS.centered
+  const effectiveContentAlign = contentAlign || preset.contentAlign
+  const effectiveVerticalAlign = verticalAlign || preset.verticalAlign
+  const effectiveMinHeight = minHeight || preset.minHeight
+  const effectivePadding = padding || preset.padding
+  const effectiveOverlayOpacity = overlayOpacity !== undefined ? overlayOpacity : preset.overlayOpacity
 
   // Title sizes with tight line-height and negative letter-spacing for refinement
   const titleSizeClasses = {
@@ -87,6 +143,157 @@ export function HeroSection({
     bottom: 'justify-end',
   }
 
+  // Split layout: image on right, text on left
+  if (heroStyle === 'split' && imageUrl) {
+    return (
+      <section
+        ref={(ref) => {
+          if (ref) {
+            connect(drag(ref))
+          }
+        }}
+        className={`
+          relative flex
+          ${isSelected ? 'ring-2 ring-primary' : ''}
+        `}
+        style={{
+          minHeight: `${effectiveMinHeight}px`,
+          paddingTop: `${effectivePadding}px`,
+          paddingBottom: `${effectivePadding}px`,
+        }}
+      >
+        <div className="container mx-auto px-4 relative z-10 w-full">
+          <div className="grid md:grid-cols-2 gap-8 items-center">
+            {/* Text Content */}
+            <div className={`flex flex-col ${alignClasses[effectiveContentAlign]}`} style={{ color: textColor || '#ffffff' }}>
+              {(showTitle || showSubtitle) && (
+                <div className={`mb-8 ${alignClasses[effectiveContentAlign]}`}>
+                  {showTitle && (
+                    <h1 
+                      className={`${titleSizeClasses[titleSize]} font-bold mb-6`}
+                      style={{ 
+                        fontFamily: effectiveFontFamily,
+                        letterSpacing: titleLetterSpacing[titleSize],
+                      }}
+                    >
+                      {title || 'Welcome to Our Parish'}
+                    </h1>
+                  )}
+                  {showSubtitle && (
+                    <p className={`${subtitleSizeClasses[subtitleSize]} opacity-90 leading-relaxed`}>
+                      {subtitle || 'Join us in worship and fellowship'}
+                    </p>
+                  )}
+                </div>
+              )}
+              <Element is="div" canvas id="hero-content" className={`w-full flex flex-col ${alignClasses[effectiveContentAlign]}`}>
+                {/* Drop components here */}
+              </Element>
+            </div>
+            {/* Image */}
+            <div className="relative">
+              <div
+                className="w-full h-96 rounded-lg bg-cover bg-center"
+                style={{ backgroundImage: `url(${imageUrl})` }}
+              />
+              <div
+                className="absolute inset-0 rounded-lg"
+                style={{ 
+                  backgroundColor: overlayColor || '#000000',
+                  opacity: effectiveOverlayOpacity / 100,
+                }}
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  // Circular image layout
+  if (heroStyle === 'circularImage') {
+    return (
+      <section
+        ref={(ref) => {
+          if (ref) {
+            connect(drag(ref))
+          }
+        }}
+        className={`
+          relative flex
+          ${isSelected ? 'ring-2 ring-primary' : ''}
+        `}
+        style={{
+          minHeight: `${effectiveMinHeight}px`,
+          paddingTop: `${effectivePadding}px`,
+          paddingBottom: `${effectivePadding}px`,
+        }}
+      >
+        {/* Background Image Layer */}
+        {imageUrl && (
+          <div
+            className="absolute inset-0 bg-cover bg-center"
+            style={{ backgroundImage: `url(${imageUrl})` }}
+          />
+        )}
+        
+        {/* Overlay Layer */}
+        <div
+          className="absolute inset-0"
+          style={{ 
+            backgroundColor: overlayColor || '#000000',
+            opacity: effectiveOverlayOpacity / 100,
+          }}
+        />
+        
+        {/* Content Layer */}
+        <div 
+          className={`container mx-auto px-4 relative z-10 flex flex-col ${verticalAlignClasses[effectiveVerticalAlign]} ${alignClasses[effectiveContentAlign]}`}
+          style={{ color: textColor || '#ffffff' }}
+        >
+          {(showTitle || showSubtitle) && (
+            <div className={`mb-8 max-w-4xl ${alignClasses[effectiveContentAlign]}`}>
+              {showTitle && (
+                <h1 
+                  className={`${titleSizeClasses[titleSize]} font-bold mb-6`}
+                  style={{ 
+                    fontFamily: effectiveFontFamily,
+                    letterSpacing: titleLetterSpacing[titleSize],
+                  }}
+                >
+                  {title || 'Welcome to Our Parish'}
+                </h1>
+              )}
+              {showSubtitle && (
+                <p className={`${subtitleSizeClasses[subtitleSize]} opacity-90 leading-relaxed max-w-2xl ${effectiveContentAlign === 'center' ? 'mx-auto' : ''}`}>
+                  {subtitle || 'Join us in worship and fellowship'}
+                </p>
+              )}
+            </div>
+          )}
+          
+          {/* Circular Image */}
+          {(circularImageUrl || imageUrl) && (
+            <div className="mb-8 flex justify-center">
+              <div
+                className="w-64 h-64 rounded-full bg-cover bg-center border-4 shadow-2xl"
+                style={{ 
+                  backgroundImage: `url(${circularImageUrl || imageUrl})`,
+                  borderColor: textColor || '#ffffff',
+                }}
+              />
+            </div>
+          )}
+          
+          <Element is="div" canvas id="hero-content" className={`w-full flex flex-col ${alignClasses[effectiveContentAlign]}`}>
+            {/* Drop components here */}
+          </Element>
+        </div>
+      </section>
+    )
+  }
+
+  // Default layouts (centered, fullImage, minimal)
   return (
     <section
       ref={(ref) => {
@@ -99,13 +306,13 @@ export function HeroSection({
         ${isSelected ? 'ring-2 ring-primary' : ''}
       `}
       style={{
-        minHeight: `${minHeight}px`,
-        paddingTop: `${padding}px`,
-        paddingBottom: `${padding}px`,
+        minHeight: `${effectiveMinHeight}px`,
+        paddingTop: `${effectivePadding}px`,
+        paddingBottom: `${effectivePadding}px`,
       }}
     >
       {/* Background Image Layer */}
-      {imageUrl && (
+      {imageUrl && heroStyle !== 'minimal' && (
         <div
           className="absolute inset-0 bg-cover bg-center"
           style={{ backgroundImage: `url(${imageUrl})` }}
@@ -113,26 +320,28 @@ export function HeroSection({
       )}
       
       {/* Overlay Layer */}
-      <div
-        className="absolute inset-0"
-        style={{ 
-          backgroundColor: overlayColor || '#000000',
-          opacity: (overlayOpacity || 0) / 100,
-        }}
-      />
+      {heroStyle !== 'minimal' && (
+        <div
+          className="absolute inset-0"
+          style={{ 
+            backgroundColor: overlayColor || '#000000',
+            opacity: effectiveOverlayOpacity / 100,
+          }}
+        />
+      )}
       
       {/* Content Layer */}
       <div 
-        className={`container mx-auto px-4 relative z-10 flex flex-col ${verticalAlignClasses[verticalAlign]} ${alignClasses[contentAlign]}`}
+        className={`container mx-auto px-4 relative z-10 flex flex-col ${verticalAlignClasses[effectiveVerticalAlign]} ${alignClasses[effectiveContentAlign]}`}
         style={{ color: textColor || '#ffffff' }}
       >
         {(showTitle || showSubtitle) && (
-          <div className={`mb-8 max-w-4xl ${alignClasses[contentAlign]}`}>
+          <div className={`mb-8 max-w-4xl ${alignClasses[effectiveContentAlign]}`}>
             {showTitle && (
               <h1 
                 className={`${titleSizeClasses[titleSize]} font-bold mb-6`}
                 style={{ 
-                  fontFamily: 'serif',
+                  fontFamily: effectiveFontFamily,
                   letterSpacing: titleLetterSpacing[titleSize],
                 }}
               >
@@ -140,13 +349,13 @@ export function HeroSection({
               </h1>
             )}
             {showSubtitle && (
-              <p className={`${subtitleSizeClasses[subtitleSize]} opacity-90 leading-relaxed max-w-2xl ${contentAlign === 'center' ? 'mx-auto' : ''}`}>
+              <p className={`${subtitleSizeClasses[subtitleSize]} opacity-90 leading-relaxed max-w-2xl ${effectiveContentAlign === 'center' ? 'mx-auto' : ''}`}>
                 {subtitle || 'Join us in worship and fellowship'}
               </p>
             )}
           </div>
         )}
-        <Element is="div" canvas id="hero-content" className={`w-full flex flex-col ${alignClasses[contentAlign]}`}>
+        <Element is="div" canvas id="hero-content" className={`w-full flex flex-col ${alignClasses[effectiveContentAlign]}`}>
           {/* Drop components here (buttons, images, etc.) */}
         </Element>
       </div>
@@ -267,8 +476,126 @@ function HeroSectionSettings() {
     e.preventDefault()
   }
 
+  const [uploadingCircular, setUploadingCircular] = useState(false)
+  const [previewCircularUrl, setPreviewCircularUrl] = useState<string | null>(null)
+  const circularFileInputRef = useRef<HTMLInputElement>(null)
+
+  const handleCircularImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    if (!file.type.startsWith('image/')) {
+      setUploadError('Please select an image file')
+      return
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      setUploadError('Image must be less than 5MB')
+      return
+    }
+
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      setPreviewCircularUrl(e.target?.result as string)
+    }
+    reader.readAsDataURL(file)
+
+    setUploadingCircular(true)
+    setUploadError('')
+
+    try {
+      const supabase = createClient()
+      
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) {
+        throw new Error('You must be logged in to upload images')
+      }
+
+      const { data: page } = await supabase
+        .from('pages')
+        .select('parish_id')
+        .eq('id', pageId)
+        .single()
+
+      if (!page) {
+        throw new Error('Page not found')
+      }
+
+      const fileExt = file.name.split('.').pop()
+      const fileName = `pages/${page.parish_id}/${pageId}/hero/circular/${Date.now()}.${fileExt}`
+
+      const { error: uploadErr } = await supabase.storage
+        .from('media')
+        .upload(fileName, file, {
+          cacheControl: '3600',
+          upsert: false
+        })
+
+      if (uploadErr) throw uploadErr
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('media')
+        .getPublicUrl(fileName)
+
+      setProp((props: any) => {
+        props.circularImageUrl = publicUrl
+      })
+
+      setPreviewCircularUrl(null)
+    } catch (error: any) {
+      console.error('Error uploading circular image:', error)
+      setUploadError(error.message || 'Failed to upload image')
+      setPreviewCircularUrl(null)
+    } finally {
+      setUploadingCircular(false)
+    }
+  }
+
   return (
     <div className="divide-y divide-gray-100">
+      {/* Hero Style Preset - Most Important */}
+      <SettingsAccordion title="Hero Style" defaultOpen>
+        <div>
+          <Label className="text-sm font-medium mb-2 block">Choose a Layout</Label>
+          <div className="grid grid-cols-2 gap-2">
+            {[
+              { label: 'Centered', value: 'centered', desc: 'Classic centered text' },
+              { label: 'Full Image', value: 'fullImage', desc: 'Dramatic background' },
+              { label: 'Split', value: 'split', desc: 'Image + text side-by-side' },
+              { label: 'Minimal', value: 'minimal', desc: 'Text only, spacious' },
+              { label: 'Circular', value: 'circularImage', desc: 'Featured circular image' },
+            ].map((option) => (
+              <button
+                key={option.value}
+                type="button"
+                onClick={() => {
+                  const preset = HERO_PRESETS[option.value as keyof typeof HERO_PRESETS]
+                  setProp((p: any) => {
+                    p.heroStyle = option.value
+                    // Apply preset defaults
+                    if (!p.contentAlign) p.contentAlign = preset.contentAlign
+                    if (!p.verticalAlign) p.verticalAlign = preset.verticalAlign
+                    if (!p.minHeight) p.minHeight = preset.minHeight
+                    if (!p.padding) p.padding = preset.padding
+                    if (p.overlayOpacity === undefined) p.overlayOpacity = preset.overlayOpacity
+                  })
+                }}
+                className={`p-3 text-left rounded-md border transition-colors ${
+                  (props.heroStyle || 'centered') === option.value
+                    ? 'bg-primary text-primary-foreground border-primary'
+                    : 'bg-white hover:bg-gray-50 border-gray-200'
+                }`}
+              >
+                <div className="font-medium text-xs">{option.label}</div>
+                <div className={`text-xs mt-0.5 ${(props.heroStyle || 'centered') === option.value ? 'opacity-90' : 'text-gray-500'}`}>
+                  {option.desc}
+                </div>
+              </button>
+            ))}
+          </div>
+        </div>
+      </SettingsAccordion>
+
       {/* Content Section */}
       <SettingsAccordion title="Content" defaultOpen>
         <div className="flex items-center space-x-2">
@@ -311,6 +638,60 @@ function HeroSectionSettings() {
           </div>
         )}
       </SettingsAccordion>
+
+      {/* Circular Image (only for circularImage style) */}
+      {props.heroStyle === 'circularImage' && (
+        <SettingsAccordion title="Circular Image" defaultOpen>
+          <div>
+            <Label className="text-sm font-medium">Circular Feature Image</Label>
+            <div
+              className="mt-2 border-2 border-dashed border-gray-200 rounded-lg p-4 text-center hover:border-primary/50 transition-colors cursor-pointer"
+              onClick={() => circularFileInputRef.current?.click()}
+            >
+              <input
+                ref={circularFileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleCircularImageUpload}
+                disabled={uploadingCircular}
+                className="hidden"
+              />
+              {previewCircularUrl ? (
+                <div className="space-y-2">
+                  <img src={previewCircularUrl} alt="Preview" className="max-h-24 mx-auto rounded-full" />
+                  <p className="text-xs text-gray-500">Uploading...</p>
+                </div>
+              ) : uploadingCircular ? (
+                <div className="space-y-2">
+                  <Loader2 className="h-6 w-6 mx-auto animate-spin text-primary" />
+                  <p className="text-xs text-gray-500">Uploading...</p>
+                </div>
+              ) : props.circularImageUrl ? (
+                <div className="space-y-2">
+                  <img src={props.circularImageUrl} alt="Circular" className="max-h-24 mx-auto rounded-full" />
+                  <p className="text-xs text-gray-500">Click to change</p>
+                </div>
+              ) : (
+                <div className="space-y-2 py-2">
+                  <ImageIcon className="h-6 w-6 mx-auto text-gray-400" />
+                  <p className="text-xs text-gray-500">Click to upload circular image</p>
+                </div>
+              )}
+            </div>
+            {props.circularImageUrl && (
+              <Button
+                variant="ghost"
+                size="sm"
+                className="w-full mt-2 text-red-500 hover:text-red-600 hover:bg-red-50"
+                onClick={() => setProp((p: any) => (p.circularImageUrl = ''))}
+              >
+                <X className="h-4 w-4 mr-1" />
+                Remove Circular Image
+              </Button>
+            )}
+          </div>
+        </SettingsAccordion>
+      )}
 
       {/* Background Section */}
       <SettingsAccordion title="Background" defaultOpen>
@@ -550,6 +931,8 @@ HeroSection.craft = {
     contentAlign: 'center',
     verticalAlign: 'center',
     minHeight: 500,
+    heroStyle: 'centered',
+    circularImageUrl: '',
   },
   related: {
     settings: HeroSectionSettings,

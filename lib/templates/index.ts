@@ -14,6 +14,8 @@ import { cathedralLightTemplate } from './cathedral-light'
 import { cathedralDarkTemplate } from './cathedral-dark'
 import { paschaLightTemplate } from './pascha-light'
 import { paschaDarkTemplate } from './pascha-dark'
+import { byzantineLightTemplate } from './byzantine-light'
+import { byzantineDarkTemplate } from './byzantine-dark'
 
 // All available templates
 const templates: PageTemplate[] = [
@@ -23,6 +25,8 @@ const templates: PageTemplate[] = [
   cathedralDarkTemplate,
   paschaLightTemplate,
   paschaDarkTemplate,
+  byzantineLightTemplate,
+  byzantineDarkTemplate,
 ]
 
 /**
@@ -59,6 +63,8 @@ export {
   cathedralDarkTemplate,
   paschaLightTemplate,
   paschaDarkTemplate,
+  byzantineLightTemplate,
+  byzantineDarkTemplate,
 }
 
 

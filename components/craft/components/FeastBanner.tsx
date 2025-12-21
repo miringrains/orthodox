@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { SettingsAccordion } from '../controls/SettingsAccordion'
 import { ColorPicker } from '../controls/ColorPicker'
+import { useFontContext } from '../contexts/FontContext'
 
 /**
  * Feast Banner Component
@@ -51,6 +52,9 @@ export function FeastBanner({
     isSelected: state.events.selected,
   }))
 
+  const globalFonts = useFontContext()
+  const effectiveFontFamily = globalFonts.fontFamily !== 'inherit' ? globalFonts.fontFamily : undefined
+
   return (
     <div
       ref={(ref) => {
@@ -79,7 +83,7 @@ export function FeastBanner({
           className="text-center text-2xl md:text-3xl font-bold mb-2"
           style={{ 
             color: textColor,
-            fontFamily: 'serif',
+            fontFamily: effectiveFontFamily,
           }}
         >
           {feastTitle}
@@ -106,7 +110,7 @@ export function FeastBanner({
               style={{ 
                 color: textColor,
                 opacity: 0.9,
-                fontFamily: 'serif',
+                fontFamily: effectiveFontFamily,
               }}
             >
               "{troparion}"
