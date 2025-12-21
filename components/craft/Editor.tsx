@@ -387,10 +387,8 @@ function EditorContent({
                 width: viewportWidths[viewMode],
                 maxWidth: '100%',
                 minHeight: '600px',
-                // Apply global fonts to the entire canvas area
-                fontFamily: fontFamily !== 'inherit' ? fontFamily : undefined,
+                // Apply base font size to the entire canvas area
                 fontSize: baseFontSize,
-                fontWeight: baseFontWeight,
               }}
             >
               {/* 
