@@ -32,9 +32,14 @@ export interface PageTemplate {
   fonts: TemplateFonts
   craftSchema: string // Serialized Craft.js JSON
   globalFonts: {
-    fontFamily: string
+    // New font system (preferred)
+    headingFont?: string
+    bodyFont?: string
+    buttonFont?: string
+    // Legacy support - maps to all three if new ones not set
+    fontFamily?: string
     baseFontSize: string
-    baseFontWeight: string
+    baseFontWeight?: string
   }
 }
 

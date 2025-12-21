@@ -488,9 +488,10 @@ export const paschaLightTemplate: PageTemplate = {
     body: 'DM Sans',
   },
   globalFonts: {
-    fontFamily: 'DM Sans, sans-serif',
-    baseFontSize: '16px',
-    baseFontWeight: 'normal',
+    headingFont: 'Lora, serif',
+    bodyFont: 'DM Sans, sans-serif',
+    buttonFont: 'DM Sans, sans-serif',
+    baseFontSize: '17px',
   },
   craftSchema: JSON.stringify(craftSchema),
 }

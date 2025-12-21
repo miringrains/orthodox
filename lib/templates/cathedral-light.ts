@@ -534,9 +534,10 @@ export const cathedralLightTemplate: PageTemplate = {
     body: 'Inter',
   },
   globalFonts: {
-    fontFamily: 'Inter, sans-serif',
+    headingFont: 'Cinzel, serif',
+    bodyFont: 'Inter, sans-serif',
+    buttonFont: 'Inter, sans-serif',
     baseFontSize: '17px',
-    baseFontWeight: 'normal',
   },
   craftSchema: JSON.stringify(craftSchema),
 }

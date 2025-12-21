@@ -432,9 +432,10 @@ export const cathedralDarkTemplate: PageTemplate = {
     body: 'Inter',
   },
   globalFonts: {
-    fontFamily: 'Inter, sans-serif',
-    baseFontSize: '16px',
-    baseFontWeight: 'normal',
+    headingFont: 'Cinzel, serif',
+    bodyFont: 'Inter, sans-serif',
+    buttonFont: 'Inter, sans-serif',
+    baseFontSize: '17px',
   },
   craftSchema: JSON.stringify(craftSchema),
 }

@@ -228,10 +228,12 @@ function EditorContent({
     }
 
     try {
-      // Apply template fonts
-      setFontFamily(template.globalFonts.fontFamily)
-      setBaseFontSize(template.globalFonts.baseFontSize)
-      setBaseFontWeight(template.globalFonts.baseFontWeight)
+      // Apply template fonts - templates use legacy fontFamily, map to all three
+      const templateFont = template.globalFonts.fontFamily || 'inherit'
+      setHeadingFont(template.globalFonts.headingFont || templateFont)
+      setBodyFont(template.globalFonts.bodyFont || templateFont)
+      setButtonFont(template.globalFonts.buttonFont || templateFont)
+      setBaseFontSize(template.globalFonts.baseFontSize || '16px')
 
       // The craftSchema is already in Craft.js serialized format
       // Just deserialize it directly - this replaces ALL content

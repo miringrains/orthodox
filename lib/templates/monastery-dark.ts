@@ -371,9 +371,10 @@ export const monasteryDarkTemplate: PageTemplate = {
     body: 'Source Sans 3',
   },
   globalFonts: {
-    fontFamily: 'Source Sans 3, sans-serif',
+    headingFont: 'Playfair Display, serif',
+    bodyFont: 'Source Sans 3, sans-serif',
+    buttonFont: 'Source Sans 3, sans-serif',
     baseFontSize: '17px',
-    baseFontWeight: 'normal',
   },
   craftSchema: JSON.stringify(craftSchema),
 }

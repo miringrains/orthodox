@@ -469,9 +469,10 @@ export const byzantineLightTemplate: PageTemplate = {
     body: 'Source Sans 3',
   },
   globalFonts: {
-    fontFamily: 'Cormorant Garamond, serif',
-    baseFontSize: '18px',
-    baseFontWeight: 'normal',
+    headingFont: 'Cormorant Garamond, serif',
+    bodyFont: 'Source Sans 3, sans-serif',
+    buttonFont: 'Source Sans 3, sans-serif',
+    baseFontSize: '17px',
   },
   craftSchema: JSON.stringify(craftSchema),
 }
