@@ -99,13 +99,23 @@ function EditorContent({
   const { query, actions } = useEditor((state) => ({
     enabled: state.options.enabled,
   }))
-  const { fontFamily, baseFontSize, baseFontWeight, setFontFamily, setBaseFontSize, setBaseFontWeight } = useFontContext()
+  const { 
+    headingFont, 
+    bodyFont, 
+    buttonFont, 
+    baseFontSize,
+    setHeadingFont,
+    setBodyFont,
+    setButtonFont,
+    setBaseFontSize,
+  } = useFontContext()
 
-  // Load font from Google Fonts when fontFamily changes
+  // Load fonts from Google Fonts when they change
   useEffect(() => {
-    console.log('Font family changed to:', fontFamily)
-    loadGoogleFont(fontFamily)
-  }, [fontFamily])
+    loadGoogleFont(headingFont)
+    loadGoogleFont(bodyFont)
+    loadGoogleFont(buttonFont)
+  }, [headingFont, bodyFont, buttonFont])
 
   // Debug: log what Frame received
   useEffect(() => {
@@ -136,7 +146,7 @@ function EditorContent({
 
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [query, fontFamily, baseFontSize, baseFontWeight])
+  }, [query, headingFont, bodyFont, buttonFont, baseFontSize])
 
   const handleSave = async () => {
     console.log('=== EDITOR handleSave CALLED ===')
@@ -157,9 +167,10 @@ function EditorContent({
       const contentWithFonts = {
         ...parsed,
         globalFonts: {
-          fontFamily,
+          headingFont,
+          bodyFont,
+          buttonFont,
           baseFontSize,
-          baseFontWeight,
         },
       }
       console.log('contentWithFonts keys:', Object.keys(contentWithFonts))

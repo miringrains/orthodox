@@ -9,6 +9,7 @@ interface FontSelectorProps {
   label: string
   value: string
   onChange: (value: string) => void
+  description?: string
 }
 
 // Track loaded fonts to avoid duplicate loading
@@ -35,7 +36,7 @@ function loadFont(font: FontDefinition) {
   loadedFonts.add(font.family)
 }
 
-export function FontSelector({ label, value, onChange }: FontSelectorProps) {
+export function FontSelector({ label, value, onChange, description }: FontSelectorProps) {
   const [previewFonts, setPreviewFonts] = useState<Set<string>>(new Set())
   const fontsByCategory = getFontsByCategory()
 
@@ -124,9 +125,9 @@ export function FontSelector({ label, value, onChange }: FontSelectorProps) {
           </SelectGroup>
         </SelectContent>
       </Select>
-      <p className="text-xs text-muted-foreground mt-1">
-        Powered by Google Fonts (free for commercial use)
-      </p>
+      {description && (
+        <p className="text-xs text-muted-foreground mt-1">{description}</p>
+      )}
     </div>
   )
 }

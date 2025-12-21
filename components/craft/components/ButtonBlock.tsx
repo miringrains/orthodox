@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input'
 import { SettingsAccordion } from '../controls/SettingsAccordion'
 import { ColorPicker } from '../controls/ColorPicker'
 import { getContrastTextColor } from '@/lib/color-utils'
+import { useFontContext } from '../contexts/FontContext'
 
 interface ButtonBlockProps {
   text?: string
@@ -40,6 +41,9 @@ export function ButtonBlock({
     isSelected: state.events.selected,
   }))
 
+  const globalFonts = useFontContext()
+  const effectiveFontFamily = globalFonts.buttonFont !== 'inherit' ? globalFonts.buttonFont : undefined
+
   const alignClasses = {
     left: 'justify-start',
     center: 'justify-center',
@@ -64,6 +68,7 @@ export function ButtonBlock({
 
   // Build button styles
   const buttonStyles: React.CSSProperties = {
+    fontFamily: effectiveFontFamily,
     fontWeight: 500,
     letterSpacing: '0.025em',
     borderRadius: '6px',

@@ -11,29 +11,37 @@ interface CraftRendererProps {
 }
 
 /**
+ * Helper to load a single font
+ */
+function loadFont(fontFamily: string) {
+  if (!fontFamily || fontFamily === 'inherit') return
+  
+  const font = AVAILABLE_FONTS.find(f => f.family === fontFamily)
+  if (!font) return
+  
+  const url = generateFontUrl(fontFamily)
+  if (!url) return
+  
+  // Check if already loaded
+  const existingLink = document.querySelector(`link[href="${url}"]`)
+  if (existingLink) return
+  
+  // Create and append link element
+  const link = document.createElement('link')
+  link.rel = 'stylesheet'
+  link.href = url
+  document.head.appendChild(link)
+}
+
+/**
  * Component to dynamically load Google Fonts on the public page
  */
-function FontLoader({ fontFamily }: { fontFamily?: string }) {
+function FontLoader({ fonts }: { fonts: { headingFont?: string; bodyFont?: string; buttonFont?: string } }) {
   useEffect(() => {
-    if (!fontFamily || fontFamily === 'inherit') return
-    
-    // Check if font is in our available fonts list
-    const font = AVAILABLE_FONTS.find(f => f.family === fontFamily)
-    if (!font) return
-    
-    const url = generateFontUrl(fontFamily)
-    if (!url) return
-    
-    // Check if already loaded
-    const existingLink = document.querySelector(`link[href="${url}"]`)
-    if (existingLink) return
-    
-    // Create and append link element
-    const link = document.createElement('link')
-    link.rel = 'stylesheet'
-    link.href = url
-    document.head.appendChild(link)
-  }, [fontFamily])
+    if (fonts.headingFont) loadFont(fonts.headingFont)
+    if (fonts.bodyFont) loadFont(fonts.bodyFont)
+    if (fonts.buttonFont) loadFont(fonts.buttonFont)
+  }, [fonts.headingFont, fonts.bodyFont, fonts.buttonFont])
   
   return null
 }
@@ -96,8 +104,8 @@ export function CraftRenderer({ content }: CraftRendererProps) {
     
     return (
       <FontProvider initialFonts={globalFonts}>
-        {/* Load the font from Google Fonts */}
-        <FontLoader fontFamily={globalFonts.fontFamily} />
+        {/* Load all fonts from Google Fonts */}
+        <FontLoader fonts={globalFonts} />
         
         <div
           style={{

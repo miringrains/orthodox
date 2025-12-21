@@ -63,9 +63,9 @@ export function Heading({
     isSelected: state.events.selected,
   }))
   
-  // Use global font settings if component doesn't override
+  // Use global heading font unless component overrides
   const globalFonts = useFontContext()
-  const effectiveFontFamily = fontFamily && fontFamily !== 'inherit' ? fontFamily : globalFonts.fontFamily
+  const effectiveFontFamily = fontFamily && fontFamily !== 'inherit' ? fontFamily : globalFonts.headingFont
   // IMPORTANT: Only use explicit fontSize if set - don't fall back to global base size
   // This allows Tailwind size classes (text-3xl, text-4xl, etc.) to work properly
   const effectiveFontSize = fontSize && fontSize.trim() !== '' ? fontSize : undefined

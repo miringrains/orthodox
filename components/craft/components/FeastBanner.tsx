@@ -53,7 +53,8 @@ export function FeastBanner({
   }))
 
   const globalFonts = useFontContext()
-  const effectiveFontFamily = globalFonts.fontFamily !== 'inherit' ? globalFonts.fontFamily : undefined
+  // Feast banner uses heading font
+  const effectiveHeadingFont = globalFonts.headingFont !== 'inherit' ? globalFonts.headingFont : undefined
 
   return (
     <div
@@ -83,7 +84,7 @@ export function FeastBanner({
           className="text-center text-2xl md:text-3xl font-bold mb-2"
           style={{ 
             color: textColor,
-            fontFamily: effectiveFontFamily,
+            fontFamily: effectiveHeadingFont,
           }}
         >
           {feastTitle}
@@ -110,7 +111,7 @@ export function FeastBanner({
               style={{ 
                 color: textColor,
                 opacity: 0.9,
-                fontFamily: effectiveFontFamily,
+                fontFamily: effectiveHeadingFont,
               }}
             >
               "{troparion}"

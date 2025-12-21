@@ -60,7 +60,9 @@ export function Navbar({
   const [isMobile, setIsMobile] = React.useState(false)
   const navRef = React.useRef<HTMLElement>(null)
   const globalFonts = useFontContext()
-  const effectiveFontFamily = globalFonts.fontFamily !== 'inherit' ? globalFonts.fontFamily : undefined
+  // Navbar uses heading font for parish name
+  const effectiveHeadingFont = globalFonts.headingFont !== 'inherit' ? globalFonts.headingFont : undefined
+  const effectiveButtonFont = globalFonts.buttonFont !== 'inherit' ? globalFonts.buttonFont : undefined
 
   React.useEffect(() => {
     if (!navRef.current) return
@@ -94,11 +96,12 @@ export function Navbar({
   }
 
   // Compute effective styles based on transparency and position
+  // Overlay mode uses negative margin to let hero slide under, NOT absolute positioning
   const effectiveBackground = isTransparent ? 'transparent' : backgroundColor
-  const navPositionClass = position === 'overlay' 
-    ? 'absolute top-0 left-0 right-0' 
-    : 'sticky top-0'
-  const navBaseClass = `z-50 ${position !== 'overlay' ? 'border-b shadow-sm' : ''}`
+  const navPositionClass = 'relative'
+  const navBaseClass = `z-50 ${!isTransparent ? 'border-b shadow-sm' : ''}`
+  // When overlay, the navbar stays in flow but hero overlaps under it via negative margin
+  const overlayStyle = position === 'overlay' ? { marginBottom: '-100px' } : {}
 
   // Centered layout: icon/logo on top, menu below
   if (layout === 'centered' && !isMobile) {
@@ -114,7 +117,7 @@ export function Navbar({
           ${navBaseClass} ${navPositionClass}
           ${isSelected ? 'ring-2 ring-primary' : ''}
         `}
-        style={{ backgroundColor: effectiveBackground }}
+        style={{ backgroundColor: effectiveBackground, ...overlayStyle }}
       >
         <div className="px-4 py-4">
           {/* Centered Logo/Icon */}
@@ -137,7 +140,7 @@ export function Navbar({
             {showParishName && parishName && (
               <span 
                 className="mt-2 text-lg tracking-wide"
-                style={{ color: textColor, fontFamily: effectiveFontFamily }}
+                style={{ color: textColor, fontFamily: effectiveHeadingFont }}
               >
                 {parishName}
               </span>
@@ -191,7 +194,7 @@ export function Navbar({
           ${navBaseClass} ${navPositionClass}
           ${isSelected ? 'ring-2 ring-primary' : ''}
         `}
-        style={{ backgroundColor: effectiveBackground }}
+        style={{ backgroundColor: effectiveBackground, ...overlayStyle }}
       >
         <div className="px-6 py-4">
           <div className="flex items-center justify-between">
@@ -217,7 +220,7 @@ export function Navbar({
                 {showParishName && parishName && (
                   <span 
                     className="text-lg tracking-wide"
-                    style={{ color: textColor, fontFamily: effectiveFontFamily }}
+                    style={{ color: textColor, fontFamily: effectiveHeadingFont }}
                   >
                     {parishName}
                   </span>
@@ -272,7 +275,7 @@ export function Navbar({
         ${navBaseClass} ${navPositionClass}
         ${isSelected ? 'ring-2 ring-primary' : ''}
       `}
-      style={{ backgroundColor: effectiveBackground }}
+      style={{ backgroundColor: effectiveBackground, ...overlayStyle }}
     >
       <div className="px-4">
         <div 
@@ -292,7 +295,7 @@ export function Navbar({
                 {showParishName && parishName && (
                   <span 
                     className="text-lg tracking-wide hidden sm:block"
-                    style={{ color: textColor, fontFamily: effectiveFontFamily }}
+                    style={{ color: textColor, fontFamily: effectiveHeadingFont }}
                   >
                     {parishName}
                   </span>

@@ -88,7 +88,7 @@ export function TextBlock({
         ${isSelected && !isEditing ? 'cursor-text' : ''}
       `}
       style={{
-        fontFamily: globalFonts.fontFamily !== 'inherit' ? globalFonts.fontFamily : undefined,
+        fontFamily: globalFonts.bodyFont !== 'inherit' ? globalFonts.bodyFont : undefined,
         color: textColor || undefined,
       }}
       onDoubleClick={() => {
@@ -108,7 +108,7 @@ export function TextBlock({
           autoFocus
           rows={Math.max(3, editContent.split('\n').length)}
           style={{
-            fontFamily: globalFonts.fontFamily !== 'inherit' ? globalFonts.fontFamily : undefined,
+            fontFamily: globalFonts.bodyFont !== 'inherit' ? globalFonts.bodyFont : undefined,
             color: textColor || undefined,
           }}
         />

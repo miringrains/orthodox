@@ -101,7 +101,9 @@ export function HeroSection({
 
   // Use global font context instead of hardcoded serif
   const globalFonts = useFontContext()
-  const effectiveFontFamily = globalFonts.fontFamily !== 'inherit' ? globalFonts.fontFamily : undefined
+  // Hero titles use heading font
+  const effectiveHeadingFont = globalFonts.headingFont !== 'inherit' ? globalFonts.headingFont : undefined
+  const effectiveBodyFont = globalFonts.bodyFont !== 'inherit' ? globalFonts.bodyFont : undefined
 
   // Apply preset values (user can still override)
   const preset = HERO_PRESETS[heroStyle] || HERO_PRESETS.centered
@@ -175,7 +177,7 @@ export function HeroSection({
                     <h1 
                       className={`${titleSizeClasses[titleSize]} font-bold mb-6`}
                       style={{ 
-                        fontFamily: effectiveFontFamily,
+                        fontFamily: effectiveHeadingFont,
                         letterSpacing: titleLetterSpacing[titleSize],
                       }}
                     >
@@ -263,7 +265,7 @@ export function HeroSection({
                 <h1 
                   className={`${titleSizeClasses[titleSize]} font-bold mb-6`}
                   style={{ 
-                    fontFamily: effectiveFontFamily,
+                    fontFamily: effectiveHeadingFont,
                     letterSpacing: titleLetterSpacing[titleSize],
                   }}
                 >
@@ -348,7 +350,7 @@ export function HeroSection({
               <h1 
                 className={`${titleSizeClasses[titleSize]} font-bold mb-6`}
                 style={{ 
-                  fontFamily: effectiveFontFamily,
+                  fontFamily: effectiveHeadingFont,
                   letterSpacing: titleLetterSpacing[titleSize],
                 }}
               >
