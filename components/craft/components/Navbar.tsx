@@ -28,6 +28,8 @@ interface NavbarProps {
   textColor?: string
   ctaBackgroundColor?: string
   ctaTextColor?: string
+  isTransparent?: boolean
+  position?: 'static' | 'overlay'
 }
 
 export function Navbar({ 
@@ -44,6 +46,8 @@ export function Navbar({
   textColor = '#1f2937',
   ctaBackgroundColor = '',
   ctaTextColor = '',
+  isTransparent = false,
+  position = 'static',
 }: NavbarProps) {
   const {
     connectors: { connect, drag },
@@ -89,6 +93,13 @@ export function Navbar({
     setMobileMenuOpen(false)
   }
 
+  // Compute effective styles based on transparency and position
+  const effectiveBackground = isTransparent ? 'transparent' : backgroundColor
+  const navPositionClass = position === 'overlay' 
+    ? 'absolute top-0 left-0 right-0' 
+    : 'sticky top-0'
+  const navBaseClass = `z-50 ${position !== 'overlay' ? 'border-b shadow-sm' : ''}`
+
   // Centered layout: icon/logo on top, menu below
   if (layout === 'centered' && !isMobile) {
     return (
@@ -100,10 +111,10 @@ export function Navbar({
           }
         }}
         className={`
-          border-b shadow-sm sticky top-0 z-50
+          ${navBaseClass} ${navPositionClass}
           ${isSelected ? 'ring-2 ring-primary' : ''}
         `}
-        style={{ backgroundColor }}
+        style={{ backgroundColor: effectiveBackground }}
       >
         <div className="px-4 py-4">
           {/* Centered Logo/Icon */}
@@ -177,10 +188,10 @@ export function Navbar({
           }
         }}
         className={`
-          border-b shadow-sm sticky top-0 z-50
+          ${navBaseClass} ${navPositionClass}
           ${isSelected ? 'ring-2 ring-primary' : ''}
         `}
-        style={{ backgroundColor }}
+        style={{ backgroundColor: effectiveBackground }}
       >
         <div className="px-6 py-4">
           <div className="flex items-center justify-between">
@@ -258,10 +269,10 @@ export function Navbar({
         }
       }}
       className={`
-        border-b shadow-sm sticky top-0 z-50
+        ${navBaseClass} ${navPositionClass}
         ${isSelected ? 'ring-2 ring-primary' : ''}
       `}
-      style={{ backgroundColor }}
+      style={{ backgroundColor: effectiveBackground }}
     >
       <div className="px-4">
         <div 
@@ -501,6 +512,36 @@ function NavbarSettings() {
             Centered and Stacked work best with icon-style logos
           </p>
         </div>
+
+        <div>
+          <Label className="text-sm font-medium">Position</Label>
+          <Select
+            value={props.position || 'static'}
+            onValueChange={(value) => setProp((p: any) => (p.position = value))}
+          >
+            <SelectTrigger className="mt-1">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="static">Static (Above Content)</SelectItem>
+              <SelectItem value="overlay">Overlay (On Top of Hero)</SelectItem>
+            </SelectContent>
+          </Select>
+          <p className="text-xs text-gray-500 mt-1">
+            Overlay position allows navbar to float over the hero section
+          </p>
+        </div>
+
+        <div className="flex items-center space-x-2">
+          <input
+            type="checkbox"
+            id="isTransparent"
+            checked={props.isTransparent || false}
+            onChange={(e) => setProp((p: any) => (p.isTransparent = e.target.checked))}
+            className="h-4 w-4 rounded border-gray-300"
+          />
+          <Label htmlFor="isTransparent" className="text-sm">Transparent Background</Label>
+        </div>
       </SettingsAccordion>
 
       {/* Logo Section */}
@@ -729,6 +770,8 @@ Navbar.craft = {
     textColor: '#1f2937',
     ctaBackgroundColor: '',
     ctaTextColor: '',
+    isTransparent: false,
+    position: 'static',
   },
   related: {
     settings: NavbarSettings,

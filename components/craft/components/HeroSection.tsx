@@ -18,6 +18,7 @@ interface HeroSectionProps {
   title?: string
   subtitle?: string
   imageUrl?: string
+  backgroundColor?: string
   overlayColor?: string
   overlayOpacity?: number
   textColor?: string
@@ -76,6 +77,7 @@ export function HeroSection({
   title, 
   subtitle, 
   imageUrl, 
+  backgroundColor = '',
   overlayColor = '#000000',
   overlayOpacity = 40,
   textColor = '#ffffff',
@@ -160,6 +162,7 @@ export function HeroSection({
           minHeight: `${effectiveMinHeight}px`,
           paddingTop: `${effectivePadding}px`,
           paddingBottom: `${effectivePadding}px`,
+          backgroundColor: backgroundColor || undefined,
         }}
       >
         <div className="container mx-auto px-4 relative z-10 w-full">
@@ -227,6 +230,7 @@ export function HeroSection({
           minHeight: `${effectiveMinHeight}px`,
           paddingTop: `${effectivePadding}px`,
           paddingBottom: `${effectivePadding}px`,
+          backgroundColor: backgroundColor || undefined,
         }}
       >
         {/* Background Image Layer */}
@@ -238,13 +242,15 @@ export function HeroSection({
         )}
         
         {/* Overlay Layer */}
-        <div
-          className="absolute inset-0"
-          style={{ 
-            backgroundColor: overlayColor || '#000000',
-            opacity: effectiveOverlayOpacity / 100,
-          }}
-        />
+        {(imageUrl || effectiveOverlayOpacity > 0) && (
+          <div
+            className="absolute inset-0"
+            style={{ 
+              backgroundColor: overlayColor || '#000000',
+              opacity: effectiveOverlayOpacity / 100,
+            }}
+          />
+        )}
         
         {/* Content Layer */}
         <div 
@@ -309,6 +315,7 @@ export function HeroSection({
         minHeight: `${effectiveMinHeight}px`,
         paddingTop: `${effectivePadding}px`,
         paddingBottom: `${effectivePadding}px`,
+        backgroundColor: backgroundColor || (heroStyle === 'minimal' ? '#ffffff' : undefined),
       }}
     >
       {/* Background Image Layer */}
@@ -319,8 +326,8 @@ export function HeroSection({
         />
       )}
       
-      {/* Overlay Layer */}
-      {heroStyle !== 'minimal' && (
+      {/* Overlay Layer - only show if there's an image or explicit opacity */}
+      {heroStyle !== 'minimal' && (imageUrl || effectiveOverlayOpacity > 0) && (
         <div
           className="absolute inset-0"
           style={{ 
@@ -749,18 +756,30 @@ function HeroSectionSettings() {
           )}
         </div>
 
-        {/* Overlay controls - the user's mental model */}
+        {/* Background Color - always visible, especially useful for minimal preset */}
         <ColorPicker
-          label="Overlay Color"
-          value={props.overlayColor || '#000000'}
-          onChange={(value) => setProp((p: any) => (p.overlayColor = value))}
+          label="Background Color"
+          value={props.backgroundColor || ''}
+          onChange={(value) => setProp((p: any) => (p.backgroundColor = value))}
+          placeholder="Transparent"
         />
 
-        <OpacityControl
-          label="Overlay Opacity"
-          value={props.overlayOpacity ?? 40}
-          onChange={(value) => setProp((p: any) => (p.overlayOpacity = value))}
-        />
+        {/* Overlay controls - for image-based heroes */}
+        {props.imageUrl && (
+          <>
+            <ColorPicker
+              label="Overlay Color"
+              value={props.overlayColor || '#000000'}
+              onChange={(value) => setProp((p: any) => (p.overlayColor = value))}
+            />
+
+            <OpacityControl
+              label="Overlay Opacity"
+              value={props.overlayOpacity ?? 40}
+              onChange={(value) => setProp((p: any) => (p.overlayOpacity = value))}
+            />
+          </>
+        )}
 
         <ColorPicker
           label="Text Color"
@@ -920,6 +939,7 @@ HeroSection.craft = {
     title: 'Welcome to Our Parish',
     subtitle: 'Join us in worship and fellowship',
     imageUrl: '',
+    backgroundColor: '',
     overlayColor: '#000000',
     overlayOpacity: 40,
     textColor: '#ffffff',
