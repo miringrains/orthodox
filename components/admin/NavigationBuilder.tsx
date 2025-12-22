@@ -78,7 +78,8 @@ export function NavigationBuilder({ parishId, initialNavigation }: NavigationBui
         .order('kind')
       
       if (data) {
-        setPages(data)
+        // Type assertion for compatibility with Page interface
+        setPages(data as Page[])
       }
     }
     fetchPages()
