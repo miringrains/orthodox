@@ -19,7 +19,7 @@ interface DividerProps {
   style?: 'solid' | 'dashed' | 'dotted'
   margin?: { top: number; right: number; bottom: number; left: number }
   width?: string // e.g., '60px', '100%', '50%'
-  align?: 'left' | 'center' | 'right' | 'inherit'
+  align?: 'left' | 'center' | 'right'
   variant?: 'single' | 'double' | 'triple' | 'ornate'
   gap?: number // Gap between lines for double/triple
   // SVG ornament dividers
