@@ -127,6 +127,12 @@ export function Section({
         backgroundPosition: 'center',
       }
     }
+    // For solid background, use overlayColor as the background
+    if (overlayColor) {
+      return {
+        backgroundColor: overlayColor,
+      }
+    }
     return {}
   }
 

@@ -120,10 +120,11 @@ export function Navbar({
   }
 
   // Compute effective styles based on transparency and position
-  // Overlay mode: navbar stays in flow, hero will add paddingTop to compensate
   const effectiveBackground = isTransparent ? 'transparent' : backgroundColor
   const navPositionClass = 'relative'
   const navBaseClass = `z-50 ${!isTransparent ? 'border-b shadow-sm' : ''}`
+  // When overlay mode is enabled, use negative margin so the next element (hero) slides under
+  const overlayMargin = position === 'overlay' ? { marginBottom: '-80px' } : {}
 
   // Centered layout: icon/logo on top, menu below
   if (layout === 'centered' && !isMobile) {
@@ -139,7 +140,7 @@ export function Navbar({
           ${navBaseClass} ${navPositionClass}
           ${isSelected ? 'ring-2 ring-primary' : ''}
         `}
-        style={{ backgroundColor: effectiveBackground }}
+        style={{ backgroundColor: effectiveBackground, ...overlayMargin }}
       >
         <div className="px-4 py-4">
           {/* Centered Logo/Icon */}
@@ -216,7 +217,7 @@ export function Navbar({
           ${navBaseClass} ${navPositionClass}
           ${isSelected ? 'ring-2 ring-primary' : ''}
         `}
-        style={{ backgroundColor: effectiveBackground }}
+        style={{ backgroundColor: effectiveBackground, ...overlayMargin }}
       >
         <div className="px-6 py-4">
           <div className="flex items-center justify-between">
@@ -297,7 +298,7 @@ export function Navbar({
         ${navBaseClass} ${navPositionClass}
         ${isSelected ? 'ring-2 ring-primary' : ''}
       `}
-      style={{ backgroundColor: effectiveBackground }}
+      style={{ backgroundColor: effectiveBackground, ...overlayMargin }}
     >
       <div className="px-4">
         <div 
