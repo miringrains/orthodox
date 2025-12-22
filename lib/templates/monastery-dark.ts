@@ -110,7 +110,7 @@ const craftSchema = {
       url: '/contact',
       variant: 'solid',
       size: 'lg',
-      align: 'center',
+      align: 'inherit',
       backgroundColor: '#C9A962',
       textColor: '#1a1a1a',
     },

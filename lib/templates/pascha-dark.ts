@@ -140,7 +140,7 @@ const craftSchema = {
       url: '/schedule',
       variant: 'solid',
       size: 'lg',
-      align: 'center',
+      align: 'inherit',
       backgroundColor: '#FFD700',
       textColor: '#1a1a1a',
     },

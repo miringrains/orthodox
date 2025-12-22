@@ -68,29 +68,40 @@ export function Triptych({
         padding: `${padding}px`,
       }}
     >
+      {/* 
+        Responsive grid: 
+        - Mobile: single column (stacked, center panel first)
+        - Desktop (md+): 3 columns 
+      */}
       <div 
-        className="grid max-w-6xl mx-auto"
+        className="flex flex-col md:grid max-w-6xl mx-auto"
         style={{
-          gridTemplateColumns: `${sideWidth}fr ${centerWidth}fr ${sideWidth}fr`,
           gap: `${gap}px`,
-        }}
+          // @ts-ignore - CSS custom property for grid
+          '--triptych-side': `${sideWidth}fr`,
+          '--triptych-center': `${centerWidth}fr`,
+          gridTemplateColumns: `var(--triptych-side) var(--triptych-center) var(--triptych-side)`,
+        } as React.CSSProperties}
       >
-        {/* Left Panel */}
-        <div style={panelStyle} className="rounded-lg overflow-hidden">
-          <Element is={ColumnCanvas} id="left-panel" canvas>
-            {/* Left panel content */}
-          </Element>
-        </div>
-
-        {/* Center Panel (Emphasized) */}
-        <div style={panelStyle} className="rounded-lg overflow-hidden">
+        {/* Center Panel - shows first on mobile */}
+        <div 
+          style={panelStyle} 
+          className="rounded-lg order-first md:order-2"
+        >
           <Element is={ColumnCanvas} id="center-panel" canvas>
             {/* Center panel content */}
           </Element>
         </div>
 
+        {/* Left Panel */}
+        <div style={panelStyle} className="rounded-lg order-2 md:order-1">
+          <Element is={ColumnCanvas} id="left-panel" canvas>
+            {/* Left panel content */}
+          </Element>
+        </div>
+
         {/* Right Panel */}
-        <div style={panelStyle} className="rounded-lg overflow-hidden">
+        <div style={panelStyle} className="rounded-lg order-3 md:order-3">
           <Element is={ColumnCanvas} id="right-panel" canvas>
             {/* Right panel content */}
           </Element>
