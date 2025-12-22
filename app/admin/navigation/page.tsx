@@ -30,17 +30,21 @@ export default async function NavigationPage() {
   }
 
   // Fetch navigation data for each parish
+  // Note: site_navigation column was added via migration but types may not be updated
   const parishesWithNav = await Promise.all(
     parishes.map(async (parish) => {
       const { data } = await supabase
         .from('parishes')
-        .select('site_navigation')
+        .select('*')
         .eq('id', parish.id)
         .single()
       
+      // Type assertion for the new column that may not be in generated types
+      const siteNavigation = (data as any)?.site_navigation || { items: [] }
+      
       return {
         ...parish,
-        site_navigation: data?.site_navigation || { items: [] }
+        site_navigation: siteNavigation as { items: any[] }
       }
     })
   )

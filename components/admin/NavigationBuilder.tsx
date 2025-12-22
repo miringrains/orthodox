@@ -89,12 +89,13 @@ export function NavigationBuilder({ parishId, initialNavigation }: NavigationBui
     setSaveStatus('idle')
     
     try {
+      // Type assertion for the new column that may not be in generated types
       const { error } = await supabase
         .from('parishes')
         .update({ 
           site_navigation: { items },
           updated_at: new Date().toISOString()
-        })
+        } as any)
         .eq('id', parishId)
       
       if (error) throw error

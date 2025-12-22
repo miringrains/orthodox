@@ -74,13 +74,15 @@ export function Navbar({
     if (!useGlobalNavigation || !parishSlug) return
 
     async function fetchNavigation() {
+      // Type assertion for the new column that may not be in generated types
       const { data } = await supabase
         .from('parishes')
-        .select('site_navigation')
+        .select('*')
         .eq('slug', parishSlug)
         .single()
 
-      if (data?.site_navigation?.items) {
+      const siteNavigation = (data as any)?.site_navigation
+      if (siteNavigation?.items) {
         // Flatten navigation items to simple label/url pairs
         const flattenItems = (items: any[]): { label: string; url: string }[] => {
           return items.flatMap(item => {
@@ -98,7 +100,7 @@ export function Navbar({
             return result
           })
         }
-        setGlobalMenuItems(flattenItems(data.site_navigation.items))
+        setGlobalMenuItems(flattenItems(siteNavigation.items))
       }
     }
 
