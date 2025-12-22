@@ -8,7 +8,6 @@ import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 
 export default function SignupPage() {
   const [step, setStep] = useState(1)
@@ -104,17 +103,24 @@ export default function SignupPage() {
     }
   }
 
+  const inputClasses = "h-10 bg-white dark:bg-[#232323] border-[#D1CEC8] dark:border-[#2F2F2F] text-[#0B0B0B] dark:text-[#F3F2EE] placeholder:text-[#8C8881] focus:border-[#C9A227] focus:ring-[#C9A227]/35"
+  const labelClasses = "text-sm font-medium text-[#3A3A3A] dark:text-[#CFCAC2]"
+
   return (
-    <Card className="w-full max-w-md">
-      <CardHeader>
-        <CardTitle>{step === 1 ? 'Create Account' : 'Tell Us About You'}</CardTitle>
-        <CardDescription>
-          {step === 1
-            ? 'Enter your email and password to get started'
-            : 'Complete your profile and parish information'}
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
+    <div className="w-full max-w-sm">
+      {/* Card */}
+      <div className="bg-white dark:bg-[#191919] border border-[#D1CEC8] dark:border-[#2F2F2F] rounded-md shadow-soft p-6">
+        <div className="mb-6 text-center">
+          <h1 className="text-xl font-semibold text-[#0B0B0B] dark:text-[#F3F2EE]">
+            {step === 1 ? 'Create Account' : 'Tell Us About You'}
+          </h1>
+          <p className="mt-1.5 text-sm text-[#6A6761] dark:text-[#A8A39A]">
+            {step === 1
+              ? 'Enter your email and password to get started'
+              : 'Complete your profile and parish information'}
+          </p>
+        </div>
+
         {step === 1 ? (
           <form
             onSubmit={(e) => {
@@ -123,8 +129,8 @@ export default function SignupPage() {
             }}
             className="space-y-4"
           >
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+            <div className="space-y-1.5">
+              <Label htmlFor="email" className={labelClasses}>Email</Label>
               <Input
                 id="email"
                 type="email"
@@ -132,10 +138,12 @@ export default function SignupPage() {
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 disabled={loading}
+                className={inputClasses}
+                placeholder="you@example.com"
               />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+            <div className="space-y-1.5">
+              <Label htmlFor="password" className={labelClasses}>Password</Label>
               <Input
                 id="password"
                 type="password"
@@ -144,41 +152,49 @@ export default function SignupPage() {
                 required
                 disabled={loading}
                 minLength={6}
+                className={inputClasses}
+                placeholder="Minimum 6 characters"
               />
             </div>
-            <Button type="submit" className="w-full" disabled={loading}>
+            <Button 
+              type="submit" 
+              className="w-full h-10 bg-[#C9A227] hover:bg-[#B8921F] active:bg-[#A8821D] text-[#0B0B0B] font-medium border-0" 
+              disabled={loading}
+            >
               Continue
             </Button>
           </form>
         ) : (
           <form onSubmit={handleSignup} className="space-y-4">
             {error && (
-              <div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">
+              <div className="rounded-md bg-[#F3E6E6] dark:bg-[#6F2D2D]/20 border border-[#6F2D2D]/30 p-3 text-sm text-[#6F2D2D]">
                 {error}
               </div>
             )}
-            <div className="space-y-2">
-              <Label htmlFor="firstName">First Name</Label>
+            <div className="space-y-1.5">
+              <Label htmlFor="firstName" className={labelClasses}>First Name</Label>
               <Input
                 id="firstName"
                 value={firstName}
                 onChange={(e) => setFirstName(e.target.value)}
                 required
                 disabled={loading}
+                className={inputClasses}
               />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="lastName">Last Name</Label>
+            <div className="space-y-1.5">
+              <Label htmlFor="lastName" className={labelClasses}>Last Name</Label>
               <Input
                 id="lastName"
                 value={lastName}
                 onChange={(e) => setLastName(e.target.value)}
                 required
                 disabled={loading}
+                className={inputClasses}
               />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="parishName">Parish Name</Label>
+            <div className="space-y-1.5">
+              <Label htmlFor="parishName" className={labelClasses}>Parish Name</Label>
               <Input
                 id="parishName"
                 value={parishName}
@@ -186,31 +202,42 @@ export default function SignupPage() {
                 required
                 disabled={loading}
                 placeholder="e.g., Saint Elizabeth Orthodox Church"
+                className={inputClasses}
               />
             </div>
             <div className="flex gap-2">
               <Button
                 type="button"
                 variant="outline"
-                className="flex-1"
+                className="flex-1 h-10 bg-white dark:bg-[#232323] border-[#D1CEC8] dark:border-[#2F2F2F] text-[#3A3A3A] dark:text-[#CFCAC2] hover:bg-[#EEECE6] dark:hover:bg-[#2F2F2F]"
                 onClick={() => setStep(1)}
                 disabled={loading}
               >
                 Back
               </Button>
-              <Button type="submit" className="flex-1" disabled={loading}>
-                {loading ? 'Creating Account...' : 'Create Account'}
+              <Button 
+                type="submit" 
+                className="flex-1 h-10 bg-[#C9A227] hover:bg-[#B8921F] active:bg-[#A8821D] text-[#0B0B0B] font-medium border-0" 
+                disabled={loading}
+              >
+                {loading ? 'Creating...' : 'Create Account'}
               </Button>
             </div>
           </form>
         )}
-        <div className="mt-4 text-center text-sm">
-          <a href="/auth/login" className="text-primary hover:underline">
-            Already have an account? Sign in
-          </a>
+        
+        <div className="mt-5 pt-5 border-t border-[#D1CEC8] dark:border-[#2F2F2F] text-center">
+          <p className="text-sm text-[#6A6761] dark:text-[#A8A39A]">
+            Already have an account?{' '}
+            <a 
+              href="/auth/login" 
+              className="text-[#0B0B0B] dark:text-[#F3F2EE] hover:text-[#C9A227] dark:hover:text-[#C9A227] font-medium transition-colors"
+            >
+              Sign in
+            </a>
+          </p>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   )
 }
-
