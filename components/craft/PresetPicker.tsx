@@ -50,7 +50,7 @@ export function PresetPicker({ componentType, parishId }: PresetPickerProps) {
         .order('name')
 
       if (data) {
-        setCustomPresets(data.map(p => ({
+        setCustomPresets(data.map((p: any) => ({
           id: p.id,
           name: p.name,
           componentType: p.component_type,
