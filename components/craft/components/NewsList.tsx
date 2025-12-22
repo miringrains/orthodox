@@ -75,7 +75,7 @@ export function NewsList({
           {title}
         </h2>
       )}
-      <div className={`grid gap-4 ${columnClasses[columns as keyof typeof columnClasses] || 'md:grid-cols-3'}`}>
+      <div className={`grid grid-cols-1 gap-4 ${columnClasses[columns as keyof typeof columnClasses] || 'md:grid-cols-3'}`}>
         {Array.from({ length: limit }).map((_, i) => (
           <div key={i} style={styles.card}>
             <h3 className="text-lg font-semibold mb-3" style={styles.cardTitle}>

@@ -11,11 +11,12 @@ import { SpacingControl } from '../controls/SpacingControl'
 import { BorderControl } from '../controls/BorderControl'
 import { ShadowControl } from '../controls/ShadowControl'
 import { useFontContext } from '../contexts/FontContext'
+import { useAlignmentContext } from '../contexts/AlignmentContext'
 
 interface HeadingProps {
   text?: string
   level?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6'
-  align?: 'left' | 'center' | 'right'
+  align?: 'left' | 'center' | 'right' | 'inherit'
   fontFamily?: string
   fontSize?: string
   fontWeight?: string
@@ -37,7 +38,7 @@ interface HeadingProps {
 export function Heading({
   text,
   level = 'h1',
-  align = 'left',
+  align = 'inherit',
   fontFamily,
   fontSize,
   fontWeight,
@@ -72,6 +73,10 @@ export function Heading({
   const effectiveFontWeight = fontWeight && fontWeight !== 'normal' && fontWeight !== 'bold' 
     ? fontWeight 
     : undefined // Let the 'font-bold' or default class handle it
+
+  // Inherit alignment from context if align is 'inherit'
+  const alignmentContext = useAlignmentContext()
+  const effectiveAlign = align === 'inherit' ? alignmentContext.align : align
 
   const [isEditing, setIsEditing] = useState(false)
   const [editText, setEditText] = useState(text || '')
@@ -131,7 +136,7 @@ export function Heading({
     },
     className: `
       ${defaultSizes[level]}
-      ${alignClasses[align]}
+      ${alignClasses[effectiveAlign]}
       ${isSelected ? 'ring-2 ring-primary rounded' : ''}
       ${isSelected && !isEditing ? 'cursor-text' : ''}
       ${useContainer ? 'mx-auto px-4 md:px-6' : ''}
@@ -224,13 +229,14 @@ function HeadingSettings() {
       <div>
         <Label>Alignment</Label>
         <Select
-          value={props.align || 'left'}
+          value={props.align || 'inherit'}
           onValueChange={(value) => setProp((props: any) => (props.align = value))}
         >
           <SelectTrigger>
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
+            <SelectItem value="inherit">Inherit</SelectItem>
             <SelectItem value="left">Left</SelectItem>
             <SelectItem value="center">Center</SelectItem>
             <SelectItem value="right">Right</SelectItem>
@@ -382,7 +388,7 @@ Heading.craft = {
   props: {
     text: 'Heading Text',
     level: 'h1',
-    align: 'left',
+    align: 'inherit',
     fontFamily: 'inherit',
     fontSize: '',
     fontWeight: 'bold',

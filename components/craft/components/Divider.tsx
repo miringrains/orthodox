@@ -12,6 +12,7 @@ import {
   ORNAMENT_DIVIDER_STYLES, 
   getDividerSvg 
 } from '@/lib/svg-decorations'
+import { useAlignmentContext } from '../contexts/AlignmentContext'
 
 interface DividerProps {
   thickness?: number
@@ -19,7 +20,7 @@ interface DividerProps {
   style?: 'solid' | 'dashed' | 'dotted'
   margin?: { top: number; right: number; bottom: number; left: number }
   width?: string // e.g., '60px', '100%', '50%'
-  align?: 'left' | 'center' | 'right'
+  align?: 'left' | 'center' | 'right' | 'inherit'
   variant?: 'single' | 'double' | 'triple' | 'ornate'
   gap?: number // Gap between lines for double/triple
   // SVG ornament dividers
@@ -33,7 +34,7 @@ export function Divider({
   style = 'solid',
   margin = { top: 20, right: 0, bottom: 20, left: 0 },
   width = '100%',
-  align = 'center',
+  align = 'inherit',
   variant = 'single',
   gap = 4,
   dividerType = 'line',
@@ -45,6 +46,10 @@ export function Divider({
   } = useNode((state) => ({
     isSelected: state.events.selected,
   }))
+
+  // Inherit alignment from context if align is 'inherit'
+  const alignmentContext = useAlignmentContext()
+  const effectiveAlign = align === 'inherit' ? alignmentContext.align : align
 
   const marginStyle = `${margin?.top ?? 0}px ${margin?.right ?? 0}px ${margin?.bottom ?? 0}px ${margin?.left ?? 0}px`
 
@@ -71,7 +76,7 @@ export function Divider({
         style={{ margin: marginStyle }}
       >
         <div
-          className={`${alignClasses[align]}`}
+          className={`${alignClasses[effectiveAlign]}`}
           style={{
             width,
             height: '24px',
@@ -100,7 +105,7 @@ export function Divider({
           }
         }}
         className={`
-          ${alignClasses[align]}
+          ${alignClasses[effectiveAlign]}
           ${isSelected ? 'ring-2 ring-primary rounded' : ''}
         `}
         style={{
@@ -122,7 +127,7 @@ export function Divider({
           }
         }}
         className={`
-          ${alignClasses[align]}
+          ${alignClasses[effectiveAlign]}
           ${isSelected ? 'ring-2 ring-primary rounded p-1' : ''}
         `}
         style={{ width, margin: marginStyle }}
@@ -144,7 +149,7 @@ export function Divider({
           }
         }}
         className={`
-          ${alignClasses[align]}
+          ${alignClasses[effectiveAlign]}
           ${isSelected ? 'ring-2 ring-primary rounded p-1' : ''}
         `}
         style={{ width, margin: marginStyle }}
@@ -168,7 +173,7 @@ export function Divider({
           }
         }}
         className={`
-          ${alignClasses[align]}
+          ${alignClasses[effectiveAlign]}
           ${isSelected ? 'ring-2 ring-primary rounded p-1' : ''}
         `}
         style={{ width, margin: marginStyle }}
@@ -313,6 +318,7 @@ function DividerSettings() {
           <Label>Alignment</Label>
           <div className="flex gap-2 mt-2">
             {[
+              { label: 'Inherit', value: 'inherit' },
               { label: 'Left', value: 'left' },
               { label: 'Center', value: 'center' },
               { label: 'Right', value: 'right' },
@@ -322,7 +328,7 @@ function DividerSettings() {
                 type="button"
                 onClick={() => setProp((p: any) => (p.align = option.value))}
                 className={`flex-1 px-3 py-1.5 text-xs rounded-md border transition-colors ${
-                  (props.align || 'center') === option.value
+                  (props.align || 'inherit') === option.value
                     ? 'bg-primary text-primary-foreground border-primary'
                     : 'bg-white hover:bg-gray-50 border-gray-200'
                 }`}
@@ -406,7 +412,7 @@ Divider.craft = {
     style: 'solid',
     margin: { top: 20, right: 0, bottom: 20, left: 0 },
     width: '100%',
-    align: 'center',
+    align: 'inherit',
     variant: 'single',
     gap: 4,
     dividerType: 'line',

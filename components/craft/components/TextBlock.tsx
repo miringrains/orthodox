@@ -5,12 +5,13 @@ import React, { useState } from 'react'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { useFontContext } from '../contexts/FontContext'
+import { useAlignmentContext } from '../contexts/AlignmentContext'
 import { SettingsAccordion } from '../controls/SettingsAccordion'
 import { ColorPicker } from '../controls/ColorPicker'
 
 interface TextBlockProps {
   content?: string
-  align?: 'left' | 'center' | 'right'
+  align?: 'left' | 'center' | 'right' | 'inherit'
   size?: 'sm' | 'md' | 'lg' | 'xl'
   textColor?: string
   fontWeight?: 'normal' | 'medium' | 'semibold' | 'bold'
@@ -18,7 +19,7 @@ interface TextBlockProps {
 
 export function TextBlock({ 
   content, 
-  align = 'left', 
+  align = 'inherit', 
   size = 'md',
   textColor = '',
   fontWeight = 'normal',
@@ -32,6 +33,10 @@ export function TextBlock({
   }))
   
   const globalFonts = useFontContext()
+  
+  // Inherit alignment from context if align is 'inherit'
+  const alignmentContext = useAlignmentContext()
+  const effectiveAlign = align === 'inherit' ? alignmentContext.align : align
 
   const [isEditing, setIsEditing] = useState(false)
   const [editContent, setEditContent] = useState(content || '')
@@ -82,7 +87,7 @@ export function TextBlock({
       }}
       className={`
         ${sizeClasses[size]} 
-        ${alignClasses[align]} 
+        ${alignClasses[effectiveAlign]} 
         ${weightClasses[fontWeight]}
         ${isSelected ? 'ring-2 ring-primary rounded' : ''}
         ${isSelected && !isEditing ? 'cursor-text' : ''}
@@ -127,6 +132,7 @@ function TextBlockSettings() {
   }))
 
   const alignOptions = [
+    { label: 'Inherit', value: 'inherit' },
     { label: 'Left', value: 'left' },
     { label: 'Center', value: 'center' },
     { label: 'Right', value: 'right' },
@@ -238,7 +244,7 @@ TextBlock.craft = {
   displayName: 'Text Block',
   props: {
     content: 'Enter your text here',
-    align: 'left',
+    align: 'inherit',
     size: 'md',
     textColor: '',
     fontWeight: 'normal',
