@@ -46,7 +46,11 @@ export function Divider({
     isSelected: state.events.selected,
   }))
 
-  const marginStyle = `${margin?.top ?? 0}px ${margin?.right ?? 0}px ${margin?.bottom ?? 0}px ${margin?.left ?? 0}px`
+  // Only use vertical margins - horizontal centering is handled by Tailwind classes
+  const verticalMarginStyle = {
+    marginTop: `${margin?.top ?? 0}px`,
+    marginBottom: `${margin?.bottom ?? 0}px`,
+  }
 
   const alignClasses = {
     left: 'mr-auto',
@@ -68,7 +72,7 @@ export function Divider({
         className={`
           ${isSelected ? 'ring-2 ring-primary rounded p-1' : ''}
         `}
-        style={{ margin: marginStyle }}
+        style={verticalMarginStyle}
       >
         <div
           className={`${alignClasses[align]}`}
@@ -105,7 +109,7 @@ export function Divider({
         `}
         style={{
           width,
-          margin: marginStyle,
+          ...verticalMarginStyle,
           borderTop: `${thickness}px ${style} ${color}`,
         }}
       />
@@ -125,7 +129,7 @@ export function Divider({
           ${alignClasses[align]}
           ${isSelected ? 'ring-2 ring-primary rounded p-1' : ''}
         `}
-        style={{ width, margin: marginStyle }}
+        style={{ width, ...verticalMarginStyle }}
       >
         <div style={{ borderTop: `${thickness}px ${style} ${color}` }} />
         <div style={{ height: `${gap}px` }} />
@@ -147,7 +151,7 @@ export function Divider({
           ${alignClasses[align]}
           ${isSelected ? 'ring-2 ring-primary rounded p-1' : ''}
         `}
-        style={{ width, margin: marginStyle }}
+        style={{ width, ...verticalMarginStyle }}
       >
         <div style={{ borderTop: `${thickness}px ${style} ${color}` }} />
         <div style={{ height: `${gap}px` }} />
@@ -171,7 +175,7 @@ export function Divider({
           ${alignClasses[align]}
           ${isSelected ? 'ring-2 ring-primary rounded p-1' : ''}
         `}
-        style={{ width, margin: marginStyle }}
+        style={{ width, ...verticalMarginStyle }}
       >
         <div style={{ borderTop: `1px ${style} ${color}`, opacity: 0.5 }} />
         <div style={{ height: `${gap}px` }} />
