@@ -66,6 +66,9 @@ export function Navbar({
   const effectiveHeadingFont = globalFonts.headingFont !== 'inherit' ? globalFonts.headingFont : undefined
   const effectiveButtonFont = globalFonts.buttonFont !== 'inherit' ? globalFonts.buttonFont : undefined
 
+  // Local state for measured height (used for negative margin in overlay mode)
+  const [measuredHeight, setMeasuredHeight] = React.useState(0)
+
   // Measure navbar height and register with LayoutContext
   useLayoutEffect(() => {
     if (!navRef.current) return
@@ -73,6 +76,7 @@ export function Navbar({
     const measureHeight = () => {
       if (navRef.current) {
         const height = navRef.current.getBoundingClientRect().height
+        setMeasuredHeight(height)
         setNavbarHeight(height)
       }
     }
@@ -123,8 +127,10 @@ export function Navbar({
   const effectiveBackground = isTransparent ? 'transparent' : backgroundColor
   const navPositionClass = 'relative'
   const navBaseClass = `z-50 ${!isTransparent ? 'border-b shadow-sm' : ''}`
-  // When overlay mode is enabled, use negative margin so the next element (hero) slides under
-  const overlayMargin = position === 'overlay' ? { marginBottom: '-80px' } : {}
+  // When overlay mode is enabled, use negative margin equal to navbar height so hero slides under
+  const overlayMargin = position === 'overlay' && measuredHeight > 0 
+    ? { marginBottom: `-${measuredHeight}px` } 
+    : {}
 
   // Centered layout: icon/logo on top, menu below
   if (layout === 'centered' && !isMobile) {

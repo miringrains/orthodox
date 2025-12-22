@@ -109,7 +109,10 @@ export function HeroSection({
 
   // Get navbar height from LayoutContext for overlay compensation
   const { navbarHeight, navbarMode } = useLayoutContext()
-  const navbarCompensation = navbarMode === 'overlay' ? navbarHeight : 0
+  // When navbar is overlay, hero extends upward behind it
+  const shouldExtendUnderNav = navbarMode === 'overlay' && navbarHeight > 0
+  const heroMarginTop = shouldExtendUnderNav ? `-${navbarHeight}px` : undefined
+  const contentPaddingTop = shouldExtendUnderNav ? `${navbarHeight}px` : undefined
 
   // Apply preset values (user can still override)
   const preset = HERO_PRESETS[heroStyle] || HERO_PRESETS.centered
@@ -328,6 +331,7 @@ export function HeroSection({
         paddingTop: `${effectivePadding}px`,
         paddingBottom: `${effectivePadding}px`,
         backgroundColor: backgroundColor || (heroStyle === 'minimal' ? '#ffffff' : undefined),
+        marginTop: heroMarginTop,
       }}
     >
       {/* Background Image Layer */}
@@ -354,7 +358,7 @@ export function HeroSection({
         className={`container mx-auto px-4 relative z-10 flex flex-col ${verticalAlignClasses[effectiveVerticalAlign]} ${alignClasses[effectiveContentAlign]}`}
         style={{ 
           color: textColor || '#ffffff',
-          paddingTop: navbarCompensation > 0 ? `${navbarCompensation}px` : undefined,
+          paddingTop: contentPaddingTop,
         }}
       >
         {(showTitle || showSubtitle) && (

@@ -115,7 +115,7 @@ export function ButtonBlock({
           connect(drag(ref))
         }
       }}
-      className={`flex ${alignClasses[effectiveAlign]} ${isSelected ? 'ring-2 ring-primary rounded p-1' : ''}`}
+      className={`w-full flex ${alignClasses[effectiveAlign]} ${isSelected ? 'ring-2 ring-primary rounded p-1' : ''}`}
     >
       {url && url !== '#' ? (
         <Link href={url} className={fullWidth ? 'w-full' : ''}>
