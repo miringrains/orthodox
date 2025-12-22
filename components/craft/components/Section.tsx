@@ -115,6 +115,7 @@ export function Section({
           width: cornerSize,
           height: cornerSize,
           opacity: cornerOpacity / 100,
+          transform: getCornerTransform(position),
         }}
       >
         <div
@@ -130,7 +131,6 @@ export function Section({
             WebkitMaskRepeat: 'no-repeat',
             maskPosition: 'center',
             WebkitMaskPosition: 'center',
-            transform: getCornerTransform(position),
           }}
         />
       </div>
