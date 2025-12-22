@@ -13,6 +13,15 @@ import { ColorPicker } from '../controls/ColorPicker'
 import { OpacityControl } from '../controls/OpacityControl'
 import { ColumnCanvas } from './shared/ColumnCanvas'
 import { AlignmentProvider } from '../contexts/AlignmentContext'
+import {
+  CornerStyle,
+  CORNER_STYLES,
+  getCornerSvgUrl,
+  getCornerTransform,
+  PatternStyle,
+  PATTERN_STYLES,
+  getPatternSvgUrl,
+} from '@/lib/svg-decorations'
 
 interface SectionProps {
   imageUrl?: string
@@ -37,6 +46,15 @@ interface SectionProps {
   shapeDividerTop?: 'none' | 'wave' | 'angle' | 'curve'
   shapeDividerBottom?: 'none' | 'wave' | 'angle' | 'curve'
   shapeDividerColor?: string
+  // Corner ornaments
+  cornerStyle?: CornerStyle
+  cornerColor?: string
+  cornerSize?: number
+  cornerOpacity?: number
+  // Background pattern
+  backgroundPattern?: PatternStyle
+  patternOpacity?: number
+  patternColor?: string
 }
 
 export function Section({
@@ -59,6 +77,13 @@ export function Section({
   shapeDividerTop = 'none',
   shapeDividerBottom = 'none',
   shapeDividerColor = '#ffffff',
+  cornerStyle = 'none',
+  cornerColor = '#C9A962',
+  cornerSize = 80,
+  cornerOpacity = 30,
+  backgroundPattern = 'none',
+  patternOpacity = 5,
+  patternColor = '#000000',
 }: SectionProps) {
   const {
     connectors: { connect, drag },
@@ -66,6 +91,51 @@ export function Section({
   } = useNode((state) => ({
     isSelected: state.events.selected,
   }))
+
+  // Corner ornament URL
+  const cornerSvgUrl = cornerStyle !== 'none' ? getCornerSvgUrl(cornerStyle) : null
+  const patternUrl = backgroundPattern !== 'none' ? getPatternSvgUrl(backgroundPattern) : null
+
+  // Render a single corner ornament
+  const renderCorner = (position: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right') => {
+    if (!cornerSvgUrl) return null
+
+    const positionStyles: Record<string, React.CSSProperties> = {
+      'top-left': { top: 0, left: 0 },
+      'top-right': { top: 0, right: 0 },
+      'bottom-left': { bottom: 0, left: 0 },
+      'bottom-right': { bottom: 0, right: 0 },
+    }
+
+    return (
+      <div
+        className="absolute pointer-events-none z-20"
+        style={{
+          ...positionStyles[position],
+          width: cornerSize,
+          height: cornerSize,
+          opacity: cornerOpacity / 100,
+        }}
+      >
+        <div
+          style={{
+            width: '100%',
+            height: '100%',
+            backgroundColor: cornerColor,
+            maskImage: `url(${cornerSvgUrl})`,
+            WebkitMaskImage: `url(${cornerSvgUrl})`,
+            maskSize: 'contain',
+            WebkitMaskSize: 'contain',
+            maskRepeat: 'no-repeat',
+            WebkitMaskRepeat: 'no-repeat',
+            maskPosition: 'center',
+            WebkitMaskPosition: 'center',
+            transform: getCornerTransform(position),
+          }}
+        />
+      </div>
+    )
+  }
 
   // Shape divider paths
   const SHAPE_DIVIDERS = {
@@ -172,11 +242,45 @@ export function Section({
         }
       }}
       className={`
-        relative
+        relative overflow-hidden
         ${isSelected ? 'ring-2 ring-primary' : ''}
       `}
       style={getBackgroundStyle()}
     >
+      {/* Background Pattern Layer */}
+      {patternUrl && (
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            opacity: patternOpacity / 100,
+          }}
+        >
+          <div
+            style={{
+              width: '100%',
+              height: '100%',
+              backgroundColor: patternColor,
+              maskImage: `url(${patternUrl})`,
+              WebkitMaskImage: `url(${patternUrl})`,
+              maskSize: 'auto',
+              WebkitMaskSize: 'auto',
+              maskRepeat: 'repeat',
+              WebkitMaskRepeat: 'repeat',
+            }}
+          />
+        </div>
+      )}
+
+      {/* Corner Ornaments */}
+      {cornerStyle !== 'none' && (
+        <>
+          {renderCorner('top-left')}
+          {renderCorner('top-right')}
+          {renderCorner('bottom-left')}
+          {renderCorner('bottom-right')}
+        </>
+      )}
+
       {/* Top Shape Divider */}
       {renderShapeDivider('top')}
 
@@ -648,6 +752,101 @@ function SectionSettings() {
           </>
         )}
       </SettingsAccordion>
+
+      {/* Corner Ornaments Section */}
+      <SettingsAccordion title="Corner Ornaments">
+        <div>
+          <Label className="text-sm font-medium mb-2 block">Corner Style</Label>
+          <div className="grid grid-cols-2 gap-2">
+            {CORNER_STYLES.map((style) => (
+              <button
+                key={style.value}
+                type="button"
+                onClick={() => setProp((p: any) => (p.cornerStyle = style.value))}
+                className={`px-3 py-1.5 text-xs rounded-md border transition-colors text-left ${
+                  (props.cornerStyle || 'none') === style.value
+                    ? 'bg-primary text-primary-foreground border-primary'
+                    : 'bg-white hover:bg-gray-50 border-gray-200'
+                }`}
+              >
+                {style.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {props.cornerStyle && props.cornerStyle !== 'none' && (
+          <>
+            <ColorPicker
+              label="Corner Color"
+              value={props.cornerColor || '#C9A962'}
+              onChange={(value) => setProp((p: any) => (p.cornerColor = value))}
+            />
+            <div>
+              <Label className="text-sm font-medium">Corner Size (px)</Label>
+              <div className="flex flex-wrap gap-2 mt-2">
+                {[40, 60, 80, 100, 120, 160].map((size) => (
+                  <button
+                    key={size}
+                    type="button"
+                    onClick={() => setProp((p: any) => (p.cornerSize = size))}
+                    className={`px-3 py-1.5 text-xs rounded-md border transition-colors ${
+                      (props.cornerSize || 80) === size
+                        ? 'bg-primary text-primary-foreground border-primary'
+                        : 'bg-white hover:bg-gray-50 border-gray-200'
+                    }`}
+                  >
+                    {size}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <OpacityControl
+              label="Corner Opacity"
+              value={props.cornerOpacity ?? 30}
+              onChange={(value) => setProp((p: any) => (p.cornerOpacity = value))}
+            />
+          </>
+        )}
+      </SettingsAccordion>
+
+      {/* Background Pattern Section */}
+      <SettingsAccordion title="Background Pattern">
+        <div>
+          <Label className="text-sm font-medium mb-2 block">Pattern Style</Label>
+          <div className="flex flex-wrap gap-2">
+            {PATTERN_STYLES.map((style) => (
+              <button
+                key={style.value}
+                type="button"
+                onClick={() => setProp((p: any) => (p.backgroundPattern = style.value))}
+                className={`px-3 py-1.5 text-xs rounded-md border transition-colors ${
+                  (props.backgroundPattern || 'none') === style.value
+                    ? 'bg-primary text-primary-foreground border-primary'
+                    : 'bg-white hover:bg-gray-50 border-gray-200'
+                }`}
+              >
+                {style.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {props.backgroundPattern && props.backgroundPattern !== 'none' && (
+          <>
+            <ColorPicker
+              label="Pattern Color"
+              value={props.patternColor || '#000000'}
+              onChange={(value) => setProp((p: any) => (p.patternColor = value))}
+            />
+            <OpacityControl
+              label="Pattern Opacity"
+              value={props.patternOpacity ?? 5}
+              onChange={(value) => setProp((p: any) => (p.patternOpacity = value))}
+            />
+          </>
+        )}
+      </SettingsAccordion>
     </div>
   )
 }
@@ -674,6 +873,13 @@ Section.craft = {
     shapeDividerTop: 'none',
     shapeDividerBottom: 'none',
     shapeDividerColor: '#ffffff',
+    cornerStyle: 'none',
+    cornerColor: '#C9A962',
+    cornerSize: 80,
+    cornerOpacity: 30,
+    backgroundPattern: 'none',
+    patternOpacity: 5,
+    patternColor: '#000000',
   },
   related: {
     settings: SectionSettings,
