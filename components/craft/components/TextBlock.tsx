@@ -5,7 +5,6 @@ import React, { useState } from 'react'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { useFontContext } from '../contexts/FontContext'
-import { useAlignmentContext } from '../contexts/AlignmentContext'
 import { SettingsAccordion } from '../controls/SettingsAccordion'
 import { ColorPicker } from '../controls/ColorPicker'
 
@@ -33,10 +32,6 @@ export function TextBlock({
   }))
   
   const globalFonts = useFontContext()
-  
-  // Inherit alignment from context if align is 'inherit'
-  const alignmentContext = useAlignmentContext()
-  const effectiveAlign = align === 'inherit' ? alignmentContext.align : align
 
   const [isEditing, setIsEditing] = useState(false)
   const [editContent, setEditContent] = useState(content || '')
@@ -49,11 +44,6 @@ export function TextBlock({
     xl: 'text-xl leading-relaxed',      // 1.625
   }
 
-  const alignClasses = {
-    left: 'text-left',
-    center: 'text-center',
-    right: 'text-right',
-  }
 
   const weightClasses = {
     normal: 'font-normal',
@@ -87,7 +77,6 @@ export function TextBlock({
       }}
       className={`
         ${sizeClasses[size]} 
-        ${alignClasses[effectiveAlign]} 
         ${weightClasses[fontWeight]}
         ${isSelected ? 'ring-2 ring-primary rounded' : ''}
         ${isSelected && !isEditing ? 'cursor-text' : ''}
@@ -95,6 +84,7 @@ export function TextBlock({
       style={{
         fontFamily: globalFonts.bodyFont !== 'inherit' ? globalFonts.bodyFont : undefined,
         color: textColor || undefined,
+        textAlign: align,
       }}
       onDoubleClick={() => {
         if (isSelected) {

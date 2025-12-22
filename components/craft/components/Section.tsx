@@ -313,11 +313,10 @@ export function Section({
           style={{ 
             maxWidth: containerWidth,
             color: textColor || undefined,
+            textAlign: contentAlign,
           }}
         >
-          <AlignmentProvider align={contentAlign}>
-            <Element is={ColumnCanvas} canvas id="section-content" />
-          </AlignmentProvider>
+          <Element is={ColumnCanvas} canvas id="section-content" />
         </div>
       </div>
 

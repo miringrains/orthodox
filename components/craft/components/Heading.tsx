@@ -11,7 +11,6 @@ import { SpacingControl } from '../controls/SpacingControl'
 import { BorderControl } from '../controls/BorderControl'
 import { ShadowControl } from '../controls/ShadowControl'
 import { useFontContext } from '../contexts/FontContext'
-import { useAlignmentContext } from '../contexts/AlignmentContext'
 
 interface HeadingProps {
   text?: string
@@ -74,18 +73,9 @@ export function Heading({
     ? fontWeight 
     : undefined // Let the 'font-bold' or default class handle it
 
-  // Inherit alignment from context if align is 'inherit'
-  const alignmentContext = useAlignmentContext()
-  const effectiveAlign = align === 'inherit' ? alignmentContext.align : align
-
   const [isEditing, setIsEditing] = useState(false)
   const [editText, setEditText] = useState(text || '')
 
-  const alignClasses = {
-    left: 'text-left',
-    center: 'text-center',
-    right: 'text-right',
-  }
 
   // Default sizes with proper line-height for headings
   // These Tailwind classes provide sensible defaults that can be overridden with inline fontSize
@@ -136,12 +126,12 @@ export function Heading({
     },
     className: `
       ${defaultSizes[level]}
-      ${alignClasses[effectiveAlign]}
       ${isSelected ? 'ring-2 ring-primary rounded' : ''}
       ${isSelected && !isEditing ? 'cursor-text' : ''}
       ${useContainer ? 'mx-auto px-4 md:px-6' : ''}
     `,
     style: {
+      textAlign: align,
       fontFamily: effectiveFontFamily !== 'inherit' ? effectiveFontFamily : undefined,
       fontSize: effectiveFontSize,
       fontWeight: effectiveFontWeight,
