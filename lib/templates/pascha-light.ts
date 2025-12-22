@@ -97,7 +97,7 @@ const craftSchema = {
     props: {
       title: 'Christ is Risen!',
       subtitle: 'Experience the joy of Orthodox Christianity',
-      imageUrl: '',
+      imageUrl: '/indoor-view-church.webp',
       backgroundColor: '#5DADE2',
       overlayColor: '#000000',
       overlayOpacity: 0,

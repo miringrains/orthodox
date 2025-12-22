@@ -64,7 +64,7 @@ const craftSchema = {
     props: {
       title: 'Welcome to Our Cathedral',
       subtitle: 'Experience the beauty and majesty of Orthodox worship',
-      imageUrl: '',
+      imageUrl: '/interior-saint-stephen-orthodox-church-istanbul-turkey.webp',
       backgroundColor: '#0A1628',
       overlayColor: '#000000',
       overlayOpacity: 0,

@@ -97,7 +97,7 @@ const craftSchema = {
     props: {
       title: 'Timeless. Sacred. Here.',
       subtitle: 'Experience the ancient faith of the Orthodox Church',
-      imageUrl: '',
+      imageUrl: '/indoor-view-church.webp',
       backgroundColor: '#8B4513',
       overlayColor: '#000000',
       overlayOpacity: 0,

@@ -65,7 +65,7 @@ const craftSchema = {
     props: {
       title: 'Come and See',
       subtitle: 'Experience the ancient faith of the Orthodox Church in a welcoming community',
-      imageUrl: '',
+      imageUrl: '/curchi-monastery-orhei-moldova.webp',
       backgroundColor: '#0D0D0D',
       overlayColor: '#000000',
       overlayOpacity: 0,

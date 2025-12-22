@@ -65,7 +65,7 @@ const craftSchema = {
     props: {
       title: 'Come and See',
       subtitle: 'Experience the ancient faith of the Orthodox Church in a welcoming community',
-      imageUrl: '',
+      imageUrl: '/hancu-monastery-church-greenery-moldova.webp',
       backgroundColor: '#2C3E50',
       overlayColor: '#000000',
       overlayOpacity: 0,

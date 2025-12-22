@@ -66,7 +66,7 @@ const craftSchema = {
     props: {
       title: 'Welcome to Our Cathedral',
       subtitle: 'Experience the beauty and majesty of Orthodox worship',
-      imageUrl: '',
+      imageUrl: '/low-angle-view-cathedral-against-clear-sky.webp',
       backgroundColor: '#1E3A5F',
       overlayColor: '#000000',
       overlayOpacity: 0,

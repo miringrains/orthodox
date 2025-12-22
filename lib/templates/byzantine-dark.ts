@@ -97,7 +97,7 @@ const craftSchema = {
     props: {
       title: 'Timeless. Sacred. Here.',
       subtitle: 'Experience the ancient faith of the Orthodox Church',
-      imageUrl: '',
+      imageUrl: '/curchi-monastery-orhei-moldova.webp',
       backgroundColor: '#1A0F0A',
       overlayColor: '#000000',
       overlayOpacity: 0,
