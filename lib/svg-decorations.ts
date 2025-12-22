@@ -108,18 +108,18 @@ export function getCornerSvgUrl(style: CornerStyle): string {
 
 /**
  * Get CSS transform for positioning corner in different positions
- * Original SVGs are designed for top-right corner
+ * Original SVGs are designed for top-left corner (ornament pointing inward from top-left)
  */
 export function getCornerTransform(position: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right'): string {
   switch (position) {
     case 'top-left':
-      return 'scaleX(-1)'
+      return 'none'  // Original orientation
     case 'top-right':
-      return 'none'
+      return 'scaleX(-1)'  // Flip horizontally
     case 'bottom-left':
-      return 'scale(-1, -1)'
+      return 'scaleY(-1)'  // Flip vertically
     case 'bottom-right':
-      return 'scaleY(-1)'
+      return 'scale(-1, -1)'  // Flip both (rotate 180°)
     default:
       return 'none'
   }
