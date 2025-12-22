@@ -12,6 +12,7 @@ import { SettingsAccordion } from '../controls/SettingsAccordion'
 import { ColorPicker } from '../controls/ColorPicker'
 import { OpacityControl } from '../controls/OpacityControl'
 import { ColumnCanvas } from './shared/ColumnCanvas'
+import { AlignmentProvider } from '../contexts/AlignmentContext'
 
 interface SectionProps {
   imageUrl?: string
@@ -20,12 +21,22 @@ interface SectionProps {
   textColor?: string
   padding?: number
   containerWidth?: string
+  contentAlign?: 'left' | 'center' | 'right'
   // Border styling (inspired by illuminated manuscripts)
   borderTop?: boolean
   borderBottom?: boolean
   borderColor?: string
   borderThickness?: number
   borderStyle?: 'single' | 'double' | 'ornate'
+  // Background options
+  backgroundType?: 'solid' | 'gradient' | 'image'
+  gradientDirection?: 'to-bottom' | 'to-right' | 'to-bottom-right'
+  gradientStartColor?: string
+  gradientEndColor?: string
+  // Shape dividers
+  shapeDividerTop?: 'none' | 'wave' | 'angle' | 'curve'
+  shapeDividerBottom?: 'none' | 'wave' | 'angle' | 'curve'
+  shapeDividerColor?: string
 }
 
 export function Section({
@@ -35,11 +46,19 @@ export function Section({
   textColor = '',
   padding = 60,
   containerWidth = '1200px',
+  contentAlign = 'left',
   borderTop = false,
   borderBottom = false,
   borderColor = '#C9A227',
   borderThickness = 2,
   borderStyle = 'single',
+  backgroundType = 'solid',
+  gradientDirection = 'to-bottom',
+  gradientStartColor = '',
+  gradientEndColor = '',
+  shapeDividerTop = 'none',
+  shapeDividerBottom = 'none',
+  shapeDividerColor = '#ffffff',
 }: SectionProps) {
   const {
     connectors: { connect, drag },
@@ -47,6 +66,69 @@ export function Section({
   } = useNode((state) => ({
     isSelected: state.events.selected,
   }))
+
+  // Shape divider paths
+  const SHAPE_DIVIDERS = {
+    wave: 'M0,0 C150,50 350,0 500,0 L500,50 L0,50 Z',
+    angle: 'M0,50 L500,0 L500,50 Z',
+    curve: 'M0,50 Q250,0 500,50 L500,50 L0,50 Z',
+  }
+
+  // Render shape divider SVG
+  const renderShapeDivider = (position: 'top' | 'bottom') => {
+    const shape = position === 'top' ? shapeDividerTop : shapeDividerBottom
+    if (shape === 'none') return null
+
+    const path = SHAPE_DIVIDERS[shape]
+    const isTop = position === 'top'
+    
+    return (
+      <div 
+        className="absolute left-0 right-0"
+        style={{ 
+          [isTop ? 'top' : 'bottom']: 0,
+          height: '50px',
+          overflow: 'hidden',
+          zIndex: 1,
+        }}
+      >
+        <svg
+          width="100%"
+          height="50"
+          preserveAspectRatio="none"
+          style={{ display: 'block' }}
+        >
+          <path
+            d={path}
+            fill={shapeDividerColor}
+            transform={isTop ? 'scale(1, 1)' : 'scale(1, -1) translate(0, -50)'}
+          />
+        </svg>
+      </div>
+    )
+  }
+
+  // Compute background style
+  const getBackgroundStyle = (): React.CSSProperties => {
+    if (backgroundType === 'gradient' && gradientStartColor && gradientEndColor) {
+      const directionMap = {
+        'to-bottom': 'to bottom',
+        'to-right': 'to right',
+        'to-bottom-right': 'to bottom right',
+      }
+      return {
+        background: `linear-gradient(${directionMap[gradientDirection]}, ${gradientStartColor}, ${gradientEndColor})`,
+      }
+    }
+    if (backgroundType === 'image' && imageUrl) {
+      return {
+        backgroundImage: `url(${imageUrl})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+      }
+    }
+    return {}
+  }
 
   // Render border based on style
   const renderBorder = () => {
@@ -87,13 +169,17 @@ export function Section({
         relative
         ${isSelected ? 'ring-2 ring-primary' : ''}
       `}
+      style={getBackgroundStyle()}
     >
+      {/* Top Shape Divider */}
+      {renderShapeDivider('top')}
+
       {/* Top Border */}
       {borderTop && renderBorder()}
 
       <div style={{ paddingTop: `${padding}px`, paddingBottom: `${padding}px` }}>
-        {/* Background Image Layer - always full opacity */}
-        {imageUrl && (
+        {/* Background Image Layer - only if backgroundType is 'image' */}
+        {backgroundType === 'image' && imageUrl && (
           <div
             className="absolute inset-0 bg-cover bg-center"
             style={{ backgroundImage: `url(${imageUrl})` }}
@@ -101,7 +187,7 @@ export function Section({
         )}
         
         {/* Overlay Layer - controls visibility of image */}
-        {(overlayColor || imageUrl) && (
+        {backgroundType === 'image' && (overlayColor || imageUrl) && (
           <div
             className="absolute inset-0"
             style={{ 
@@ -119,12 +205,17 @@ export function Section({
             color: textColor || undefined,
           }}
         >
-          <Element is={ColumnCanvas} canvas id="section-content" />
+          <AlignmentProvider align={contentAlign}>
+            <Element is={ColumnCanvas} canvas id="section-content" />
+          </AlignmentProvider>
         </div>
       </div>
 
       {/* Bottom Border */}
       {borderBottom && renderBorder()}
+
+      {/* Bottom Shape Divider */}
+      {renderShapeDivider('bottom')}
     </section>
   )
 }
@@ -214,6 +305,30 @@ function SectionSettings() {
       {/* Layout Section */}
       <SettingsAccordion title="Layout" defaultOpen>
         <div>
+          <Label className="text-sm font-medium">Content Alignment</Label>
+          <div className="flex gap-2 mt-2">
+            {[
+              { label: 'Left', value: 'left' },
+              { label: 'Center', value: 'center' },
+              { label: 'Right', value: 'right' },
+            ].map((option) => (
+              <button
+                key={option.value}
+                type="button"
+                onClick={() => setProp((p: any) => (p.contentAlign = option.value))}
+                className={`flex-1 px-2 py-1.5 text-xs rounded-md border transition-colors ${
+                  (props.contentAlign || 'left') === option.value
+                    ? 'bg-primary text-primary-foreground border-primary'
+                    : 'bg-white hover:bg-gray-50 border-gray-200'
+                }`}
+              >
+                {option.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div>
           <Label className="text-sm font-medium">Content Width</Label>
           <div className="flex flex-wrap gap-2 mt-2">
             {widthOptions.map((option) => (
@@ -256,7 +371,70 @@ function SectionSettings() {
       {/* Background Section */}
       <SettingsAccordion title="Background">
         <div>
-          <Label className="text-sm font-medium">Background Image</Label>
+          <Label className="text-sm font-medium">Background Type</Label>
+          <div className="flex gap-2 mt-2">
+            {[
+              { label: 'Solid', value: 'solid' },
+              { label: 'Gradient', value: 'gradient' },
+              { label: 'Image', value: 'image' },
+            ].map((option) => (
+              <button
+                key={option.value}
+                type="button"
+                onClick={() => setProp((p: any) => (p.backgroundType = option.value))}
+                className={`flex-1 px-2 py-1.5 text-xs rounded-md border transition-colors ${
+                  (props.backgroundType || 'solid') === option.value
+                    ? 'bg-primary text-primary-foreground border-primary'
+                    : 'bg-white hover:bg-gray-50 border-gray-200'
+                }`}
+              >
+                {option.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {(props.backgroundType || 'solid') === 'gradient' && (
+          <>
+            <div>
+              <Label className="text-sm font-medium">Gradient Direction</Label>
+              <div className="flex gap-2 mt-2">
+                {[
+                  { label: '↓', value: 'to-bottom' },
+                  { label: '→', value: 'to-right' },
+                  { label: '↘', value: 'to-bottom-right' },
+                ].map((option) => (
+                  <button
+                    key={option.value}
+                    type="button"
+                    onClick={() => setProp((p: any) => (p.gradientDirection = option.value))}
+                    className={`flex-1 px-2 py-1.5 text-xs rounded-md border transition-colors ${
+                      (props.gradientDirection || 'to-bottom') === option.value
+                        ? 'bg-primary text-primary-foreground border-primary'
+                        : 'bg-white hover:bg-gray-50 border-gray-200'
+                    }`}
+                  >
+                    {option.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <ColorPicker
+              label="Start Color"
+              value={props.gradientStartColor || ''}
+              onChange={(value) => setProp((p: any) => (p.gradientStartColor = value))}
+            />
+            <ColorPicker
+              label="End Color"
+              value={props.gradientEndColor || ''}
+              onChange={(value) => setProp((p: any) => (p.gradientEndColor = value))}
+            />
+          </>
+        )}
+
+        {(props.backgroundType || 'solid') === 'image' && (
+          <div>
+            <Label className="text-sm font-medium">Background Image</Label>
           <div
             className="mt-2 border-2 border-dashed border-gray-200 rounded-lg p-4 text-center hover:border-primary/50 transition-colors cursor-pointer"
             onClick={() => fileInputRef.current?.click()}
@@ -298,20 +476,25 @@ function SectionSettings() {
             </Button>
           )}
         </div>
+        )}
 
-        <ColorPicker
-          label="Overlay Color"
-          value={props.overlayColor || ''}
-          onChange={(value) => setProp((p: any) => (p.overlayColor = value))}
-          placeholder="none"
-        />
+        {(props.backgroundType || 'solid') === 'image' && (
+          <>
+            <ColorPicker
+              label="Overlay Color"
+              value={props.overlayColor || ''}
+              onChange={(value) => setProp((p: any) => (p.overlayColor = value))}
+              placeholder="none"
+            />
 
-        {(props.overlayColor || props.imageUrl) && (
-          <OpacityControl
-            label="Overlay Opacity"
-            value={props.overlayOpacity ?? 0}
-            onChange={(value) => setProp((p: any) => (p.overlayOpacity = value))}
-          />
+            {(props.overlayColor || props.imageUrl) && (
+              <OpacityControl
+                label="Overlay Opacity"
+                value={props.overlayOpacity ?? 0}
+                onChange={(value) => setProp((p: any) => (p.overlayOpacity = value))}
+              />
+            )}
+          </>
         )}
 
         <ColorPicker
@@ -320,6 +503,68 @@ function SectionSettings() {
           onChange={(value) => setProp((p: any) => (p.textColor = value))}
           placeholder="inherit"
         />
+      </SettingsAccordion>
+
+      {/* Shape Dividers Section */}
+      <SettingsAccordion title="Shape Dividers">
+        <div>
+          <Label className="text-sm font-medium">Top Divider</Label>
+          <div className="flex gap-2 mt-2">
+            {[
+              { label: 'None', value: 'none' },
+              { label: 'Wave', value: 'wave' },
+              { label: 'Angle', value: 'angle' },
+              { label: 'Curve', value: 'curve' },
+            ].map((option) => (
+              <button
+                key={option.value}
+                type="button"
+                onClick={() => setProp((p: any) => (p.shapeDividerTop = option.value))}
+                className={`flex-1 px-2 py-1.5 text-xs rounded-md border transition-colors ${
+                  (props.shapeDividerTop || 'none') === option.value
+                    ? 'bg-primary text-primary-foreground border-primary'
+                    : 'bg-white hover:bg-gray-50 border-gray-200'
+                }`}
+              >
+                {option.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <Label className="text-sm font-medium">Bottom Divider</Label>
+          <div className="flex gap-2 mt-2">
+            {[
+              { label: 'None', value: 'none' },
+              { label: 'Wave', value: 'wave' },
+              { label: 'Angle', value: 'angle' },
+              { label: 'Curve', value: 'curve' },
+            ].map((option) => (
+              <button
+                key={option.value}
+                type="button"
+                onClick={() => setProp((p: any) => (p.shapeDividerBottom = option.value))}
+                className={`flex-1 px-2 py-1.5 text-xs rounded-md border transition-colors ${
+                  (props.shapeDividerBottom || 'none') === option.value
+                    ? 'bg-primary text-primary-foreground border-primary'
+                    : 'bg-white hover:bg-gray-50 border-gray-200'
+                }`}
+              >
+                {option.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {((props.shapeDividerTop && props.shapeDividerTop !== 'none') || 
+          (props.shapeDividerBottom && props.shapeDividerBottom !== 'none')) && (
+          <ColorPicker
+            label="Divider Color"
+            value={props.shapeDividerColor || '#ffffff'}
+            onChange={(value) => setProp((p: any) => (p.shapeDividerColor = value))}
+          />
+        )}
       </SettingsAccordion>
 
       {/* Border Section */}
@@ -410,11 +655,19 @@ Section.craft = {
     textColor: '',
     padding: 60,
     containerWidth: '1200px',
+    contentAlign: 'left',
     borderTop: false,
     borderBottom: false,
     borderColor: '#C9A227',
     borderThickness: 2,
     borderStyle: 'single',
+    backgroundType: 'solid',
+    gradientDirection: 'to-bottom',
+    gradientStartColor: '',
+    gradientEndColor: '',
+    shapeDividerTop: 'none',
+    shapeDividerBottom: 'none',
+    shapeDividerColor: '#ffffff',
   },
   related: {
     settings: SectionSettings,

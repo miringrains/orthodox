@@ -10,6 +10,7 @@ import { Toolbox } from './Toolbox'
 import { SettingsPanel } from './SettingsPanel'
 import { GlobalSettings } from './GlobalSettings'
 import { FontProvider, useFontContext } from './contexts/FontContext'
+import { LayoutProvider } from './contexts/LayoutContext'
 import { craftComponents } from './components'
 import { TemplatePicker } from './TemplatePicker'
 import type { PageTemplate } from '@/lib/templates'
@@ -452,13 +453,15 @@ export function CraftEditor({ content, onSave, pageId }: CraftEditorProps) {
   
   return (
     <FontProvider initialFonts={globalFonts}>
-      <Editor resolver={craftComponents}>
-        <EditorContent 
-          onSave={onSave} 
-          pageId={pageId} 
-          initialCraftData={initialCraftData}
-        />
-      </Editor>
+      <LayoutProvider>
+        <Editor resolver={craftComponents}>
+          <EditorContent 
+            onSave={onSave} 
+            pageId={pageId} 
+            initialCraftData={initialCraftData}
+          />
+        </Editor>
+      </LayoutProvider>
     </FontProvider>
   )
 }

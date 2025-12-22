@@ -1,7 +1,7 @@
 'use client'
 
 import { useNode } from '@craftjs/core'
-import React, { useRef, useState } from 'react'
+import React, { useRef, useState, useLayoutEffect } from 'react'
 import Link from 'next/link'
 import { Menu, X, Plus, Trash2, Loader2, Image as ImageIcon } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -13,6 +13,7 @@ import { ColorPicker } from '../controls/ColorPicker'
 import { createClient } from '@/lib/supabase/client'
 import { useParams } from 'next/navigation'
 import { useFontContext } from '../contexts/FontContext'
+import { useLayoutContext } from '../contexts/LayoutContext'
 
 interface NavbarProps {
   logoUrl?: string
@@ -60,9 +61,32 @@ export function Navbar({
   const [isMobile, setIsMobile] = React.useState(false)
   const navRef = React.useRef<HTMLElement>(null)
   const globalFonts = useFontContext()
+  const { setNavbarHeight, setNavbarMode } = useLayoutContext()
   // Navbar uses heading font for parish name
   const effectiveHeadingFont = globalFonts.headingFont !== 'inherit' ? globalFonts.headingFont : undefined
   const effectiveButtonFont = globalFonts.buttonFont !== 'inherit' ? globalFonts.buttonFont : undefined
+
+  // Measure navbar height and register with LayoutContext
+  useLayoutEffect(() => {
+    if (!navRef.current) return
+
+    const measureHeight = () => {
+      if (navRef.current) {
+        const height = navRef.current.getBoundingClientRect().height
+        setNavbarHeight(height)
+      }
+    }
+
+    measureHeight()
+    setNavbarMode(position)
+
+    const resizeObserver = new ResizeObserver(() => {
+      measureHeight()
+    })
+
+    resizeObserver.observe(navRef.current)
+    return () => resizeObserver.disconnect()
+  }, [position, setNavbarHeight, setNavbarMode])
 
   React.useEffect(() => {
     if (!navRef.current) return
@@ -96,12 +120,10 @@ export function Navbar({
   }
 
   // Compute effective styles based on transparency and position
-  // Overlay mode uses negative margin to let hero slide under, NOT absolute positioning
+  // Overlay mode: navbar stays in flow, hero will add paddingTop to compensate
   const effectiveBackground = isTransparent ? 'transparent' : backgroundColor
   const navPositionClass = 'relative'
   const navBaseClass = `z-50 ${!isTransparent ? 'border-b shadow-sm' : ''}`
-  // When overlay, the navbar stays in flow but hero overlaps under it via negative margin
-  const overlayStyle = position === 'overlay' ? { marginBottom: '-100px' } : {}
 
   // Centered layout: icon/logo on top, menu below
   if (layout === 'centered' && !isMobile) {
@@ -117,7 +139,7 @@ export function Navbar({
           ${navBaseClass} ${navPositionClass}
           ${isSelected ? 'ring-2 ring-primary' : ''}
         `}
-        style={{ backgroundColor: effectiveBackground, ...overlayStyle }}
+        style={{ backgroundColor: effectiveBackground }}
       >
         <div className="px-4 py-4">
           {/* Centered Logo/Icon */}
@@ -194,7 +216,7 @@ export function Navbar({
           ${navBaseClass} ${navPositionClass}
           ${isSelected ? 'ring-2 ring-primary' : ''}
         `}
-        style={{ backgroundColor: effectiveBackground, ...overlayStyle }}
+        style={{ backgroundColor: effectiveBackground }}
       >
         <div className="px-6 py-4">
           <div className="flex items-center justify-between">

@@ -24,6 +24,8 @@ import { Triptych } from './components/Triptych'
 import { FeastBanner } from './components/FeastBanner'
 import { IconDisplay } from './components/IconDisplay'
 import { CallToActionBar } from './components/CallToActionBar'
+import { FloatingImageSection } from './components/FloatingImageSection'
+import { ClippedImage } from './components/ClippedImage'
 
 // Export components for Craft.js resolver
 export const craftComponents = {
@@ -51,4 +53,7 @@ export const craftComponents = {
   FeastBanner,
   IconDisplay,
   CallToActionBar,
+  // New visual components
+  FloatingImageSection,
+  ClippedImage,
 }

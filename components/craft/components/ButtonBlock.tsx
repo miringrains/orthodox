@@ -8,6 +8,7 @@ import { SettingsAccordion } from '../controls/SettingsAccordion'
 import { ColorPicker } from '../controls/ColorPicker'
 import { getContrastTextColor } from '@/lib/color-utils'
 import { useFontContext } from '../contexts/FontContext'
+import { useAlignmentContext } from '../contexts/AlignmentContext'
 
 interface ButtonBlockProps {
   text?: string
@@ -15,7 +16,7 @@ interface ButtonBlockProps {
   variant?: 'solid' | 'outline' | 'ghost'
   size?: 'sm' | 'md' | 'lg'
   fullWidth?: boolean
-  align?: 'left' | 'center' | 'right'
+  align?: 'left' | 'center' | 'right' | 'inherit'
   // Custom colors (solid variant)
   backgroundColor?: string
   textColor?: string
@@ -29,7 +30,7 @@ export function ButtonBlock({
   variant = 'solid', 
   size = 'md', 
   fullWidth = false,
-  align = 'center',
+  align = 'inherit',
   backgroundColor = '#1a1a1a',
   textColor = '',
   borderColor = '',
@@ -43,6 +44,10 @@ export function ButtonBlock({
 
   const globalFonts = useFontContext()
   const effectiveFontFamily = globalFonts.buttonFont !== 'inherit' ? globalFonts.buttonFont : undefined
+  
+  // Inherit alignment from context if align is 'inherit'
+  const alignmentContext = useAlignmentContext()
+  const effectiveAlign = align === 'inherit' ? alignmentContext.align : align
 
   const alignClasses = {
     left: 'justify-start',
@@ -110,7 +115,7 @@ export function ButtonBlock({
           connect(drag(ref))
         }
       }}
-      className={`flex ${alignClasses[align]} ${isSelected ? 'ring-2 ring-primary rounded p-1' : ''}`}
+      className={`flex ${alignClasses[effectiveAlign]} ${isSelected ? 'ring-2 ring-primary rounded p-1' : ''}`}
     >
       {url && url !== '#' ? (
         <Link href={url} className={fullWidth ? 'w-full' : ''}>
@@ -141,6 +146,7 @@ function ButtonBlockSettings() {
   ]
 
   const alignOptions = [
+    { label: 'Inherit', value: 'inherit' },
     { label: 'Left', value: 'left' },
     { label: 'Center', value: 'center' },
     { label: 'Right', value: 'right' },
@@ -219,7 +225,7 @@ function ButtonBlockSettings() {
                 type="button"
                 onClick={() => setProp((p: any) => (p.align = option.value))}
                 className={`flex-1 px-2 py-1.5 text-xs rounded-md border transition-colors ${
-                  (props.align || 'center') === option.value
+                  (props.align || 'inherit') === option.value
                     ? 'bg-primary text-primary-foreground border-primary'
                     : 'bg-white hover:bg-gray-50 border-gray-200'
                 }`}
@@ -280,7 +286,7 @@ ButtonBlock.craft = {
     variant: 'solid',
     size: 'md',
     fullWidth: false,
-    align: 'center',
+    align: 'inherit',
     backgroundColor: '#1a1a1a',
     textColor: '',
     borderColor: '',

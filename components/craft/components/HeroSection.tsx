@@ -13,6 +13,8 @@ import { SettingsAccordion } from '../controls/SettingsAccordion'
 import { OpacityControl } from '../controls/OpacityControl'
 import { ColorPicker } from '../controls/ColorPicker'
 import { useFontContext } from '../contexts/FontContext'
+import { useLayoutContext } from '../contexts/LayoutContext'
+import { AlignmentProvider } from '../contexts/AlignmentContext'
 
 interface HeroSectionProps {
   title?: string
@@ -105,6 +107,10 @@ export function HeroSection({
   const effectiveHeadingFont = globalFonts.headingFont !== 'inherit' ? globalFonts.headingFont : undefined
   const effectiveBodyFont = globalFonts.bodyFont !== 'inherit' ? globalFonts.bodyFont : undefined
 
+  // Get navbar height from LayoutContext for overlay compensation
+  const { navbarHeight, navbarMode } = useLayoutContext()
+  const navbarCompensation = navbarMode === 'overlay' ? navbarHeight : 0
+
   // Apply preset values (user can still override)
   const preset = HERO_PRESETS[heroStyle] || HERO_PRESETS.centered
   const effectiveContentAlign = contentAlign || preset.contentAlign
@@ -191,9 +197,11 @@ export function HeroSection({
                   )}
                 </div>
               )}
-              <Element is="div" canvas id="hero-content" className={`w-full flex flex-col ${alignClasses[effectiveContentAlign]}`}>
-                {/* Drop components here */}
-              </Element>
+              <AlignmentProvider align={effectiveContentAlign}>
+                <Element is="div" canvas id="hero-content" className={`w-full flex flex-col ${alignClasses[effectiveContentAlign]}`}>
+                  {/* Drop components here */}
+                </Element>
+              </AlignmentProvider>
             </div>
             {/* Image */}
             <div className="relative">
@@ -293,9 +301,11 @@ export function HeroSection({
             </div>
           )}
           
-          <Element is="div" canvas id="hero-content" className={`w-full flex flex-col ${alignClasses[effectiveContentAlign]}`}>
-            {/* Drop components here */}
-          </Element>
+          <AlignmentProvider align={effectiveContentAlign}>
+            <Element is="div" canvas id="hero-content" className={`w-full flex flex-col ${alignClasses[effectiveContentAlign]}`}>
+              {/* Drop components here */}
+            </Element>
+          </AlignmentProvider>
         </div>
       </section>
     )
@@ -342,7 +352,10 @@ export function HeroSection({
       {/* Content Layer */}
       <div 
         className={`container mx-auto px-4 relative z-10 flex flex-col ${verticalAlignClasses[effectiveVerticalAlign]} ${alignClasses[effectiveContentAlign]}`}
-        style={{ color: textColor || '#ffffff' }}
+        style={{ 
+          color: textColor || '#ffffff',
+          paddingTop: navbarCompensation > 0 ? `${navbarCompensation}px` : undefined,
+        }}
       >
         {(showTitle || showSubtitle) && (
           <div className={`mb-8 max-w-4xl ${alignClasses[effectiveContentAlign]}`}>
@@ -364,9 +377,11 @@ export function HeroSection({
             )}
           </div>
         )}
-        <Element is="div" canvas id="hero-content" className={`w-full flex flex-col ${alignClasses[effectiveContentAlign]}`}>
-          {/* Drop components here (buttons, images, etc.) */}
-        </Element>
+        <AlignmentProvider align={effectiveContentAlign}>
+          <Element is="div" canvas id="hero-content" className={`w-full flex flex-col ${alignClasses[effectiveContentAlign]}`}>
+            {/* Drop components here (buttons, images, etc.) */}
+          </Element>
+        </AlignmentProvider>
       </div>
     </section>
   )

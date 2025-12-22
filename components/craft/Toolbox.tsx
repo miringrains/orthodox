@@ -40,6 +40,8 @@ import { Triptych } from './components/Triptych'
 import { FeastBanner } from './components/FeastBanner'
 import { IconDisplay } from './components/IconDisplay'
 import { CallToActionBar } from './components/CallToActionBar'
+import { FloatingImageSection } from './components/FloatingImageSection'
+import { ClippedImage } from './components/ClippedImage'
 import { Navigation, Columns, Heading as HeadingIcon, Minus, Space, LayoutList } from 'lucide-react'
 
 const components = [
@@ -65,6 +67,8 @@ const components = [
   { name: 'Sermons', icon: Headphones, component: SermonCardGrid, componentName: 'SermonCardGrid', category: 'Content' },
   { name: 'Gallery', icon: Grid3x3, component: GalleryGrid, componentName: 'GalleryGrid', category: 'Content' },
   { name: 'CTA Bar', icon: LayoutList, component: CallToActionBar, componentName: 'CallToActionBar', category: 'Layout' },
+  { name: 'Floating Image Section', icon: Layout, component: FloatingImageSection, componentName: 'FloatingImageSection', category: 'Layout' },
+  { name: 'Clipped Image', icon: Image, component: ClippedImage, componentName: 'ClippedImage', category: 'Basic' },
 ]
 
 const categories = ['Basic', 'Layout', 'Orthodox', 'Content']
