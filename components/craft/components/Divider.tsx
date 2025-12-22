@@ -54,7 +54,7 @@ export function Divider({
     right: 'ml-auto',
   }
 
-  // SVG Ornament Divider
+  // SVG Ornament Divider - uses CSS mask for dynamic coloring
   if (dividerType === 'ornament') {
     const svgUrl = getDividerSvg(ornamentStyle, color)
     
@@ -75,10 +75,15 @@ export function Divider({
           style={{
             width,
             height: '24px',
-            backgroundImage: `url("${svgUrl}")`,
-            backgroundRepeat: 'no-repeat',
-            backgroundPosition: 'center',
-            backgroundSize: 'contain',
+            backgroundColor: color,
+            maskImage: `url("${svgUrl}")`,
+            WebkitMaskImage: `url("${svgUrl}")`,
+            maskRepeat: 'no-repeat',
+            WebkitMaskRepeat: 'no-repeat',
+            maskPosition: 'center',
+            WebkitMaskPosition: 'center',
+            maskSize: 'contain',
+            WebkitMaskSize: 'contain',
           }}
         />
       </div>

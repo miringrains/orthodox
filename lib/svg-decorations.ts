@@ -24,6 +24,22 @@ export const ORNAMENT_DIVIDER_STYLES: { value: OrnamentDividerStyle; label: stri
  * @param color - Hex color for the divider (e.g., '#C9A962')
  */
 export function getDividerSvg(style: OrnamentDividerStyle, color: string): string {
+  // Use the actual SVG files from public folder with CSS mask for coloring
+  const svgPaths: Record<OrnamentDividerStyle, string> = {
+    diamond: '/divider-1.svg',
+    cross: '/divider-2.svg',
+    scroll: '/divider-3.svg',
+    byzantine: '/divider-4.svg',
+  }
+  
+  return svgPaths[style] || ''
+}
+
+/**
+ * Get inline SVG data URL (legacy - kept for reference but not used)
+ * The issue with data URLs is encoding complexity
+ */
+function getLegacyDividerSvg(style: OrnamentDividerStyle, color: string): string {
   // Convert hex to SVG-safe color
   const safeColor = color.replace('#', '%23')
   
