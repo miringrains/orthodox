@@ -54,11 +54,12 @@ export function NewsList({
     },
   }
 
+  // Use lg breakpoint (1024px) for column layout - single column below that
   const columnClasses = {
-    1: 'md:grid-cols-1',
-    2: 'md:grid-cols-2',
-    3: 'md:grid-cols-3',
-    4: 'md:grid-cols-4',
+    1: '',
+    2: 'lg:grid-cols-2',
+    3: 'lg:grid-cols-3',
+    4: 'lg:grid-cols-2 xl:grid-cols-4',
   }
 
   return (
@@ -75,7 +76,7 @@ export function NewsList({
           {title}
         </h2>
       )}
-      <div className={`grid grid-cols-1 gap-4 ${columnClasses[columns as keyof typeof columnClasses] || 'md:grid-cols-3'}`}>
+      <div className={`grid grid-cols-1 gap-4 ${columnClasses[columns as keyof typeof columnClasses] || 'lg:grid-cols-3'}`}>
         {Array.from({ length: limit }).map((_, i) => (
           <div key={i} style={styles.card}>
             <h3 className="text-lg font-semibold mb-3" style={styles.cardTitle}>
