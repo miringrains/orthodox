@@ -26,7 +26,7 @@ const craftSchema = {
     displayName: 'div',
     custom: {},
     hidden: false,
-    nodes: ['navbar', 'hero', 'feast', 'welcome-section', 'schedule-section', 'footer-section'],
+    nodes: ['navbar', 'hero', 'feast', 'welcome-section', 'triptych-section', 'schedule-section', 'cta-bar', 'footer-section'],
     linkedNodes: {},
   },
   navbar: {
@@ -222,6 +222,39 @@ const craftSchema = {
     nodes: [],
     linkedNodes: {},
   },
+  'triptych-section': {
+    type: { resolvedName: 'Triptych' },
+    isCanvas: false,
+    props: {
+      panels: [
+        { 
+          title: 'Divine Liturgy', 
+          description: 'Join us for the ancient worship service that has been celebrated for nearly 2000 years.',
+          imageUrl: ''
+        },
+        { 
+          title: 'Community', 
+          description: 'We are a family of believers from all walks of life, united in faith and love.',
+          imageUrl: ''
+        },
+        { 
+          title: 'Learn & Grow', 
+          description: 'Classes for all ages, from Sunday School to adult education and study groups.',
+          imageUrl: ''
+        },
+      ],
+      backgroundColor: '#0D0D0D',
+      textColor: '#F5F0E8',
+      accentColor: '#C9A962',
+      spacing: 24,
+    },
+    displayName: 'Triptych',
+    custom: {},
+    parent: 'ROOT',
+    hidden: false,
+    nodes: [],
+    linkedNodes: {},
+  },
   'schedule-section': {
     type: { resolvedName: 'Section' },
     isCanvas: false,
@@ -302,6 +335,27 @@ const craftSchema = {
     displayName: 'Schedule Preview',
     custom: {},
     parent: 'schedule-content',
+    hidden: false,
+    nodes: [],
+    linkedNodes: {},
+  },
+  'cta-bar': {
+    type: { resolvedName: 'CallToActionBar' },
+    isCanvas: false,
+    props: {
+      items: [
+        { label: 'VISIT', url: '/visit' },
+        { label: 'DONATE', url: '/giving' },
+        { label: 'LEARN', url: '/about' },
+      ],
+      backgroundColor: '#C9A962',
+      textColor: '#0D0D0D',
+      dividerColor: '#0D0D0D',
+      padding: 24,
+    },
+    displayName: 'CTA Bar',
+    custom: {},
+    parent: 'ROOT',
     hidden: false,
     nodes: [],
     linkedNodes: {},

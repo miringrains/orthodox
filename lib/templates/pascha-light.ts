@@ -24,7 +24,7 @@ const craftSchema = {
     displayName: 'div',
     custom: {},
     hidden: false,
-    nodes: ['navbar', 'hero', 'welcome-section', 'section-divider-1', 'services-section', 'section-divider-2', 'news-section', 'footer-section'],
+    nodes: ['navbar', 'hero', 'welcome-section', 'triptych-section', 'section-divider-1', 'services-section', 'section-divider-2', 'news-section', 'cta-bar', 'footer-section'],
     linkedNodes: {},
   },
   // Decorative dividers for visual rhythm
@@ -234,6 +234,39 @@ const craftSchema = {
     nodes: [],
     linkedNodes: {},
   },
+  'triptych-section': {
+    type: { resolvedName: 'Triptych' },
+    isCanvas: false,
+    props: {
+      panels: [
+        { 
+          title: 'Divine Liturgy', 
+          description: 'Join us for the ancient worship service that has been celebrated for nearly 2000 years.',
+          imageUrl: ''
+        },
+        { 
+          title: 'Community', 
+          description: 'We are a family of believers from all walks of life, united in faith and love.',
+          imageUrl: ''
+        },
+        { 
+          title: 'Learn & Grow', 
+          description: 'Classes for all ages, from Sunday School to adult education and study groups.',
+          imageUrl: ''
+        },
+      ],
+      backgroundColor: '#ffffff',
+      textColor: '#333333',
+      accentColor: '#E6B800',
+      spacing: 24,
+    },
+    displayName: 'Triptych',
+    custom: {},
+    parent: 'ROOT',
+    hidden: false,
+    nodes: [],
+    linkedNodes: {},
+  },
   'services-section': {
     type: { resolvedName: 'Section' },
     isCanvas: false,
@@ -402,6 +435,27 @@ const craftSchema = {
     displayName: 'News List',
     custom: {},
     parent: 'news-content',
+    hidden: false,
+    nodes: [],
+    linkedNodes: {},
+  },
+  'cta-bar': {
+    type: { resolvedName: 'CallToActionBar' },
+    isCanvas: false,
+    props: {
+      items: [
+        { label: 'VISIT', url: '/visit' },
+        { label: 'DONATE', url: '/giving' },
+        { label: 'LEARN', url: '/about' },
+      ],
+      backgroundColor: '#E6B800',
+      textColor: '#333333',
+      dividerColor: '#333333',
+      padding: 24,
+    },
+    displayName: 'CTA Bar',
+    custom: {},
+    parent: 'ROOT',
     hidden: false,
     nodes: [],
     linkedNodes: {},

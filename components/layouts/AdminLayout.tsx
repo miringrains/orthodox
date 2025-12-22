@@ -17,6 +17,7 @@ import {
   Menu,
   X,
   LogOut,
+  Navigation,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { createClient } from '@/lib/supabase/client'
@@ -30,6 +31,7 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
   const navItems = [
     { href: '/admin/dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { href: '/admin/pages', label: 'Pages', icon: FileText },
+    { href: '/admin/navigation', label: 'Navigation', icon: Navigation },
     { href: '/admin/schedule', label: 'Schedule', icon: Calendar },
     { href: '/admin/events', label: 'Events', icon: Calendar },
     { href: '/admin/announcements', label: 'Announcements', icon: Megaphone },

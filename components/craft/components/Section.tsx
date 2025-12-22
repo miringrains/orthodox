@@ -614,70 +614,8 @@ function SectionSettings() {
         />
       </SettingsAccordion>
 
-      {/* Shape Dividers Section */}
-      <SettingsAccordion title="Shape Dividers">
-        <div>
-          <Label className="text-sm font-medium">Top Divider</Label>
-          <div className="flex gap-2 mt-2">
-            {[
-              { label: 'None', value: 'none' },
-              { label: 'Wave', value: 'wave' },
-              { label: 'Angle', value: 'angle' },
-              { label: 'Curve', value: 'curve' },
-            ].map((option) => (
-              <button
-                key={option.value}
-                type="button"
-                onClick={() => setProp((p: any) => (p.shapeDividerTop = option.value))}
-                className={`flex-1 px-2 py-1.5 text-xs rounded-md border transition-colors ${
-                  (props.shapeDividerTop || 'none') === option.value
-                    ? 'bg-primary text-primary-foreground border-primary'
-                    : 'bg-white hover:bg-gray-50 border-gray-200'
-                }`}
-              >
-                {option.label}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <div>
-          <Label className="text-sm font-medium">Bottom Divider</Label>
-          <div className="flex gap-2 mt-2">
-            {[
-              { label: 'None', value: 'none' },
-              { label: 'Wave', value: 'wave' },
-              { label: 'Angle', value: 'angle' },
-              { label: 'Curve', value: 'curve' },
-            ].map((option) => (
-              <button
-                key={option.value}
-                type="button"
-                onClick={() => setProp((p: any) => (p.shapeDividerBottom = option.value))}
-                className={`flex-1 px-2 py-1.5 text-xs rounded-md border transition-colors ${
-                  (props.shapeDividerBottom || 'none') === option.value
-                    ? 'bg-primary text-primary-foreground border-primary'
-                    : 'bg-white hover:bg-gray-50 border-gray-200'
-                }`}
-              >
-                {option.label}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {((props.shapeDividerTop && props.shapeDividerTop !== 'none') || 
-          (props.shapeDividerBottom && props.shapeDividerBottom !== 'none')) && (
-          <ColorPicker
-            label="Divider Color"
-            value={props.shapeDividerColor || '#ffffff'}
-            onChange={(value) => setProp((p: any) => (p.shapeDividerColor = value))}
-          />
-        )}
-      </SettingsAccordion>
-
-      {/* Border Section */}
-      <SettingsAccordion title="Borders">
+      {/* Decorations Section - Consolidated borders, corners, patterns */}
+      <SettingsAccordion title="Decorations">
         <p className="text-xs text-muted-foreground mb-3">
           Add decorative borders inspired by illuminated manuscripts
         </p>
@@ -750,12 +688,10 @@ function SectionSettings() {
             </div>
           </>
         )}
-      </SettingsAccordion>
 
-      {/* Corner Ornaments Section */}
-      <SettingsAccordion title="Corner Ornaments">
-        <div>
-          <Label className="text-sm font-medium mb-2 block">Corner Style</Label>
+        {/* Corner Ornaments - merged into Decorations */}
+        <div className="pt-3 mt-3 border-t border-gray-100">
+          <Label className="text-sm font-medium mb-2 block">Corner Ornaments</Label>
           <div className="grid grid-cols-2 gap-2">
             {CORNER_STYLES.map((style) => (
               <button
@@ -782,9 +718,9 @@ function SectionSettings() {
               onChange={(value) => setProp((p: any) => (p.cornerColor = value))}
             />
             <div>
-              <Label className="text-sm font-medium">Corner Size (px)</Label>
+              <Label className="text-sm font-medium">Corner Size</Label>
               <div className="flex flex-wrap gap-2 mt-2">
-                {[40, 60, 80, 100, 120, 160].map((size) => (
+                {[60, 80, 100, 120].map((size) => (
                   <button
                     key={size}
                     type="button"
@@ -795,24 +731,17 @@ function SectionSettings() {
                         : 'bg-white hover:bg-gray-50 border-gray-200'
                     }`}
                   >
-                    {size}
+                    {size}px
                   </button>
                 ))}
               </div>
             </div>
-            <OpacityControl
-              label="Corner Opacity"
-              value={props.cornerOpacity ?? 30}
-              onChange={(value) => setProp((p: any) => (p.cornerOpacity = value))}
-            />
           </>
         )}
-      </SettingsAccordion>
 
-      {/* Background Pattern Section */}
-      <SettingsAccordion title="Background Pattern">
-        <div>
-          <Label className="text-sm font-medium mb-2 block">Pattern Style</Label>
+        {/* Background Pattern - merged into Decorations */}
+        <div className="pt-3 mt-3 border-t border-gray-100">
+          <Label className="text-sm font-medium mb-2 block">Background Pattern</Label>
           <div className="flex flex-wrap gap-2">
             {PATTERN_STYLES.map((style) => (
               <button

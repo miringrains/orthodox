@@ -5,6 +5,12 @@ import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { Copy, Eye, EyeOff } from 'lucide-react'
 import React from 'react'
+import { useParams } from 'next/navigation'
+import { PresetPicker, SavePresetButton } from './PresetPicker'
+import { getPresetsForComponent } from '@/lib/presets/default-presets'
+
+// Components that support presets
+const PRESET_COMPONENTS = ['HeroSection', 'Section', 'Divider', 'Navbar']
 
 export function SettingsPanel() {
   const { selected, actions, query } = useEditor((state) => {
@@ -132,6 +138,14 @@ export function SettingsPanel() {
     })
   }
 
+  // Get parish ID from URL params (if available)
+  const params = useParams()
+  const pageId = params?.id as string | undefined
+
+  // Check if current component supports presets
+  const hasPresets = selected && PRESET_COMPONENTS.includes(selected.componentType)
+  const presetCount = hasPresets ? getPresetsForComponent(selected.componentType).length : 0
+
   return (
     <div className="p-4">
       {selected ? (
@@ -161,6 +175,25 @@ export function SettingsPanel() {
               </Button>
             </div>
           </div>
+          
+          {/* Preset Buttons - shown for components with presets */}
+          {hasPresets && presetCount > 0 && (
+            <div className="flex gap-2 pb-2 border-b">
+              <div className="flex-1">
+                <PresetPicker 
+                  componentType={selected.componentType} 
+                  parishId={pageId}
+                />
+              </div>
+              <div className="flex-1">
+                <SavePresetButton 
+                  componentType={selected.componentType} 
+                  parishId={pageId}
+                />
+              </div>
+            </div>
+          )}
+          
           {selected.settings ? (
             <div className="space-y-4">
               {typeof selected.settings === 'function' 

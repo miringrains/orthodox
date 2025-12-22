@@ -20,7 +20,7 @@ const craftSchema = {
     displayName: 'div',
     custom: {},
     hidden: false,
-    nodes: ['navbar', 'hero', 'welcome-section', 'section-divider-1', 'services-section', 'section-divider-2', 'news-section', 'cta-bar'],
+    nodes: ['navbar', 'hero', 'welcome-section', 'triptych-section', 'section-divider-1', 'services-section', 'section-divider-2', 'news-section', 'cta-bar'],
     linkedNodes: {},
   },
   // Decorative dividers with ornate style
@@ -237,6 +237,39 @@ const craftSchema = {
     displayName: 'Text Block',
     custom: {},
     parent: 'welcome-content',
+    hidden: false,
+    nodes: [],
+    linkedNodes: {},
+  },
+  'triptych-section': {
+    type: { resolvedName: 'Triptych' },
+    isCanvas: false,
+    props: {
+      panels: [
+        { 
+          title: 'Divine Liturgy', 
+          description: 'Join us for the ancient worship service that has been celebrated for nearly 2000 years.',
+          imageUrl: ''
+        },
+        { 
+          title: 'Community', 
+          description: 'We are a family of believers from all walks of life, united in faith and love.',
+          imageUrl: ''
+        },
+        { 
+          title: 'Learn & Grow', 
+          description: 'Classes for all ages, from Sunday School to adult education and study groups.',
+          imageUrl: ''
+        },
+      ],
+      backgroundColor: '#F9F4ED',
+      textColor: '#4A3728',
+      accentColor: '#D4AF37',
+      spacing: 24,
+    },
+    displayName: 'Triptych',
+    custom: {},
+    parent: 'ROOT',
     hidden: false,
     nodes: [],
     linkedNodes: {},

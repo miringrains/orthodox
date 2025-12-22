@@ -31,6 +31,8 @@ interface NavbarProps {
   ctaTextColor?: string
   isTransparent?: boolean
   position?: 'static' | 'overlay'
+  useGlobalNavigation?: boolean
+  parishSlug?: string
 }
 
 export function Navbar({ 
@@ -49,6 +51,8 @@ export function Navbar({
   ctaTextColor = '',
   isTransparent = false,
   position = 'static',
+  useGlobalNavigation = false,
+  parishSlug = '',
 }: NavbarProps) {
   const {
     connectors: { connect, drag },
@@ -59,9 +63,52 @@ export function Navbar({
 
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false)
   const [isMobile, setIsMobile] = React.useState(false)
+  const [globalMenuItems, setGlobalMenuItems] = React.useState<{ label: string; url: string }[]>([])
   const navRef = React.useRef<HTMLElement>(null)
   const globalFonts = useFontContext()
   const { setNavbarHeight, setNavbarMode } = useLayoutContext()
+  const supabase = createClient()
+
+  // Fetch global navigation if enabled
+  React.useEffect(() => {
+    if (!useGlobalNavigation || !parishSlug) return
+
+    async function fetchNavigation() {
+      const { data } = await supabase
+        .from('parishes')
+        .select('site_navigation')
+        .eq('slug', parishSlug)
+        .single()
+
+      if (data?.site_navigation?.items) {
+        // Flatten navigation items to simple label/url pairs
+        const flattenItems = (items: any[]): { label: string; url: string }[] => {
+          return items.flatMap(item => {
+            const result: { label: string; url: string }[] = []
+            if (item.url) {
+              result.push({ label: item.label, url: item.url })
+            } else if (item.pageId) {
+              // For page links, we'd need to resolve the page slug
+              // For now, use a placeholder that can be resolved server-side
+              result.push({ label: item.label, url: `/page/${item.pageId}` })
+            }
+            if (item.children) {
+              result.push(...flattenItems(item.children))
+            }
+            return result
+          })
+        }
+        setGlobalMenuItems(flattenItems(data.site_navigation.items))
+      }
+    }
+
+    fetchNavigation()
+  }, [useGlobalNavigation, parishSlug, supabase])
+
+  // Use global menu items if enabled, otherwise use prop
+  const effectiveMenuItems = useGlobalNavigation && globalMenuItems.length > 0 
+    ? globalMenuItems 
+    : menuItems
   // Navbar uses heading font for parish name
   const effectiveHeadingFont = globalFonts.headingFont !== 'inherit' ? globalFonts.headingFont : undefined
   const effectiveButtonFont = globalFonts.buttonFont !== 'inherit' ? globalFonts.buttonFont : undefined
@@ -178,7 +225,7 @@ export function Navbar({
 
           {/* Centered Menu */}
           <div className="flex items-center justify-center gap-8">
-            {(menuItems || []).map((item, index) => (
+            {effectiveMenuItems.map((item, index) => (
               <Link
                 key={index}
                 href={item.url}
@@ -259,7 +306,7 @@ export function Navbar({
 
             {/* Menu */}
             <div className="flex items-center gap-6">
-              {(menuItems || []).map((item, index) => (
+              {effectiveMenuItems.map((item, index) => (
                 <Link
                   key={index}
                   href={item.url}
@@ -343,7 +390,7 @@ export function Navbar({
           {/* Desktop Menu */}
           {!isMobile && (
             <div className="flex items-center gap-6">
-              {(menuItems || []).map((item, index) => (
+              {effectiveMenuItems.map((item, index) => (
                 <Link
                   key={index}
                   href={item.url}
@@ -395,7 +442,7 @@ export function Navbar({
           <div className="border-t pb-4" style={{ backgroundColor }}>
             <div className="pt-4">
               <div className="flex flex-col gap-2">
-                {(menuItems || []).map((item, index) => (
+                {effectiveMenuItems.map((item, index) => (
                   <Link
                     key={index}
                     href={item.url}
@@ -804,6 +851,8 @@ Navbar.craft = {
     ctaTextColor: '',
     isTransparent: false,
     position: 'static',
+    useGlobalNavigation: false,
+    parishSlug: '',
   },
   related: {
     settings: NavbarSettings,
