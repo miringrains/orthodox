@@ -41,7 +41,8 @@ export function PresetPicker({ componentType, parishId }: PresetPickerProps) {
     if (!parishId) return
 
     async function fetchCustomPresets() {
-      const { data } = await supabase
+      // Cast to any to bypass type checking for new table not in generated types
+      const { data } = await (supabase as any)
         .from('component_presets')
         .select('*')
         .eq('component_type', componentType)
@@ -180,7 +181,8 @@ export function SavePresetButton({ componentType, parishId }: SavePresetButtonPr
     try {
       const { data: { user } } = await supabase.auth.getUser()
       
-      const { error: insertError } = await supabase
+      // Cast to any to bypass type checking for new table not in generated types
+      const { error: insertError } = await (supabase as any)
         .from('component_presets')
         .insert({
           parish_id: parishId,
