@@ -56,8 +56,8 @@ export function ImageBlock({
   }))
 
   const objectFitClass = objectFit === 'cover' ? 'object-cover' : objectFit === 'contain' ? 'object-contain' : 'object-fill'
-  const paddingStyle = `${padding.top}px ${padding.right}px ${padding.bottom}px ${padding.left}px`
-  const marginStyle = `${margin.top}px ${margin.right}px ${margin.bottom}px ${margin.left}px`
+  const paddingStyle = `${padding?.top ?? 0}px ${padding?.right ?? 0}px ${padding?.bottom ?? 0}px ${padding?.left ?? 0}px`
+  const marginStyle = `${margin?.top ?? 0}px ${margin?.right ?? 0}px ${margin?.bottom ?? 0}px ${margin?.left ?? 0}px`
   const borderStyleStr = borderWidth > 0 ? `${borderWidth}px ${borderStyle} ${borderColor}` : 'none'
 
   if (!imageUrl) {

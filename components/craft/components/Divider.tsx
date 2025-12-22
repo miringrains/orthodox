@@ -46,7 +46,7 @@ export function Divider({
     isSelected: state.events.selected,
   }))
 
-  const marginStyle = `${margin.top}px ${margin.right}px ${margin.bottom}px ${margin.left}px`
+  const marginStyle = `${margin?.top ?? 0}px ${margin?.right ?? 0}px ${margin?.bottom ?? 0}px ${margin?.left ?? 0}px`
 
   const alignClasses = {
     left: 'mr-auto',
