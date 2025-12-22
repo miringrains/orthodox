@@ -297,7 +297,7 @@ export function Navbar({
         ${navBaseClass} ${navPositionClass}
         ${isSelected ? 'ring-2 ring-primary' : ''}
       `}
-      style={{ backgroundColor: effectiveBackground, ...overlayStyle }}
+      style={{ backgroundColor: effectiveBackground }}
     >
       <div className="px-4">
         <div 
