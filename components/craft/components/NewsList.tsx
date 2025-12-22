@@ -1,6 +1,7 @@
 'use client'
 
 import { useNode } from '@craftjs/core'
+import { useState, useEffect, useRef } from 'react'
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
 import { ColorPicker } from '../controls/ColorPicker'
@@ -33,6 +34,28 @@ export function NewsList({
     isSelected: state.events.selected,
   }))
 
+  // Use ResizeObserver to detect container width for responsive layout
+  const containerRef = useRef<HTMLDivElement>(null)
+  const [containerWidth, setContainerWidth] = useState(1200)
+
+  useEffect(() => {
+    if (!containerRef.current) return
+    
+    const observer = new ResizeObserver(([entry]) => {
+      setContainerWidth(entry.contentRect.width)
+    })
+    observer.observe(containerRef.current)
+    return () => observer.disconnect()
+  }, [])
+
+  // Determine actual columns based on container width
+  const getActualColumns = () => {
+    if (containerWidth < 640) return 1
+    if (containerWidth < 900) return Math.min(columns, 2)
+    return columns
+  }
+  const actualColumns = getActualColumns()
+
   const styles = {
     title: {
       color: textColor || 'inherit',
@@ -54,19 +77,13 @@ export function NewsList({
     },
   }
 
-  // Use lg breakpoint (1024px) for column layout - single column below that
-  const columnClasses = {
-    1: '',
-    2: 'lg:grid-cols-2',
-    3: 'lg:grid-cols-3',
-    4: 'lg:grid-cols-2 xl:grid-cols-4',
-  }
-
   return (
     <div
       ref={(ref) => {
         if (ref) {
           connect(drag(ref))
+          // @ts-ignore - store ref for ResizeObserver
+          containerRef.current = ref
         }
       }}
       className={isSelected ? 'ring-2 ring-primary rounded' : ''}
@@ -76,7 +93,10 @@ export function NewsList({
           {title}
         </h2>
       )}
-      <div className={`grid grid-cols-1 gap-4 ${columnClasses[columns as keyof typeof columnClasses] || 'lg:grid-cols-3'}`}>
+      <div 
+        className="grid gap-4"
+        style={{ gridTemplateColumns: `repeat(${actualColumns}, minmax(0, 1fr))` }}
+      >
         {Array.from({ length: limit }).map((_, i) => (
           <div key={i} style={styles.card}>
             <h3 className="text-lg font-semibold mb-3" style={styles.cardTitle}>
