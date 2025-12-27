@@ -265,7 +265,7 @@ function EditorContent({
       {/* Left Sidebar - Toolbox */}
       <div className="w-72 border-r border-stone-200 bg-white overflow-y-auto">
         <div className="p-4 border-b border-stone-200">
-          <h2 className="text-[11px] font-semibold text-stone-400 uppercase tracking-widest">Components</h2>
+          <h2 className="text-[12px] font-bold text-stone-600 uppercase tracking-wider">Components</h2>
         </div>
         <GlobalSettings />
         <Toolbox />
@@ -415,7 +415,7 @@ function EditorContent({
       {/* Right Sidebar - Settings */}
       <div className="w-80 border-l border-stone-200 bg-white overflow-y-auto">
         <div className="p-4 border-b border-stone-200">
-          <h2 className="text-[11px] font-semibold text-stone-400 uppercase tracking-widest">Settings</h2>
+          <h2 className="text-[12px] font-bold text-stone-600 uppercase tracking-wider">Settings</h2>
         </div>
         <SettingsPanel />
       </div>

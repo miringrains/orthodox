@@ -82,7 +82,7 @@ export function Toolbox() {
         const categoryComponents = components.filter(c => c.category === category)
         return (
           <div key={category}>
-            <h3 className="text-[11px] font-semibold text-stone-400 uppercase tracking-widest mb-3 px-1">
+            <h3 className="text-[12px] font-bold text-stone-600 uppercase tracking-wider mb-3 px-1">
               {category}
             </h3>
             <div className="space-y-1.5">
@@ -110,7 +110,7 @@ export function Toolbox() {
                     <div className="p-1.5 rounded-md bg-white border border-stone-200 group-hover:border-stone-300 transition-colors">
                       <Icon className="h-4 w-4 text-stone-500 group-hover:text-stone-700" />
                     </div>
-                    <span className="text-[13px] font-medium text-stone-600 group-hover:text-stone-900 tracking-wide">{name}</span>
+                    <span className="text-[14px] font-medium text-stone-700 group-hover:text-stone-900">{name}</span>
                   </div>
                 )
               })}

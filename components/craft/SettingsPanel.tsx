@@ -205,11 +205,11 @@ export function SettingsPanel() {
               }
             </div>
           ) : (
-            <div className="text-[13px] text-stone-500 py-6 space-y-3">
-              <p className="font-medium text-stone-700">No settings available for this component</p>
-              <div className="text-[11px] space-y-1.5 bg-stone-50 p-3 rounded-lg border border-stone-200">
-                <p><span className="font-medium text-stone-600">Component:</span> {selected.name}</p>
-                <p><span className="font-medium text-stone-600">Type:</span> {selected.componentType || 'unknown'}</p>
+            <div className="text-[13px] text-stone-600 py-6 space-y-3">
+              <p className="font-semibold text-stone-800">No settings available for this component</p>
+              <div className="text-[12px] space-y-1.5 bg-stone-50 p-3 rounded-lg border border-stone-200">
+                <p><span className="font-semibold text-stone-700">Component:</span> {selected.name}</p>
+                <p><span className="font-semibold text-stone-700">Type:</span> {selected.componentType || 'unknown'}</p>
               </div>
             </div>
           )}
@@ -233,9 +233,9 @@ export function SettingsPanel() {
       ) : (
         <div className="text-center py-12">
           <div className="w-12 h-12 rounded-xl bg-stone-100 flex items-center justify-center mx-auto mb-4">
-            <Eye className="h-5 w-5 text-stone-400" />
+            <Eye className="h-5 w-5 text-stone-500" />
           </div>
-          <p className="text-[13px] text-stone-500 tracking-wide">Select a component to edit its settings</p>
+          <p className="text-[14px] text-stone-600">Select a component to edit its settings</p>
         </div>
       )}
     </div>

@@ -66,7 +66,7 @@ export function FontSelector({ label, value, onChange, description }: FontSelect
 
   return (
     <div>
-      <Label className="text-[13px] font-medium text-stone-700 tracking-wide">{label}</Label>
+      <Label className="text-[13px] font-semibold text-stone-700">{label}</Label>
       <Select value={value || 'inherit'} onValueChange={handleFontChange}>
         <SelectTrigger className="mt-1.5 bg-white border-stone-300 text-stone-900">
           <SelectValue>
@@ -80,7 +80,7 @@ export function FontSelector({ label, value, onChange, description }: FontSelect
           </SelectItem>
           
           <SelectGroup>
-            <SelectLabel className="text-[11px] text-stone-400 uppercase tracking-widest">
+            <SelectLabel className="text-[11px] font-semibold text-stone-500 uppercase tracking-wider">
               Serif (Traditional)
             </SelectLabel>
             {fontsByCategory.serif.map((font) => (
@@ -95,7 +95,7 @@ export function FontSelector({ label, value, onChange, description }: FontSelect
           </SelectGroup>
 
           <SelectGroup>
-            <SelectLabel className="text-[11px] text-stone-400 uppercase tracking-widest">
+            <SelectLabel className="text-[11px] font-semibold text-stone-500 uppercase tracking-wider">
               Sans-Serif (Modern)
             </SelectLabel>
             {fontsByCategory['sans-serif'].map((font) => (
@@ -110,7 +110,7 @@ export function FontSelector({ label, value, onChange, description }: FontSelect
           </SelectGroup>
 
           <SelectGroup>
-            <SelectLabel className="text-[11px] text-stone-400 uppercase tracking-widest">
+            <SelectLabel className="text-[11px] font-semibold text-stone-500 uppercase tracking-wider">
               Display (Headlines)
             </SelectLabel>
             {fontsByCategory.display.map((font) => (
@@ -126,7 +126,7 @@ export function FontSelector({ label, value, onChange, description }: FontSelect
         </SelectContent>
       </Select>
       {description && (
-        <p className="text-[11px] text-stone-400 mt-1.5 tracking-wide">{description}</p>
+        <p className="text-[12px] text-stone-500 mt-1.5">{description}</p>
       )}
     </div>
   )
