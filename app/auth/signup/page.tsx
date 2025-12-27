@@ -158,7 +158,8 @@ export default function SignupPage() {
             </div>
             <Button 
               type="submit" 
-              className="w-full h-10 bg-[#C9A227] hover:bg-[#B8921F] active:bg-[#A8821D] text-[#0B0B0B] font-medium border-0" 
+              variant="gold"
+              className="w-full h-10" 
               disabled={loading}
             >
               Continue
@@ -217,7 +218,8 @@ export default function SignupPage() {
               </Button>
               <Button 
                 type="submit" 
-                className="flex-1 h-10 bg-[#C9A227] hover:bg-[#B8921F] active:bg-[#A8821D] text-[#0B0B0B] font-medium border-0" 
+                variant="gold"
+                className="flex-1 h-10" 
                 disabled={loading}
               >
                 {loading ? 'Creating...' : 'Create Account'}

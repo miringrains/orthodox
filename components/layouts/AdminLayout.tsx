@@ -104,14 +104,14 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
                   onClick={() => setIsMobileOpen(false)}
                   className={`
                     flex items-center gap-3 px-3 py-2.5 rounded-md
-                    transition-colors text-sm font-medium
+                    text-sm font-medium
                     ${isActive
-                      ? 'bg-[#C9A227] text-[#0B0B0B]'
-                      : 'text-[#3A3A3A] dark:text-[#CFCAC2] hover:bg-[#EEECE6] dark:hover:bg-[#232323]'
+                      ? 'gold-polish gold-polish-depth text-[#3A2A08]'
+                      : 'text-[#3A3A3A] dark:text-[#CFCAC2] hover:bg-[#EEECE6] dark:hover:bg-[#232323] transition-colors'
                     }
                   `}
                 >
-                  <Icon className={`h-[18px] w-[18px] ${isActive ? 'text-[#0B0B0B]' : 'text-[#8C8881]'}`} />
+                  <Icon className={`h-[18px] w-[18px] ${isActive ? 'text-[#3A2A08]' : 'text-[#8C8881]'}`} />
                   <span>{item.label}</span>
                 </Link>
               )
