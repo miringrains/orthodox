@@ -120,23 +120,18 @@ export default async function DashboardPage() {
           { label: 'Recent Announcements', value: stats.recentAnnouncements.toString(), sub: 'Latest posts', icon: Megaphone },
           { label: 'Parishes', value: (parishes?.length || 0).toString(), sub: 'Active parishes', icon: Users },
         ].map((stat) => (
-          <Card key={stat.label} className="relative overflow-hidden">
-            <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-gold-400 to-gold-600" />
-            <CardHeader className="pb-2">
-              <div className="flex items-center justify-between">
-                <span className="text-[13px] font-medium text-stone-500 dark:text-neutral-400 tracking-wide">{stat.label}</span>
-                <stat.icon className="h-4 w-4 text-stone-300 dark:text-neutral-600" />
-              </div>
-            </CardHeader>
-            <CardContent className="pt-0">
-              <div className="text-3xl font-semibold text-stone-900 dark:text-neutral-100 tracking-tight">
-                {stat.value}
-              </div>
-              <p className="text-[13px] text-stone-400 dark:text-neutral-500 mt-1 tracking-wide">
-                {stat.sub}
-              </p>
-            </CardContent>
-          </Card>
+          <div key={stat.label} className="bg-stone-900 dark:bg-neutral-800 rounded-xl p-5">
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-[13px] font-medium text-stone-400 dark:text-neutral-400 tracking-wide">{stat.label}</span>
+              <stat.icon className="h-4 w-4 text-gold-400" />
+            </div>
+            <div className="text-3xl font-semibold text-white dark:text-neutral-100 tracking-tight">
+              {stat.value}
+            </div>
+            <p className="text-[13px] text-stone-500 dark:text-neutral-500 mt-1 tracking-wide">
+              {stat.sub}
+            </p>
+          </div>
         ))}
       </div>
 

@@ -100,15 +100,15 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
       >
         <div className="flex flex-col h-full">
           {/* Logo/Header */}
-          <div className="p-5 pb-4">
+          <div className="p-5 pb-2">
             <div className="flex items-center justify-between">
               <Link href="/admin/dashboard" className="flex items-center">
                 <Image
                   src="/projectorthv1.svg"
                   alt="Project Orthodox"
-                  width={180}
-                  height={70}
-                  className="h-11 w-auto"
+                  width={200}
+                  height={80}
+                  className="h-14 w-auto"
                   priority
                 />
               </Link>
@@ -124,7 +124,7 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
             
             {/* Parish name subtitle */}
             {parishName && (
-              <div className="mt-4 flex items-center gap-2.5">
+              <div className="mt-3 mb-6 flex items-center gap-2.5 px-0.5">
                 {parishLogo ? (
                   <Image
                     src={parishLogo}
