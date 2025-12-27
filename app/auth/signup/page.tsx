@@ -3,11 +3,12 @@
 export const dynamic = 'force-dynamic'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import Link from 'next/link'
+import { ArrowLeft } from 'lucide-react'
 
 export default function SignupPage() {
   const [step, setStep] = useState(1)
@@ -18,7 +19,6 @@ export default function SignupPage() {
   const [parishName, setParishName] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
-  const router = useRouter()
   const supabase = createClient()
 
   const handleSignup = async (e: React.FormEvent) => {
@@ -94,7 +94,7 @@ export default function SignupPage() {
         return
       }
 
-      // Redirect to onboarding flow instead of dashboard
+      // Redirect to onboarding flow
       window.location.href = '/onboarding/questions'
     } catch (err) {
       console.error('Signup error:', err)
@@ -103,21 +103,17 @@ export default function SignupPage() {
     }
   }
 
-  const inputClasses = "h-10 bg-white dark:bg-[#232323] border-[#D1CEC8] dark:border-[#2F2F2F] text-[#0B0B0B] dark:text-[#F3F2EE] placeholder:text-[#8C8881] focus:border-[#C9A227] focus:ring-[#C9A227]/35"
-  const labelClasses = "text-sm font-medium text-[#3A3A3A] dark:text-[#CFCAC2]"
-
   return (
     <div className="w-full max-w-sm">
-      {/* Card */}
-      <div className="bg-white dark:bg-[#191919] border border-[#D1CEC8] dark:border-[#2F2F2F] rounded-md shadow-soft p-6">
-        <div className="mb-6 text-center">
-          <h1 className="text-xl font-semibold text-[#0B0B0B] dark:text-[#F3F2EE]">
-            {step === 1 ? 'Create Account' : 'Tell Us About You'}
+      <div className="bg-white dark:bg-neutral-900 rounded-2xl shadow-xl p-8">
+        <div className="mb-8 text-center">
+          <h1 className="font-display text-2xl text-neutral-900 dark:text-neutral-100">
+            {step === 1 ? 'Create your account' : 'Almost there'}
           </h1>
-          <p className="mt-1.5 text-sm text-[#6A6761] dark:text-[#A8A39A]">
+          <p className="mt-2 text-sm text-neutral-500">
             {step === 1
-              ? 'Enter your email and password to get started'
-              : 'Complete your profile and parish information'}
+              ? 'Start your parish platform today'
+              : 'Tell us about yourself and your parish'}
           </p>
         </div>
 
@@ -127,10 +123,12 @@ export default function SignupPage() {
               e.preventDefault()
               setStep(2)
             }}
-            className="space-y-4"
+            className="space-y-5"
           >
-            <div className="space-y-1.5">
-              <Label htmlFor="email" className={labelClasses}>Email</Label>
+            <div className="space-y-2">
+              <Label htmlFor="email" className="text-sm text-neutral-700 dark:text-neutral-300">
+                Email
+              </Label>
               <Input
                 id="email"
                 type="email"
@@ -138,12 +136,15 @@ export default function SignupPage() {
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 disabled={loading}
-                className={inputClasses}
+                className="h-11"
                 placeholder="you@example.com"
               />
             </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="password" className={labelClasses}>Password</Label>
+            
+            <div className="space-y-2">
+              <Label htmlFor="password" className="text-sm text-neutral-700 dark:text-neutral-300">
+                Password
+              </Label>
               <Input
                 id="password"
                 type="password"
@@ -152,50 +153,56 @@ export default function SignupPage() {
                 required
                 disabled={loading}
                 minLength={6}
-                className={inputClasses}
+                className="h-11"
                 placeholder="Minimum 6 characters"
               />
             </div>
-            <Button 
-              type="submit" 
-              variant="gold"
-              className="w-full h-10" 
-              disabled={loading}
-            >
+            
+            <Button type="submit" className="w-full h-11" disabled={loading}>
               Continue
             </Button>
           </form>
         ) : (
-          <form onSubmit={handleSignup} className="space-y-4">
+          <form onSubmit={handleSignup} className="space-y-5">
             {error && (
-              <div className="rounded-md bg-[#F3E6E6] dark:bg-[#6F2D2D]/20 border border-[#6F2D2D]/30 p-3 text-sm text-[#6F2D2D]">
+              <div className="rounded-lg bg-red-50 dark:bg-red-500/10 p-3 text-sm text-red-600 dark:text-red-400">
                 {error}
               </div>
             )}
-            <div className="space-y-1.5">
-              <Label htmlFor="firstName" className={labelClasses}>First Name</Label>
-              <Input
-                id="firstName"
-                value={firstName}
-                onChange={(e) => setFirstName(e.target.value)}
-                required
-                disabled={loading}
-                className={inputClasses}
-              />
+            
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-2">
+                <Label htmlFor="firstName" className="text-sm text-neutral-700 dark:text-neutral-300">
+                  First name
+                </Label>
+                <Input
+                  id="firstName"
+                  value={firstName}
+                  onChange={(e) => setFirstName(e.target.value)}
+                  required
+                  disabled={loading}
+                  className="h-11"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="lastName" className="text-sm text-neutral-700 dark:text-neutral-300">
+                  Last name
+                </Label>
+                <Input
+                  id="lastName"
+                  value={lastName}
+                  onChange={(e) => setLastName(e.target.value)}
+                  required
+                  disabled={loading}
+                  className="h-11"
+                />
+              </div>
             </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="lastName" className={labelClasses}>Last Name</Label>
-              <Input
-                id="lastName"
-                value={lastName}
-                onChange={(e) => setLastName(e.target.value)}
-                required
-                disabled={loading}
-                className={inputClasses}
-              />
-            </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="parishName" className={labelClasses}>Parish Name</Label>
+            
+            <div className="space-y-2">
+              <Label htmlFor="parishName" className="text-sm text-neutral-700 dark:text-neutral-300">
+                Parish name
+              </Label>
               <Input
                 id="parishName"
                 value={parishName}
@@ -203,40 +210,37 @@ export default function SignupPage() {
                 required
                 disabled={loading}
                 placeholder="e.g., Saint Elizabeth Orthodox Church"
-                className={inputClasses}
+                className="h-11"
               />
             </div>
-            <div className="flex gap-2">
+            
+            <div className="flex gap-3">
               <Button
                 type="button"
-                variant="outline"
-                className="flex-1 h-10 bg-white dark:bg-[#232323] border-[#D1CEC8] dark:border-[#2F2F2F] text-[#3A3A3A] dark:text-[#CFCAC2] hover:bg-[#EEECE6] dark:hover:bg-[#2F2F2F]"
+                variant="ghost"
+                className="flex-1 h-11"
                 onClick={() => setStep(1)}
                 disabled={loading}
               >
+                <ArrowLeft className="h-4 w-4 mr-2" />
                 Back
               </Button>
-              <Button 
-                type="submit" 
-                variant="gold"
-                className="flex-1 h-10" 
-                disabled={loading}
-              >
+              <Button type="submit" className="flex-1 h-11" disabled={loading}>
                 {loading ? 'Creating...' : 'Create Account'}
               </Button>
             </div>
           </form>
         )}
         
-        <div className="mt-5 pt-5 border-t border-[#D1CEC8] dark:border-[#2F2F2F] text-center">
-          <p className="text-sm text-[#6A6761] dark:text-[#A8A39A]">
+        <div className="mt-6 text-center">
+          <p className="text-sm text-neutral-500">
             Already have an account?{' '}
-            <a 
+            <Link 
               href="/auth/login" 
-              className="text-[#0B0B0B] dark:text-[#F3F2EE] hover:text-[#C9A227] dark:hover:text-[#C9A227] font-medium transition-colors"
+              className="text-neutral-900 dark:text-neutral-100 hover:text-gold-600 dark:hover:text-gold-400 font-medium transition-colors"
             >
               Sign in
-            </a>
+            </Link>
           </p>
         </div>
       </div>

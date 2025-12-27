@@ -30,28 +30,28 @@ export default function OnboardingLayout({
   const currentStep = getCurrentStep()
 
   return (
-    <div className="min-h-screen bg-[#F6F5F2]">
+    <div className="min-h-screen bg-neutral-50 dark:bg-neutral-950">
       {/* Header with logo */}
-      <header className="pt-8 pb-6 px-4">
+      <header className="pt-10 pb-8 px-4">
         <div className="max-w-4xl mx-auto flex justify-center">
           <Image
             src="/projectorthv2.svg"
             alt="Project Orthodox"
             width={80}
             height={80}
-            className="h-16 w-auto"
+            className="h-14 w-auto"
             priority
           />
         </div>
       </header>
 
       {/* Progress stepper */}
-      <div className="px-4 pb-8">
+      <div className="px-4 pb-10">
         <ProgressStepper steps={steps} currentStep={currentStep} />
       </div>
 
       {/* Main content */}
-      <main className="px-4 pb-12">
+      <main className="px-4 pb-16">
         <div className="max-w-2xl mx-auto">
           {children}
         </div>
@@ -59,4 +59,3 @@ export default function OnboardingLayout({
     </div>
   )
 }
-

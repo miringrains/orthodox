@@ -12,7 +12,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from '@/components/ui/dialog'
-import { Globe, Upload, X, Sparkles } from 'lucide-react'
+import { Upload, X, ArrowLeft } from 'lucide-react'
 
 interface WelcomeModalProps {
   parishId: string
@@ -52,7 +52,6 @@ export function WelcomeModal({ parishId, parishName, isOpen, onClose }: WelcomeM
     try {
       let logoUrl = null
 
-      // Upload logo if provided
       if (logoFile) {
         const fileExt = logoFile.name.split('.').pop()
         const fileName = `${parishId}/logo.${fileExt}`
@@ -69,7 +68,6 @@ export function WelcomeModal({ parishId, parishName, isOpen, onClose }: WelcomeM
         }
       }
 
-      // Update parish record (using any cast since types not regenerated)
       await (supabase as any)
         .from('parishes')
         .update({
@@ -100,92 +98,78 @@ export function WelcomeModal({ parishId, parishName, isOpen, onClose }: WelcomeM
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <div className="flex items-center justify-center w-12 h-12 rounded-full bg-[#F4EBD3] mx-auto mb-4">
-            <Sparkles className="h-6 w-6 text-[#C9A227]" />
-          </div>
-          <DialogTitle className="text-center text-xl">
-            Welcome to {parishName}!
+      <DialogContent className="sm:max-w-md" showCloseButton={false}>
+        <DialogHeader className="space-y-3">
+          <DialogTitle className="font-display text-2xl text-center">
+            Welcome to {parishName}
           </DialogTitle>
-          <DialogDescription className="text-center">
-            A few quick questions to personalize your experience
+          <DialogDescription className="text-center text-neutral-500">
+            Let&apos;s personalize your experience
           </DialogDescription>
         </DialogHeader>
 
         {step === 0 && (
-          <div className="space-y-4 pt-4">
-            <div className="text-center mb-4">
-              <Globe className="h-8 w-8 text-[#6A6761] mx-auto mb-2" />
-              <p className="text-sm text-[#3A3A3A]">Do you need a custom domain for your website?</p>
-            </div>
+          <div className="space-y-4 pt-2">
+            <p className="text-sm text-neutral-600 dark:text-neutral-400 text-center">
+              Do you need a custom domain for your website?
+            </p>
             
-            <div className="grid gap-3">
+            <div className="grid gap-2">
               <button
                 onClick={() => { setNeedsDomain(true); setStep(1); }}
-                className={`
-                  p-4 rounded-lg border-2 text-left transition-all
-                  border-[#D1CEC8] bg-white hover:border-[#C9A227]/50
-                `}
+                className="p-4 rounded-xl bg-neutral-50 dark:bg-neutral-800 text-left transition-all hover:bg-neutral-100 dark:hover:bg-neutral-700 group"
               >
-                <div className="font-medium text-[#0B0B0B]">Yes, I need a domain</div>
-                <div className="text-sm text-[#6A6761]">Help me set up a custom address</div>
+                <div className="font-medium text-neutral-900 dark:text-neutral-100">Yes, I need a domain</div>
+                <div className="text-sm text-neutral-500 dark:text-neutral-400 mt-0.5">Help me set up a custom address</div>
               </button>
               
               <button
                 onClick={() => { setNeedsDomain(false); setStep(1); }}
-                className={`
-                  p-4 rounded-lg border-2 text-left transition-all
-                  border-[#D1CEC8] bg-white hover:border-[#C9A227]/50
-                `}
+                className="p-4 rounded-xl bg-neutral-50 dark:bg-neutral-800 text-left transition-all hover:bg-neutral-100 dark:hover:bg-neutral-700 group"
               >
-                <div className="font-medium text-[#0B0B0B]">I already have one</div>
-                <div className="text-sm text-[#6A6761]">I&apos;ll connect my existing domain</div>
+                <div className="font-medium text-neutral-900 dark:text-neutral-100">I already have one</div>
+                <div className="text-sm text-neutral-500 dark:text-neutral-400 mt-0.5">I&apos;ll connect my existing domain</div>
               </button>
               
               <button
                 onClick={() => { setNeedsDomain(null); setStep(1); }}
-                className={`
-                  p-4 rounded-lg border-2 text-left transition-all
-                  border-[#D1CEC8] bg-white hover:border-[#C9A227]/50
-                `}
+                className="p-4 rounded-xl bg-neutral-50 dark:bg-neutral-800 text-left transition-all hover:bg-neutral-100 dark:hover:bg-neutral-700 group"
               >
-                <div className="font-medium text-[#0B0B0B]">Decide later</div>
-                <div className="text-sm text-[#6A6761]">I&apos;ll figure this out later</div>
+                <div className="font-medium text-neutral-900 dark:text-neutral-100">Decide later</div>
+                <div className="text-sm text-neutral-500 dark:text-neutral-400 mt-0.5">I&apos;ll figure this out later</div>
               </button>
             </div>
           </div>
         )}
 
         {step === 1 && (
-          <div className="space-y-4 pt-4">
-            <div className="text-center mb-4">
-              <Upload className="h-8 w-8 text-[#6A6761] mx-auto mb-2" />
-              <p className="text-sm text-[#3A3A3A]">Upload your parish logo (optional)</p>
-            </div>
+          <div className="space-y-6 pt-2">
+            <p className="text-sm text-neutral-600 dark:text-neutral-400 text-center">
+              Upload your parish logo <span className="text-neutral-400">(optional)</span>
+            </p>
             
             {logoPreview ? (
-              <div className="relative w-32 h-32 mx-auto">
+              <div className="relative w-28 h-28 mx-auto">
                 <img
                   src={logoPreview}
                   alt="Logo preview"
-                  className="w-full h-full object-contain rounded-lg border border-[#D1CEC8]"
+                  className="w-full h-full object-contain rounded-xl bg-neutral-50 dark:bg-neutral-800"
                 />
                 <button
                   onClick={removeLogo}
-                  className="absolute -top-2 -right-2 w-6 h-6 bg-[#6F2D2D] text-white rounded-full flex items-center justify-center hover:bg-[#5A2424]"
+                  className="absolute -top-2 -right-2 w-6 h-6 bg-neutral-900 dark:bg-neutral-100 text-white dark:text-neutral-900 rounded-full flex items-center justify-center hover:bg-neutral-700 dark:hover:bg-neutral-300 transition-colors"
                 >
-                  <X className="h-4 w-4" />
+                  <X className="h-3.5 w-3.5" />
                 </button>
               </div>
             ) : (
               <Label
                 htmlFor="logo-upload"
-                className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-[#D1CEC8] rounded-lg cursor-pointer hover:border-[#C9A227]/50 transition-colors"
+                className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-neutral-200 dark:border-neutral-700 rounded-xl cursor-pointer hover:border-neutral-300 dark:hover:border-neutral-600 hover:bg-neutral-50 dark:hover:bg-neutral-800/50 transition-all"
               >
-                <Upload className="h-8 w-8 text-[#8C8881] mb-2" />
-                <span className="text-sm text-[#6A6761]">Click to upload</span>
-                <span className="text-xs text-[#8C8881]">PNG, JPG, or SVG</span>
+                <Upload className="h-6 w-6 text-neutral-400 mb-2" />
+                <span className="text-sm text-neutral-600 dark:text-neutral-400">Click to upload</span>
+                <span className="text-xs text-neutral-400 dark:text-neutral-500 mt-1">PNG, JPG, or SVG</span>
                 <Input
                   id="logo-upload"
                   type="file"
@@ -196,28 +180,28 @@ export function WelcomeModal({ parishId, parishName, isOpen, onClose }: WelcomeM
               </Label>
             )}
 
-            <div className="flex gap-3 pt-4">
+            <div className="flex gap-3 pt-2">
               <Button
-                variant="outline"
+                variant="ghost"
                 onClick={() => setStep(0)}
                 className="flex-1"
               >
+                <ArrowLeft className="h-4 w-4 mr-2" />
                 Back
               </Button>
               <Button
-                variant="gold"
                 onClick={handleComplete}
                 disabled={loading}
                 className="flex-1"
               >
-                {loading ? 'Saving...' : 'Complete'}
+                {loading ? 'Saving...' : 'Continue'}
               </Button>
             </div>
             
             <button
               onClick={handleSkip}
               disabled={loading}
-              className="w-full text-sm text-[#6A6761] hover:text-[#0B0B0B] transition-colors"
+              className="w-full text-sm text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300 transition-colors"
             >
               Skip for now
             </button>
@@ -227,4 +211,3 @@ export function WelcomeModal({ parishId, parishName, isOpen, onClose }: WelcomeM
     </Dialog>
   )
 }
-

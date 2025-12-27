@@ -23,44 +23,68 @@ export function AddonCard({
     <button
       onClick={onToggle}
       className={`
-        relative w-full text-left p-5 rounded-xl border-2 transition-all
+        relative w-full text-left p-5 rounded-xl transition-all
         ${isSelected
-          ? 'border-[#C9A227] bg-[#F4EBD3]/50'
-          : 'border-[#D1CEC8] bg-white hover:border-[#C9A227]/30'
+          ? 'bg-neutral-900 dark:bg-neutral-100 shadow-lg'
+          : 'bg-white dark:bg-neutral-900 shadow-md hover:shadow-lg'
         }
       `}
     >
       {/* Selection indicator */}
       <div
         className={`
-          absolute top-4 right-4 w-6 h-6 rounded-full border-2 
+          absolute top-4 right-4 w-5 h-5 rounded-full 
           flex items-center justify-center transition-all
           ${isSelected
-            ? 'border-[#C9A227] bg-[#C9A227]'
-            : 'border-[#D1CEC8] bg-white'
+            ? 'bg-white dark:bg-neutral-900'
+            : 'border-2 border-neutral-200 dark:border-neutral-700'
           }
         `}
       >
-        {isSelected && <Check className="h-4 w-4 text-white" />}
+        {isSelected && <Check className="h-3 w-3 text-neutral-900 dark:text-neutral-100" />}
       </div>
 
       {/* Icon */}
       <div className={`
-        w-10 h-10 rounded-lg flex items-center justify-center mb-3
-        ${isSelected ? 'bg-[#C9A227]/20' : 'bg-[#EEECE6]'}
+        w-10 h-10 rounded-lg flex items-center justify-center mb-4
+        ${isSelected 
+          ? 'bg-white/10 dark:bg-neutral-900/10' 
+          : 'bg-neutral-100 dark:bg-neutral-800'
+        }
       `}>
-        <Icon className={`h-5 w-5 ${isSelected ? 'text-[#C9A227]' : 'text-[#6A6761]'}`} />
+        <Icon className={`h-5 w-5 ${
+          isSelected 
+            ? 'text-white dark:text-neutral-900' 
+            : 'text-neutral-600 dark:text-neutral-400'
+        }`} />
       </div>
 
       {/* Content */}
-      <h3 className="font-semibold text-[#0B0B0B] pr-8">{name}</h3>
-      <p className="text-sm text-[#6A6761] mt-1">{description}</p>
+      <h3 className={`font-semibold pr-8 ${
+        isSelected 
+          ? 'text-white dark:text-neutral-900' 
+          : 'text-neutral-900 dark:text-neutral-100'
+      }`}>
+        {name}
+      </h3>
+      <p className={`text-sm mt-1 ${
+        isSelected 
+          ? 'text-white/70 dark:text-neutral-900/70' 
+          : 'text-neutral-500'
+      }`}>
+        {description}
+      </p>
       
       {/* Price */}
       <div className="mt-3">
-        <span className="text-sm font-medium text-[#C9A227]">{price}</span>
+        <span className={`text-sm font-medium ${
+          isSelected 
+            ? 'text-gold-300 dark:text-gold-600' 
+            : 'text-gold-600 dark:text-gold-400'
+        }`}>
+          {price}
+        </span>
       </div>
     </button>
   )
 }
-

@@ -8,9 +8,13 @@ function Input({ className, type, ...props }: React.ComponentProps<"input">) {
       type={type}
       data-slot="input"
       className={cn(
-        "file:text-foreground placeholder:text-[#8C8881] selection:bg-[#EBDCA8] selection:text-[#0B0B0B] h-9 w-full min-w-0 rounded-md border border-[#D1CEC8] dark:border-[#2F2F2F] bg-white dark:bg-[#232323] px-3 py-1 text-base text-[#0B0B0B] dark:text-[#F3F2EE] shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm",
-        "focus-visible:border-[#C9A227] focus-visible:ring-[#C9A227]/35 focus-visible:ring-[3px]",
-        "aria-invalid:ring-[#6F2D2D]/20 dark:aria-invalid:ring-[#6F2D2D]/40 aria-invalid:border-[#6F2D2D]",
+        "flex h-10 w-full rounded-lg border border-neutral-200 bg-white px-3 py-2 text-sm text-neutral-900 transition-colors",
+        "placeholder:text-neutral-400",
+        "focus:outline-none focus:ring-2 focus:ring-neutral-900 focus:ring-offset-0 focus:border-neutral-900",
+        "disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-neutral-50",
+        "dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100 dark:placeholder:text-neutral-500",
+        "dark:focus:ring-neutral-100 dark:focus:border-neutral-100",
+        "file:border-0 file:bg-transparent file:text-sm file:font-medium",
         className
       )}
       {...props}

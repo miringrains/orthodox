@@ -1,18 +1,17 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import Link from 'next/link'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
-  const router = useRouter()
   const supabase = createClient()
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -31,35 +30,30 @@ export default function LoginPage() {
       return
     }
 
-    // Use window.location for reliable redirect after auth
     window.location.href = '/admin/dashboard'
   }
 
   return (
     <div className="w-full max-w-sm">
-      {/* Card */}
-      <div className="bg-white dark:bg-[#191919] border border-[#D1CEC8] dark:border-[#2F2F2F] rounded-md shadow-soft p-6">
-        <div className="mb-6 text-center">
-          <h1 className="text-xl font-semibold text-[#0B0B0B] dark:text-[#F3F2EE]">
-            Sign In
+      <div className="bg-white dark:bg-neutral-900 rounded-2xl shadow-xl p-8">
+        <div className="mb-8 text-center">
+          <h1 className="font-display text-2xl text-neutral-900 dark:text-neutral-100">
+            Welcome back
           </h1>
-          <p className="mt-1.5 text-sm text-[#6A6761] dark:text-[#A8A39A]">
-            Enter your credentials to access your dashboard
+          <p className="mt-2 text-sm text-neutral-500">
+            Enter your credentials to continue
           </p>
         </div>
 
-        <form onSubmit={handleLogin} className="space-y-4">
+        <form onSubmit={handleLogin} className="space-y-5">
           {error && (
-            <div className="rounded-md bg-[#F3E6E6] dark:bg-[#6F2D2D]/20 border border-[#6F2D2D]/30 p-3 text-sm text-[#6F2D2D]">
+            <div className="rounded-lg bg-red-50 dark:bg-red-500/10 p-3 text-sm text-red-600 dark:text-red-400">
               {error}
             </div>
           )}
           
-          <div className="space-y-1.5">
-            <Label 
-              htmlFor="email" 
-              className="text-sm font-medium text-[#3A3A3A] dark:text-[#CFCAC2]"
-            >
+          <div className="space-y-2">
+            <Label htmlFor="email" className="text-sm text-neutral-700 dark:text-neutral-300">
               Email
             </Label>
             <Input
@@ -69,16 +63,13 @@ export default function LoginPage() {
               onChange={(e) => setEmail(e.target.value)}
               required
               disabled={loading}
-              className="h-10 bg-white dark:bg-[#232323] border-[#D1CEC8] dark:border-[#2F2F2F] text-[#0B0B0B] dark:text-[#F3F2EE] placeholder:text-[#8C8881] focus:border-[#C9A227] focus:ring-[#C9A227]/35"
+              className="h-11"
               placeholder="you@example.com"
             />
           </div>
           
-          <div className="space-y-1.5">
-            <Label 
-              htmlFor="password"
-              className="text-sm font-medium text-[#3A3A3A] dark:text-[#CFCAC2]"
-            >
+          <div className="space-y-2">
+            <Label htmlFor="password" className="text-sm text-neutral-700 dark:text-neutral-300">
               Password
             </Label>
             <Input
@@ -88,30 +79,29 @@ export default function LoginPage() {
               onChange={(e) => setPassword(e.target.value)}
               required
               disabled={loading}
-              className="h-10 bg-white dark:bg-[#232323] border-[#D1CEC8] dark:border-[#2F2F2F] text-[#0B0B0B] dark:text-[#F3F2EE] placeholder:text-[#8C8881] focus:border-[#C9A227] focus:ring-[#C9A227]/35"
+              className="h-11"
               placeholder="••••••••"
             />
           </div>
           
           <Button 
             type="submit" 
-            variant="gold"
-            className="w-full h-10" 
+            className="w-full h-11" 
             disabled={loading}
           >
             {loading ? 'Signing in...' : 'Sign In'}
           </Button>
         </form>
         
-        <div className="mt-5 pt-5 border-t border-[#D1CEC8] dark:border-[#2F2F2F] text-center">
-          <p className="text-sm text-[#6A6761] dark:text-[#A8A39A]">
+        <div className="mt-6 text-center">
+          <p className="text-sm text-neutral-500">
             Don&apos;t have an account?{' '}
-            <a 
+            <Link 
               href="/auth/signup" 
-              className="text-[#0B0B0B] dark:text-[#F3F2EE] hover:text-[#C9A227] dark:hover:text-[#C9A227] font-medium transition-colors"
+              className="text-neutral-900 dark:text-neutral-100 hover:text-gold-600 dark:hover:text-gold-400 font-medium transition-colors"
             >
               Sign up
-            </a>
+            </Link>
           </p>
         </div>
       </div>

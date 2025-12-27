@@ -8,6 +8,7 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --font-display: var(--font-display);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -37,256 +38,467 @@
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
   
-  /* PROJECT ORTHODOX - Custom colors */
-  --color-gold: var(--po-gold);
-  --color-gold-hover: var(--po-gold-hover);
-  --color-gold-pressed: var(--po-gold-pressed);
-  --color-gold-tint: var(--po-gold-tint);
-  --color-gold-selection: var(--po-gold-selection);
-  --color-byzantine-blue: var(--po-blue);
-  --color-byzantine-blue-hover: var(--po-blue-hover);
+  /* Radius System */
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-full: 9999px;
+  
+  /* Gold Scale - Tailwind Integration */
+  --color-gold-50: var(--gold-50);
+  --color-gold-100: var(--gold-100);
+  --color-gold-200: var(--gold-200);
+  --color-gold-300: var(--gold-300);
+  --color-gold-400: var(--gold-400);
+  --color-gold-500: var(--gold-500);
+  --color-gold-600: var(--gold-600);
+  --color-gold-700: var(--gold-700);
+  
+  /* Neutral Scale - Tailwind Integration */
+  --color-neutral-0: var(--neutral-0);
+  --color-neutral-50: var(--neutral-50);
+  --color-neutral-100: var(--neutral-100);
+  --color-neutral-150: var(--neutral-150);
+  --color-neutral-200: var(--neutral-200);
+  --color-neutral-300: var(--neutral-300);
+  --color-neutral-400: var(--neutral-400);
+  --color-neutral-500: var(--neutral-500);
+  --color-neutral-600: var(--neutral-600);
+  --color-neutral-700: var(--neutral-700);
+  --color-neutral-800: var(--neutral-800);
+  --color-neutral-900: var(--neutral-900);
+  --color-neutral-950: var(--neutral-950);
 }
 
 :root {
-  --radius: 0.375rem;
+  /* ============================================
+     PREMIUM DESIGN SYSTEM - Project Orthodox
+     ============================================ */
   
-  /* PROJECT ORTHODOX — PLATFORM COLOR SYSTEM */
-  /* Brand Anchor - Gold (accent only) */
-  --po-gold: #C9A227;
-  --po-gold-hover: #B8921F;
-  --po-gold-pressed: #A8821D;
-  --po-gold-tint: #F4EBD3;
-  --po-gold-selection: #EBDCA8;
-  --po-gold-ring: rgba(201, 162, 39, 0.35);
+  /* Typography Scale - Major Third (1.25) */
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.25rem;
+  --text-2xl: 1.5rem;
+  --text-3xl: 1.875rem;
+  --text-4xl: 2.25rem;
+  --text-5xl: 3rem;
   
-  /* Byzantine Blue (secondary accent) */
-  --po-blue: #2F3A44;
-  --po-blue-hover: #3A4754;
+  /* Letter Spacing */
+  --tracking-tighter: -0.03em;
+  --tracking-tight: -0.02em;
+  --tracking-normal: 0;
+  --tracking-wide: 0.02em;
+  --tracking-wider: 0.04em;
   
-  /* Neutral Foundation (Light Mode) */
-  --background: #F6F5F2;           /* Canvas / Warm White 50 */
-  --foreground: #0B0B0B;           /* Text / Ink 900 */
-  --card: #FFFFFF;                 /* Surface / Paper 100 */
-  --card-foreground: #1C1C1C;      /* Text / Charcoal 800 */
+  /* Line Heights */
+  --leading-none: 1;
+  --leading-tight: 1.25;
+  --leading-snug: 1.375;
+  --leading-normal: 1.5;
+  --leading-relaxed: 1.625;
+  
+  /* Spacing Scale - 4px baseline */
+  --space-0: 0;
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+  --space-20: 5rem;
+  --space-24: 6rem;
+  
+  /* Elevation System - Subtle, layered shadows */
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.03);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.04), 0 2px 4px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.04), 0 4px 6px rgba(0, 0, 0, 0.05);
+  --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.05), 0 8px 10px rgba(0, 0, 0, 0.04);
+  --shadow-2xl: 0 25px 50px rgba(0, 0, 0, 0.12);
+  
+  /* Refined Gold - Precious Metal, Not Mustard */
+  --gold-50: #FEFCF3;
+  --gold-100: #FBF6E3;
+  --gold-200: #F4E9C4;
+  --gold-300: #E8D599;
+  --gold-400: #D4B85C;
+  --gold-500: #B8962C;
+  --gold-600: #997A1E;
+  --gold-700: #755D17;
+  
+  /* Clean Neutrals - Less Beige, More Refined */
+  --neutral-0: #FFFFFF;
+  --neutral-50: #FAFAFA;
+  --neutral-100: #F5F5F5;
+  --neutral-150: #EFEFEF;
+  --neutral-200: #E5E5E5;
+  --neutral-300: #D4D4D4;
+  --neutral-400: #A3A3A3;
+  --neutral-500: #737373;
+  --neutral-600: #525252;
+  --neutral-700: #404040;
+  --neutral-800: #262626;
+  --neutral-900: #171717;
+  --neutral-950: #0A0A0A;
+  
+  /* Semantic Colors - Light Mode */
+  --background: #FAFAFA;
+  --foreground: #171717;
+  --card: #FFFFFF;
+  --card-foreground: #171717;
   --popover: #FFFFFF;
-  --popover-foreground: #1C1C1C;
-  --primary: #C9A227;              /* PO Gold 500 */
-  --primary-foreground: #0B0B0B;   /* Ink text on gold */
-  --secondary: #2F3A44;            /* Byzantine Blue 700 */
-  --secondary-foreground: #F6F5F2; /* Off-white text on blue */
-  --muted: #EEECE6;                /* Warm Stone 150 */
-  --muted-foreground: #6A6761;     /* Text / Muted 600 */
-  --accent: #EEECE6;               /* Warm Stone 150 */
-  --accent-foreground: #1C1C1C;    /* Charcoal 800 */
-  --destructive: #6F2D2D;          /* Oxide Red 700 */
-  --border: #D1CEC8;               /* Stone 200 */
-  --input: #D1CEC8;                /* Stone 200 */
-  --ring: rgba(201, 162, 39, 0.35); /* Gold focus ring */
+  --popover-foreground: #171717;
+  --primary: #171717;
+  --primary-foreground: #FFFFFF;
+  --secondary: #F5F5F5;
+  --secondary-foreground: #171717;
+  --muted: #F5F5F5;
+  --muted-foreground: #737373;
+  --accent: #F5F5F5;
+  --accent-foreground: #171717;
+  --destructive: #DC2626;
+  --border: #E5E5E5;
+  --input: #E5E5E5;
+  --ring: rgba(184, 150, 44, 0.4);
   
-  /* Chart colors - muted palette */
-  --chart-1: #C9A227;
-  --chart-2: #2F3A44;
-  --chart-3: #6E6B54;
-  --chart-4: #1F4D3A;
-  --chart-5: #7A5A12;
+  /* Chart colors */
+  --chart-1: #B8962C;
+  --chart-2: #404040;
+  --chart-3: #737373;
+  --chart-4: #166534;
+  --chart-5: #755D17;
   
   /* Sidebar - Light */
   --sidebar: #FFFFFF;
-  --sidebar-foreground: #1C1C1C;
-  --sidebar-primary: #C9A227;
-  --sidebar-primary-foreground: #0B0B0B;
-  --sidebar-accent: #EEECE6;
-  --sidebar-accent-foreground: #1C1C1C;
-  --sidebar-border: #D1CEC8;
-  --sidebar-ring: rgba(201, 162, 39, 0.35);
+  --sidebar-foreground: #171717;
+  --sidebar-primary: #B8962C;
+  --sidebar-primary-foreground: #171717;
+  --sidebar-accent: #F5F5F5;
+  --sidebar-accent-foreground: #171717;
+  --sidebar-border: #E5E5E5;
+  --sidebar-ring: rgba(184, 150, 44, 0.4);
   
   /* State Colors */
-  --success: #1F4D3A;
-  --success-tint: #E6F1EC;
-  --warning: #7A5A12;
-  --warning-tint: #F4EBD3;
-  --error: #6F2D2D;
-  --error-tint: #F3E6E6;
-  --info: #2F3A44;
-  --info-tint: #E7ECEF;
+  --success: #166534;
+  --success-light: #DCFCE7;
+  --warning: #B8962C;
+  --warning-light: #FBF6E3;
+  --error: #DC2626;
+  --error-light: #FEE2E2;
+  --info: #2563EB;
+  --info-light: #DBEAFE;
 }
 
 .dark {
-  /* Neutral Foundation (Dark Mode) */
-  --background: #121212;           /* Canvas / Charcoal 950 */
-  --foreground: #F3F2EE;           /* Text / Off-White 50 */
-  --card: #191919;                 /* Surface / Carbon 900 */
-  --card-foreground: #F3F2EE;
-  --popover: #191919;
-  --popover-foreground: #F3F2EE;
-  --primary: #C9A227;              /* PO Gold 500 - same in dark */
-  --primary-foreground: #0B0B0B;
-  --secondary: #3A4754;            /* Byzantine Blue 600 */
-  --secondary-foreground: #F3F2EE;
-  --muted: #232323;                /* Surface / Slate 850 */
-  --muted-foreground: #A8A39A;     /* Text / Muted 300 */
-  --accent: #232323;
-  --accent-foreground: #F3F2EE;
-  --destructive: #6F2D2D;
-  --border: #2F2F2F;               /* Border / Ash 800 */
-  --input: #2F2F2F;
-  --ring: rgba(201, 162, 39, 0.45);
+  /* Semantic Colors - Dark Mode */
+  --background: #0A0A0A;
+  --foreground: #FAFAFA;
+  --card: #171717;
+  --card-foreground: #FAFAFA;
+  --popover: #171717;
+  --popover-foreground: #FAFAFA;
+  --primary: #FAFAFA;
+  --primary-foreground: #171717;
+  --secondary: #262626;
+  --secondary-foreground: #FAFAFA;
+  --muted: #262626;
+  --muted-foreground: #A3A3A3;
+  --accent: #262626;
+  --accent-foreground: #FAFAFA;
+  --destructive: #DC2626;
+  --border: #262626;
+  --input: #262626;
+  --ring: rgba(212, 184, 92, 0.5);
   
   /* Sidebar - Dark */
-  --sidebar: #191919;
-  --sidebar-foreground: #F3F2EE;
-  --sidebar-primary: #C9A227;
-  --sidebar-primary-foreground: #0B0B0B;
-  --sidebar-accent: #232323;
-  --sidebar-accent-foreground: #F3F2EE;
-  --sidebar-border: #2F2F2F;
-  --sidebar-ring: rgba(201, 162, 39, 0.45);
+  --sidebar: #171717;
+  --sidebar-foreground: #FAFAFA;
+  --sidebar-primary: #D4B85C;
+  --sidebar-primary-foreground: #171717;
+  --sidebar-accent: #262626;
+  --sidebar-accent-foreground: #FAFAFA;
+  --sidebar-border: #262626;
+  --sidebar-ring: rgba(212, 184, 92, 0.5);
   
-  /* Chart colors - dark mode */
-  --chart-1: #C9A227;
-  --chart-2: #3A4754;
-  --chart-3: #6E6B54;
-  --chart-4: #1F4D3A;
-  --chart-5: #7A5A12;
+  /* Chart colors - Dark */
+  --chart-1: #D4B85C;
+  --chart-2: #A3A3A3;
+  --chart-3: #737373;
+  --chart-4: #22C55E;
+  --chart-5: #E8D599;
 }
 
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    @apply border-border;
   }
+  
   body {
     @apply bg-background text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
   
-  /* Typography refinements */
-  h1, h2, h3, h4, h5, h6 {
+  /* Typography - Display Headings */
+  h1, h2, h3 {
+    font-family: var(--font-display), Georgia, serif;
+    font-weight: 400;
+    letter-spacing: var(--tracking-tight);
+    line-height: var(--leading-tight);
     color: var(--foreground);
-    letter-spacing: -0.01em;
   }
   
-  /* Link styling following design system */
+  h1 {
+    font-size: var(--text-4xl);
+  }
+  
+  h2 {
+    font-size: var(--text-3xl);
+  }
+  
+  h3 {
+    font-size: var(--text-2xl);
+  }
+  
+  /* Body headings use sans */
+  h4, h5, h6 {
+    font-weight: 600;
+    letter-spacing: var(--tracking-tight);
+    color: var(--foreground);
+  }
+  
+  /* Links */
   a:not([class]) {
     color: var(--foreground);
+    text-decoration: underline;
+    text-underline-offset: 4px;
     transition: color 0.15s ease;
   }
+  
   a:not([class]):hover {
-    color: var(--primary);
+    color: var(--gold-600);
   }
   
-  /* Selection with gold tint */
+  /* Selection - subtle gold */
   ::selection {
-    background-color: var(--po-gold-selection);
+    background-color: var(--gold-100);
     color: var(--foreground);
   }
 }
 
-/* Utility classes for Project Orthodox design system */
 @layer utilities {
-  .text-ink { color: #0B0B0B; }
-  .text-charcoal { color: #1C1C1C; }
-  .text-graphite { color: #3A3A3A; }
-  .text-muted-po { color: #6A6761; }
-  .text-subtle { color: #8C8881; }
+  /* Typography utilities */
+  .font-display {
+    font-family: var(--font-display), Georgia, serif;
+  }
   
-  .bg-canvas { background-color: #F6F5F2; }
-  .bg-surface { background-color: #FFFFFF; }
-  .bg-warm-stone { background-color: #EEECE6; }
+  .text-display-xl {
+    font-family: var(--font-display), Georgia, serif;
+    font-size: var(--text-5xl);
+    letter-spacing: var(--tracking-tighter);
+    line-height: var(--leading-none);
+  }
   
-  .border-stone { border-color: #D1CEC8; }
+  .text-display-lg {
+    font-family: var(--font-display), Georgia, serif;
+    font-size: var(--text-4xl);
+    letter-spacing: var(--tracking-tight);
+    line-height: var(--leading-tight);
+  }
   
-  .bg-gold { background-color: #C9A227; }
-  .text-gold { color: #C9A227; }
-  .border-gold { border-color: #C9A227; }
+  .text-display-md {
+    font-family: var(--font-display), Georgia, serif;
+    font-size: var(--text-3xl);
+    letter-spacing: var(--tracking-tight);
+    line-height: var(--leading-tight);
+  }
   
-  .focus-gold:focus {
+  /* Gold accent utilities - Porto Rocha philosophy */
+  .gold-accent-line {
+    position: relative;
+  }
+  
+  .gold-accent-line::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--gold-400), var(--gold-600));
+  }
+  
+  .gold-accent-top {
+    position: relative;
+  }
+  
+  .gold-accent-top::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--gold-400), var(--gold-600));
+  }
+  
+  .gold-accent-left {
+    border-left: 2px solid var(--gold-500);
+  }
+  
+  .text-gold {
+    color: var(--gold-600);
+  }
+  
+  .text-gold-dark {
+    color: var(--gold-700);
+  }
+  
+  .bg-gold-subtle {
+    background-color: var(--gold-50);
+  }
+  
+  .border-gold {
+    border-color: var(--gold-500);
+  }
+  
+  .ring-gold {
+    --tw-ring-color: var(--gold-500);
+  }
+  
+  /* Elevation utilities */
+  .elevation-0 {
+    box-shadow: none;
+  }
+  
+  .elevation-1 {
+    box-shadow: var(--shadow-sm);
+  }
+  
+  .elevation-2 {
+    box-shadow: var(--shadow-md);
+  }
+  
+  .elevation-3 {
+    box-shadow: var(--shadow-lg);
+  }
+  
+  .elevation-4 {
+    box-shadow: var(--shadow-xl);
+  }
+  
+  /* Focus ring - gold accent */
+  .focus-ring {
     outline: none;
-    box-shadow: 0 0 0 3px var(--po-gold-ring);
   }
   
-  /* Soft shadow from design system */
-  .shadow-soft {
-    box-shadow: 0 1px 3px rgba(11, 11, 11, 0.10);
+  .focus-ring:focus-visible {
+    box-shadow: 0 0 0 2px var(--background), 0 0 0 4px var(--gold-500);
   }
   
-  /* 
-   * Hyper-realistic Polished Gold Button
-   * Uses layered radial gradients to create organic metallic appearance
-   * Simulates light hitting a curved gold surface from upper-left
-   */
-  .btn-gold {
-    /* Mesh-style gradient: layered radials for organic metallic look */
-    background: 
-      /* Specular highlight - bright spot where light hits directly */
-      radial-gradient(ellipse 80% 50% at 25% 25%, rgba(255, 248, 220, 0.9) 0%, transparent 50%),
-      /* Secondary highlight - softer glow */
-      radial-gradient(ellipse 100% 80% at 50% 0%, rgba(255, 223, 100, 0.5) 0%, transparent 60%),
-      /* Depth shadow - darker at bottom edge */
-      radial-gradient(ellipse 100% 60% at 50% 100%, rgba(139, 105, 20, 0.4) 0%, transparent 50%),
-      /* Base gold gradient - foundation */
-      linear-gradient(165deg, #D4AF37 0%, #C9A227 40%, #B8921F 70%, #A8821D 100%);
-    
-    /* Text styling - dark with subtle emboss effect */
-    color: #1A1405;
-    font-weight: 600;
-    text-shadow: 0 1px 0 rgba(255, 235, 180, 0.4);
-    
-    /* Subtle inner glow for depth */
-    box-shadow: 
-      inset 0 1px 1px rgba(255, 248, 220, 0.7),
-      inset 0 -1px 1px rgba(100, 75, 10, 0.3);
-    
+  /* Card without border - uses elevation */
+  .card-elevated {
+    background: var(--card);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+  }
+  
+  .card-elevated:hover {
+    box-shadow: var(--shadow-md);
+  }
+  
+  /* Subtle surface variations */
+  .surface-0 {
+    background-color: var(--neutral-0);
+  }
+  
+  .surface-1 {
+    background-color: var(--neutral-50);
+  }
+  
+  .surface-2 {
+    background-color: var(--neutral-100);
+  }
+  
+  /* Button - Primary (Dark, refined) */
+  .btn-primary {
+    background-color: var(--neutral-900);
+    color: var(--neutral-0);
+    font-weight: 500;
     border: none;
-    transition: box-shadow 0.2s ease, filter 0.2s ease;
+    transition: background-color 0.15s ease, box-shadow 0.15s ease;
+  }
+  
+  .btn-primary:hover {
+    background-color: var(--neutral-800);
+  }
+  
+  .btn-primary:active {
+    background-color: var(--neutral-950);
+  }
+  
+  .btn-primary:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--background), 0 0 0 4px var(--neutral-900);
+  }
+  
+  /* Button - Gold Accent (outline, not filled) */
+  .btn-gold-accent {
+    background-color: transparent;
+    color: var(--gold-600);
+    font-weight: 500;
+    border: 1px solid var(--gold-500);
+    transition: all 0.15s ease;
+  }
+  
+  .btn-gold-accent:hover {
+    background-color: var(--gold-50);
+    border-color: var(--gold-600);
+  }
+  
+  .btn-gold-accent:active {
+    background-color: var(--gold-100);
+  }
+  
+  .btn-gold-accent:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--background), 0 0 0 4px var(--gold-500);
+  }
+  
+  /* Legacy btn-gold - redirected to accent style for transition */
+  .btn-gold {
+    background-color: var(--neutral-900);
+    color: var(--neutral-0);
+    font-weight: 500;
+    border: none;
+    transition: background-color 0.15s ease, box-shadow 0.15s ease;
   }
   
   .btn-gold:hover {
-    /* Subtle outer glow on hover - no movement */
-    box-shadow: 
-      inset 0 1px 1px rgba(255, 248, 220, 0.7),
-      inset 0 -1px 1px rgba(100, 75, 10, 0.3),
-      0 0 16px rgba(201, 162, 39, 0.35);
-    filter: brightness(1.03);
+    background-color: var(--neutral-800);
   }
   
   .btn-gold:active {
-    /* Pressed state - slightly darker, remove outer glow */
-    filter: brightness(0.95);
-    box-shadow: 
-      inset 0 1px 2px rgba(100, 75, 10, 0.4),
-      inset 0 -1px 1px rgba(255, 248, 220, 0.3);
+    background-color: var(--neutral-950);
   }
   
   .btn-gold:focus-visible {
     outline: none;
-    box-shadow: 
-      inset 0 1px 1px rgba(255, 248, 220, 0.7),
-      inset 0 -1px 1px rgba(100, 75, 10, 0.3),
-      0 0 0 3px rgba(201, 162, 39, 0.5);
+    box-shadow: 0 0 0 2px var(--background), 0 0 0 4px var(--gold-500);
   }
   
   .btn-gold:disabled {
-    filter: grayscale(0.4) brightness(0.9);
+    opacity: 0.5;
     cursor: not-allowed;
-  }
-
-  /* Active nav variant - same gold treatment for sidebar */
-  .nav-gold-active {
-    background: 
-      radial-gradient(ellipse 80% 50% at 20% 30%, rgba(255, 248, 220, 0.85) 0%, transparent 50%),
-      radial-gradient(ellipse 100% 70% at 50% 0%, rgba(255, 223, 100, 0.4) 0%, transparent 55%),
-      radial-gradient(ellipse 100% 50% at 50% 100%, rgba(139, 105, 20, 0.35) 0%, transparent 45%),
-      linear-gradient(165deg, #D4AF37 0%, #C9A227 45%, #B8921F 75%, #A8821D 100%);
-    color: #1A1405;
-    font-weight: 600;
-    text-shadow: 0 1px 0 rgba(255, 235, 180, 0.35);
-    box-shadow: 
-      inset 0 1px 1px rgba(255, 248, 220, 0.6),
-      inset 0 -1px 1px rgba(100, 75, 10, 0.25);
   }
 }
