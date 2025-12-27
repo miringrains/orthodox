@@ -1,5 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { DollarSign, Calendar, Megaphone, Users, FileEdit, Plus, Eye, ArrowRight } from 'lucide-react'
 import { DashboardClient } from '@/components/admin/DashboardClient'
 import Link from 'next/link'
@@ -84,7 +84,7 @@ export default async function DashboardPage() {
   }
 
   return (
-    <div className="space-y-10">
+    <div className="space-y-8">
       {/* Welcome Modal (client component) */}
       {parishId && (
         <DashboardClient
@@ -100,133 +100,76 @@ export default async function DashboardPage() {
           <h1 className="font-display text-4xl text-stone-900 dark:text-neutral-100" style={{ letterSpacing: '-0.02em' }}>
             Welcome, {parishName}
           </h1>
-          <p className="text-stone-500 mt-2 tracking-wide">
+          <p className="text-stone-500 dark:text-neutral-400 mt-2 text-[15px] tracking-wide">
             Here&apos;s what&apos;s happening with your parish.
           </p>
         </div>
         
         {/* Plan badge */}
-        <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-white dark:bg-neutral-800 border border-stone-200 dark:border-neutral-700 text-sm shadow-sm">
-          <span className="text-stone-500 tracking-wide">Plan:</span>
-          <span className="font-semibold text-stone-900 dark:text-neutral-100">{planLabels[selectedPlan] || selectedPlan}</span>
+        <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-white dark:bg-neutral-800 border border-stone-200 dark:border-neutral-700 text-[13px] shadow-sm">
+          <span className="text-stone-400 dark:text-neutral-500 tracking-wide">Plan:</span>
+          <span className="font-semibold text-stone-700 dark:text-neutral-200">{planLabels[selectedPlan] || selectedPlan}</span>
         </div>
       </div>
 
       {/* Stats Grid */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card className="relative overflow-hidden">
-          <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-gold-400 to-gold-600" />
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-neutral-500">Last 30 Days</CardTitle>
-            <DollarSign className="h-4 w-4 text-neutral-400" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-semibold text-neutral-900 dark:text-neutral-100">
-              ${stats.totalDonations.toLocaleString()}
-            </div>
-            <p className="text-sm text-neutral-500 mt-1">
-              {stats.donations} donations
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card className="relative overflow-hidden">
-          <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-gold-400 to-gold-600" />
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-neutral-500">Upcoming Events</CardTitle>
-            <Calendar className="h-4 w-4 text-neutral-400" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-semibold text-neutral-900 dark:text-neutral-100">{stats.upcomingEvents}</div>
-            <p className="text-sm text-neutral-500 mt-1">Next 5 events</p>
-          </CardContent>
-        </Card>
-
-        <Card className="relative overflow-hidden">
-          <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-gold-400 to-gold-600" />
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-neutral-500">Recent Announcements</CardTitle>
-            <Megaphone className="h-4 w-4 text-neutral-400" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-semibold text-neutral-900 dark:text-neutral-100">{stats.recentAnnouncements}</div>
-            <p className="text-sm text-neutral-500 mt-1">Latest posts</p>
-          </CardContent>
-        </Card>
-
-        <Card className="relative overflow-hidden">
-          <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-gold-400 to-gold-600" />
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-neutral-500">Parishes</CardTitle>
-            <Users className="h-4 w-4 text-neutral-400" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-semibold text-neutral-900 dark:text-neutral-100">{parishes?.length || 0}</div>
-            <p className="text-sm text-neutral-500 mt-1">Active parishes</p>
-          </CardContent>
-        </Card>
+        {[
+          { label: 'Last 30 Days', value: `$${stats.totalDonations.toLocaleString()}`, sub: `${stats.donations} donations`, icon: DollarSign },
+          { label: 'Upcoming Events', value: stats.upcomingEvents.toString(), sub: 'Next 5 events', icon: Calendar },
+          { label: 'Recent Announcements', value: stats.recentAnnouncements.toString(), sub: 'Latest posts', icon: Megaphone },
+          { label: 'Parishes', value: (parishes?.length || 0).toString(), sub: 'Active parishes', icon: Users },
+        ].map((stat) => (
+          <Card key={stat.label} className="relative overflow-hidden">
+            <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-gold-400 to-gold-600" />
+            <CardHeader className="pb-2">
+              <div className="flex items-center justify-between">
+                <span className="text-[13px] font-medium text-stone-500 dark:text-neutral-400 tracking-wide">{stat.label}</span>
+                <stat.icon className="h-4 w-4 text-stone-300 dark:text-neutral-600" />
+              </div>
+            </CardHeader>
+            <CardContent className="pt-0">
+              <div className="text-3xl font-semibold text-stone-900 dark:text-neutral-100 tracking-tight">
+                {stat.value}
+              </div>
+              <p className="text-[13px] text-stone-400 dark:text-neutral-500 mt-1 tracking-wide">
+                {stat.sub}
+              </p>
+            </CardContent>
+          </Card>
+        ))}
       </div>
 
       {/* Quick Actions */}
       <div>
-        <h2 className="font-display text-2xl text-stone-900 dark:text-neutral-100 mb-5" style={{ letterSpacing: '-0.01em' }}>Quick Actions</h2>
+        <h2 className="font-display text-2xl text-stone-900 dark:text-neutral-100 mb-4" style={{ letterSpacing: '-0.01em' }}>
+          Quick Actions
+        </h2>
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          <Link href="/admin/pages" className="group">
-            <Card className="h-full hover:shadow-md transition-shadow">
-              <CardHeader className="pb-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-lg bg-gold-50 dark:bg-gold-500/10 flex items-center justify-center">
-                      <FileEdit className="h-5 w-5 text-gold-600 dark:text-gold-400" />
+          {[
+            { href: '/admin/pages', title: 'Edit Website', desc: 'Customize your parish site', icon: FileEdit, iconBg: 'bg-gold-50 dark:bg-gold-500/10', iconColor: 'text-gold-600 dark:text-gold-400' },
+            { href: '/admin/events/new', title: 'Add Event', desc: 'Schedule a service or gathering', icon: Plus, iconBg: 'bg-stone-100 dark:bg-neutral-800', iconColor: 'text-stone-600 dark:text-neutral-400' },
+            { href: '/admin/giving', title: 'View Donations', desc: 'See recent giving activity', icon: Eye, iconBg: 'bg-emerald-50 dark:bg-emerald-500/10', iconColor: 'text-emerald-600 dark:text-emerald-400' },
+          ].map((action) => (
+            <Link key={action.href} href={action.href} className="group">
+              <Card className="h-full hover:shadow-md hover:border-stone-300 dark:hover:border-neutral-700">
+                <div className="flex items-center gap-4 p-4">
+                  <div className={`w-10 h-10 rounded-lg ${action.iconBg} flex items-center justify-center flex-shrink-0`}>
+                    <action.icon className={`h-5 w-5 ${action.iconColor}`} />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="text-[15px] font-semibold text-stone-900 dark:text-neutral-100 tracking-tight">
+                      {action.title}
                     </div>
-                    <div>
-                      <CardTitle className="text-base">Edit Website</CardTitle>
-                      <CardDescription className="text-sm">Customize your parish site</CardDescription>
+                    <div className="text-[13px] text-stone-500 dark:text-neutral-400 tracking-wide">
+                      {action.desc}
                     </div>
                   </div>
-                  <ArrowRight className="h-4 w-4 text-neutral-400 group-hover:text-neutral-600 dark:group-hover:text-neutral-300 transition-colors" />
+                  <ArrowRight className="h-4 w-4 text-stone-300 dark:text-neutral-600 group-hover:text-stone-500 dark:group-hover:text-neutral-400 transition-colors flex-shrink-0" />
                 </div>
-              </CardHeader>
-            </Card>
-          </Link>
-          
-          <Link href="/admin/events/new" className="group">
-            <Card className="h-full hover:shadow-md transition-shadow">
-              <CardHeader className="pb-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-lg bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center">
-                      <Plus className="h-5 w-5 text-neutral-600 dark:text-neutral-400" />
-                    </div>
-                    <div>
-                      <CardTitle className="text-base">Add Event</CardTitle>
-                      <CardDescription className="text-sm">Schedule a service or gathering</CardDescription>
-                    </div>
-                  </div>
-                  <ArrowRight className="h-4 w-4 text-neutral-400 group-hover:text-neutral-600 dark:group-hover:text-neutral-300 transition-colors" />
-                </div>
-              </CardHeader>
-            </Card>
-          </Link>
-          
-          <Link href="/admin/giving" className="group">
-            <Card className="h-full hover:shadow-md transition-shadow">
-              <CardHeader className="pb-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-lg bg-green-50 dark:bg-green-500/10 flex items-center justify-center">
-                      <Eye className="h-5 w-5 text-green-600 dark:text-green-400" />
-                    </div>
-                    <div>
-                      <CardTitle className="text-base">View Donations</CardTitle>
-                      <CardDescription className="text-sm">See recent giving activity</CardDescription>
-                    </div>
-                  </div>
-                  <ArrowRight className="h-4 w-4 text-neutral-400 group-hover:text-neutral-600 dark:group-hover:text-neutral-300 transition-colors" />
-                </div>
-              </CardHeader>
-            </Card>
-          </Link>
+              </Card>
+            </Link>
+          ))}
         </div>
       </div>
     </div>

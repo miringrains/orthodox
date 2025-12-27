@@ -4,6 +4,7 @@ import { getUserParishes } from '@/lib/parish-context'
 import { NavigationBuilder } from '@/components/admin/NavigationBuilder'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Navigation } from 'lucide-react'
 
 export const dynamic = 'force-dynamic'
 
@@ -17,12 +18,21 @@ export default async function NavigationPage() {
     return (
       <div className="space-y-6">
         <div>
-          <h1 className="text-3xl font-bold">Navigation</h1>
-          <p className="text-muted-foreground mt-2">Manage your site's navigation menu</p>
+          <h1 className="font-display text-3xl text-stone-900 dark:text-neutral-100" style={{ letterSpacing: '-0.02em' }}>
+            Navigation
+          </h1>
+          <p className="text-stone-500 dark:text-neutral-400 mt-2 text-[15px] tracking-wide">
+            Manage your site's navigation menu
+          </p>
         </div>
         <Card>
-          <CardContent className="py-8 text-center text-muted-foreground">
-            No parishes found. Please create a parish first.
+          <CardContent className="py-12 text-center">
+            <div className="w-12 h-12 rounded-xl bg-stone-100 dark:bg-neutral-800 flex items-center justify-center mx-auto mb-4">
+              <Navigation className="h-6 w-6 text-stone-400 dark:text-neutral-500" />
+            </div>
+            <p className="text-stone-500 dark:text-neutral-400 text-[15px] tracking-wide">
+              No parishes found. Please create a parish first.
+            </p>
           </CardContent>
         </Card>
       </div>
@@ -52,8 +62,10 @@ export default async function NavigationPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold">Navigation</h1>
-        <p className="text-muted-foreground mt-2">
+        <h1 className="font-display text-3xl text-stone-900 dark:text-neutral-100" style={{ letterSpacing: '-0.02em' }}>
+          Navigation
+        </h1>
+        <p className="text-stone-500 dark:text-neutral-400 mt-2 text-[15px] tracking-wide">
           Manage your site's navigation menu structure
         </p>
       </div>
@@ -65,9 +77,13 @@ export default async function NavigationPage() {
         />
       ) : (
         <Tabs defaultValue={parishesWithNav[0].id}>
-          <TabsList>
+          <TabsList className="bg-stone-100 dark:bg-neutral-800 p-1 rounded-lg">
             {parishesWithNav.map(parish => (
-              <TabsTrigger key={parish.id} value={parish.id}>
+              <TabsTrigger 
+                key={parish.id} 
+                value={parish.id}
+                className="data-[state=active]:bg-white dark:data-[state=active]:bg-neutral-700 data-[state=active]:shadow-sm rounded-md text-[13px] tracking-wide"
+              >
                 {parish.name}
               </TabsTrigger>
             ))}
@@ -85,27 +101,26 @@ export default async function NavigationPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg">How Navigation Works</CardTitle>
+          <CardTitle>How Navigation Works</CardTitle>
           <CardDescription>
             Understanding the navigation system
           </CardDescription>
         </CardHeader>
-        <CardContent className="text-sm text-muted-foreground space-y-2">
+        <CardContent className="text-[14px] text-stone-600 dark:text-neutral-300 space-y-3">
           <p>
-            <strong>Menu Items:</strong> Add items that will appear in your site's top navigation bar.
+            <span className="font-medium text-stone-800 dark:text-neutral-100">Menu Items:</span> Add items that will appear in your site's top navigation bar.
           </p>
           <p>
-            <strong>Linking Pages:</strong> Connect each menu item to a page you've created, or use an external URL.
+            <span className="font-medium text-stone-800 dark:text-neutral-100">Linking Pages:</span> Connect each menu item to a page you've created, or use an external URL.
           </p>
           <p>
-            <strong>Dropdowns:</strong> Add sub-items to create dropdown menus (one level deep).
+            <span className="font-medium text-stone-800 dark:text-neutral-100">Dropdowns:</span> Add sub-items to create dropdown menus (one level deep).
           </p>
           <p>
-            <strong>Order:</strong> Use the arrow buttons to reorder items. Changes are saved when you click "Save Navigation".
+            <span className="font-medium text-stone-800 dark:text-neutral-100">Order:</span> Use the arrow buttons to reorder items. Changes are saved when you click "Save Navigation".
           </p>
         </CardContent>
       </Card>
     </div>
   )
 }
-

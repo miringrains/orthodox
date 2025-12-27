@@ -31,8 +31,12 @@ export default async function SettingsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold">Settings</h1>
-        <p className="text-muted-foreground mt-2">Manage your account and parish settings</p>
+        <h1 className="font-display text-3xl text-stone-900 dark:text-neutral-100" style={{ letterSpacing: '-0.02em' }}>
+          Settings
+        </h1>
+        <p className="text-stone-500 dark:text-neutral-400 mt-2 text-[15px] tracking-wide">
+          Manage your account and parish settings
+        </p>
       </div>
 
       {/* User Profile */}
@@ -43,12 +47,12 @@ export default async function SettingsPage() {
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
-            <label className="text-sm font-medium">Email</label>
-            <p className="text-sm text-muted-foreground">{userProfile?.email}</p>
+            <label className="text-[13px] font-medium text-stone-700 dark:text-neutral-300 tracking-wide">Email</label>
+            <p className="text-[14px] text-stone-600 dark:text-neutral-400 mt-1">{userProfile?.email}</p>
           </div>
           <div>
-            <label className="text-sm font-medium">Name</label>
-            <p className="text-sm text-muted-foreground">
+            <label className="text-[13px] font-medium text-stone-700 dark:text-neutral-300 tracking-wide">Name</label>
+            <p className="text-[14px] text-stone-600 dark:text-neutral-400 mt-1">
               {userProfile?.first_name} {userProfile?.last_name}
             </p>
           </div>
@@ -70,11 +74,15 @@ export default async function SettingsPage() {
                 return (
                   <div
                     key={pu.parish_id}
-                    className="flex items-center justify-between p-3 border rounded-lg"
+                    className="flex items-center justify-between p-4 bg-stone-50 dark:bg-neutral-800/50 rounded-lg"
                   >
                     <div>
-                      <p className="font-semibold">{parish?.name || 'Unknown Parish'}</p>
-                      <p className="text-sm text-muted-foreground">Role: {pu.role}</p>
+                      <p className="font-semibold text-[15px] text-stone-900 dark:text-neutral-100 tracking-tight">
+                        {parish?.name || 'Unknown Parish'}
+                      </p>
+                      <p className="text-[13px] text-stone-500 dark:text-neutral-400 tracking-wide mt-0.5">
+                        Role: <span className="capitalize">{pu.role}</span>
+                      </p>
                     </div>
                     <Button variant="outline" size="sm">
                       Manage
@@ -84,11 +92,12 @@ export default async function SettingsPage() {
               })}
             </div>
           ) : (
-            <p className="text-sm text-muted-foreground">You are not a member of any parishes.</p>
+            <p className="text-[14px] text-stone-500 dark:text-neutral-400 tracking-wide">
+              You are not a member of any parishes.
+            </p>
           )}
         </CardContent>
       </Card>
     </div>
   )
 }
-

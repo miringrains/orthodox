@@ -3,7 +3,7 @@ import { requireAuth } from '@/lib/auth'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import Link from 'next/link'
-import { Plus } from 'lucide-react'
+import { Plus, Clock, Calendar } from 'lucide-react'
 
 export const dynamic = 'force-dynamic'
 
@@ -34,8 +34,12 @@ export default async function SchedulePage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold">Service Schedule</h1>
-          <p className="text-muted-foreground mt-2">Manage recurring service times</p>
+          <h1 className="font-display text-3xl text-stone-900 dark:text-neutral-100" style={{ letterSpacing: '-0.02em' }}>
+            Service Schedule
+          </h1>
+          <p className="text-stone-500 dark:text-neutral-400 mt-2 text-[15px] tracking-wide">
+            Manage recurring service times
+          </p>
         </div>
         <Button asChild>
           <Link href="/admin/schedule/new">
@@ -55,22 +59,27 @@ export default async function SchedulePage() {
                     ? daysOfWeek[schedule.day_of_week]
                     : 'Special Service'}
                 </CardTitle>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-[13px] text-stone-500 dark:text-neutral-400 tracking-wide">
                   {(schedule.parishes as any)?.name || 'Unknown Parish'}
                 </p>
               </CardHeader>
               <CardContent>
-                <p className="font-semibold mb-2">{schedule.service_type}</p>
+                <p className="font-semibold text-[15px] text-stone-900 dark:text-neutral-100 mb-2 tracking-tight">
+                  {schedule.service_type}
+                </p>
                 {schedule.time && (
-                  <p className="text-muted-foreground mb-4">
-                    {new Date(`2000-01-01T${schedule.time}`).toLocaleTimeString('en-US', {
-                      hour: 'numeric',
-                      minute: '2-digit',
-                    })}
-                  </p>
+                  <div className="flex items-center gap-2 text-[13px] text-stone-500 dark:text-neutral-400 mb-4 tracking-wide">
+                    <Clock className="h-4 w-4 text-stone-400 dark:text-neutral-500" />
+                    <span>
+                      {new Date(`2000-01-01T${schedule.time}`).toLocaleTimeString('en-US', {
+                        hour: 'numeric',
+                        minute: '2-digit',
+                      })}
+                    </span>
+                  </div>
                 )}
                 {schedule.notes && (
-                  <p className="text-sm text-muted-foreground mb-4">{schedule.notes}</p>
+                  <p className="text-[14px] text-stone-600 dark:text-neutral-300 mb-4">{schedule.notes}</p>
                 )}
                 <Button asChild variant="outline" size="sm">
                   <Link href={`/admin/schedule/${schedule.id}`}>Edit</Link>
@@ -81,8 +90,11 @@ export default async function SchedulePage() {
         </div>
       ) : (
         <Card>
-          <CardContent className="pt-6">
-            <p className="text-center text-muted-foreground">
+          <CardContent className="py-12 text-center">
+            <div className="w-12 h-12 rounded-xl bg-stone-100 dark:bg-neutral-800 flex items-center justify-center mx-auto mb-4">
+              <Calendar className="h-6 w-6 text-stone-400 dark:text-neutral-500" />
+            </div>
+            <p className="text-stone-500 dark:text-neutral-400 text-[15px] tracking-wide">
               No service schedules yet. Add your first one!
             </p>
           </CardContent>
@@ -91,4 +103,3 @@ export default async function SchedulePage() {
     </div>
   )
 }
-

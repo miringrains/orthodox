@@ -3,7 +3,7 @@ import { requireAuth } from '@/lib/auth'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import Link from 'next/link'
-import { Plus } from 'lucide-react'
+import { Plus, Headphones, Calendar } from 'lucide-react'
 
 export const dynamic = 'force-dynamic'
 
@@ -32,8 +32,12 @@ export default async function SermonsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold">Sermons</h1>
-          <p className="text-muted-foreground mt-2">Manage sermons and media</p>
+          <h1 className="font-display text-3xl text-stone-900 dark:text-neutral-100" style={{ letterSpacing: '-0.02em' }}>
+            Sermons
+          </h1>
+          <p className="text-stone-500 dark:text-neutral-400 mt-2 text-[15px] tracking-wide">
+            Manage sermons and media
+          </p>
         </div>
         <Button asChild>
           <Link href="/admin/sermons/new">
@@ -49,22 +53,27 @@ export default async function SermonsPage() {
             <Card key={sermon.id}>
               <CardHeader>
                 <CardTitle>{sermon.title}</CardTitle>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-[13px] text-stone-500 dark:text-neutral-400 tracking-wide">
                   {(sermon.parishes as any)?.name || 'Unknown Parish'}
                 </p>
               </CardHeader>
               <CardContent>
                 {sermon.date_preached && (
-                  <p className="text-sm text-muted-foreground mb-4">
-                    {new Date(sermon.date_preached).toLocaleDateString('en-US', {
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric',
-                    })}
-                  </p>
+                  <div className="flex items-center gap-2 text-[13px] text-stone-500 dark:text-neutral-400 mb-4 tracking-wide">
+                    <Calendar className="h-4 w-4 text-stone-400 dark:text-neutral-500" />
+                    <span>
+                      {new Date(sermon.date_preached).toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
+                      })}
+                    </span>
+                  </div>
                 )}
                 {sermon.description && (
-                  <p className="text-sm mb-4 line-clamp-2">{sermon.description}</p>
+                  <p className="text-[14px] text-stone-600 dark:text-neutral-300 mb-4 line-clamp-2">
+                    {sermon.description}
+                  </p>
                 )}
                 <div className="flex gap-2">
                   <Button asChild variant="outline" size="sm">
@@ -77,8 +86,11 @@ export default async function SermonsPage() {
         </div>
       ) : (
         <Card>
-          <CardContent className="pt-6">
-            <p className="text-center text-muted-foreground">
+          <CardContent className="py-12 text-center">
+            <div className="w-12 h-12 rounded-xl bg-stone-100 dark:bg-neutral-800 flex items-center justify-center mx-auto mb-4">
+              <Headphones className="h-6 w-6 text-stone-400 dark:text-neutral-500" />
+            </div>
+            <p className="text-stone-500 dark:text-neutral-400 text-[15px] tracking-wide">
               No sermons yet. Add your first one!
             </p>
           </CardContent>
@@ -87,4 +99,3 @@ export default async function SermonsPage() {
     </div>
   )
 }
-

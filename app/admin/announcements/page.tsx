@@ -3,7 +3,7 @@ import { requireAuth } from '@/lib/auth'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import Link from 'next/link'
-import { Plus } from 'lucide-react'
+import { Plus, Megaphone, Pin } from 'lucide-react'
 
 export const dynamic = 'force-dynamic'
 
@@ -32,8 +32,12 @@ export default async function AnnouncementsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold">Announcements</h1>
-          <p className="text-muted-foreground mt-2">Manage parish announcements and news</p>
+          <h1 className="font-display text-3xl text-stone-900 dark:text-neutral-100" style={{ letterSpacing: '-0.02em' }}>
+            Announcements
+          </h1>
+          <p className="text-stone-500 dark:text-neutral-400 mt-2 text-[15px] tracking-wide">
+            Manage parish announcements and news
+          </p>
         </div>
         <Button asChild>
           <Link href="/admin/announcements/new">
@@ -51,19 +55,20 @@ export default async function AnnouncementsPage() {
                 <div className="flex items-start justify-between">
                   <div>
                     <CardTitle>{announcement.title}</CardTitle>
-                    <p className="text-sm text-muted-foreground mt-1">
+                    <p className="text-[13px] text-stone-500 dark:text-neutral-400 mt-1 tracking-wide">
                       {(announcement.parishes as any)?.name || 'Unknown Parish'}
                     </p>
                   </div>
                   {announcement.is_pinned && (
-                    <span className="text-xs bg-primary text-primary-foreground px-2 py-1 rounded">
+                    <span className="inline-flex items-center gap-1 text-[11px] font-medium uppercase tracking-wider bg-gold-100 dark:bg-gold-500/20 text-gold-700 dark:text-gold-400 px-2 py-1 rounded">
+                      <Pin className="h-3 w-3" />
                       Pinned
                     </span>
                   )}
                 </div>
               </CardHeader>
               <CardContent>
-                <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
+                <p className="text-[14px] text-stone-600 dark:text-neutral-300 mb-4 line-clamp-2">
                   {announcement.content.replace(/<[^>]*>/g, '')}
                 </p>
                 <div className="flex gap-2">
@@ -77,8 +82,11 @@ export default async function AnnouncementsPage() {
         </div>
       ) : (
         <Card>
-          <CardContent className="pt-6">
-            <p className="text-center text-muted-foreground">
+          <CardContent className="py-12 text-center">
+            <div className="w-12 h-12 rounded-xl bg-stone-100 dark:bg-neutral-800 flex items-center justify-center mx-auto mb-4">
+              <Megaphone className="h-6 w-6 text-stone-400 dark:text-neutral-500" />
+            </div>
+            <p className="text-stone-500 dark:text-neutral-400 text-[15px] tracking-wide">
               No announcements yet. Create your first one!
             </p>
           </CardContent>
@@ -87,4 +95,3 @@ export default async function AnnouncementsPage() {
     </div>
   )
 }
-
