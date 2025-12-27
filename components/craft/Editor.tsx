@@ -254,7 +254,7 @@ function EditorContent({
   }
 
   return (
-    <div className="flex h-screen bg-gray-100">
+    <div className="flex h-screen bg-stone-100">
       {/* Template Picker Modal */}
       <TemplatePicker
         open={showTemplatePicker}
@@ -263,29 +263,30 @@ function EditorContent({
       />
 
       {/* Left Sidebar - Toolbox */}
-      <div className="w-72 border-r bg-white shadow-sm overflow-y-auto">
-        <div className="p-4 border-b bg-gray-50">
-          <h2 className="font-semibold text-sm uppercase tracking-wide text-gray-600">Components</h2>
+      <div className="w-72 border-r border-stone-200 bg-white overflow-y-auto">
+        <div className="p-4 border-b border-stone-200">
+          <h2 className="text-[11px] font-semibold text-stone-400 uppercase tracking-widest">Components</h2>
         </div>
         <GlobalSettings />
         <Toolbox />
       </div>
 
       {/* Center - Canvas */}
-      <div className="flex-1 flex flex-col bg-gray-50">
+      <div className="flex-1 flex flex-col bg-stone-100">
         {/* Top Bar */}
-        <div className="border-b bg-white shadow-sm p-4 flex items-center justify-between">
+        <div className="border-b border-stone-200 bg-white p-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Button
               variant="ghost"
               size="sm"
               onClick={() => router.push('/admin/pages')}
+              className="text-stone-600 hover:text-stone-900"
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back
             </Button>
-            <div className="h-6 w-px bg-gray-300" />
-            <h1 className="text-lg font-semibold">Page Builder</h1>
+            <div className="h-6 w-px bg-stone-200" />
+            <h1 className="font-display text-xl text-stone-900" style={{ letterSpacing: '-0.01em' }}>Page Builder</h1>
           </div>
           <div className="flex items-center gap-3">
             {/* Template Button */}
@@ -300,7 +301,7 @@ function EditorContent({
             </Button>
             
             {/* View Mode Toggle */}
-            <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
+            <div className="flex items-center gap-0.5 bg-stone-100 rounded-lg p-1">
               <Button
                 variant={viewMode === 'desktop' ? 'default' : 'ghost'}
                 size="sm"
@@ -330,15 +331,15 @@ function EditorContent({
               </Button>
             </div>
             {saveStatus === 'success' && (
-              <div className="flex items-center gap-2 text-green-600">
+              <div className="flex items-center gap-2 text-emerald-600">
                 <CheckCircle2 className="h-4 w-4" />
-                <span className="text-sm">Saved!</span>
+                <span className="text-[13px] tracking-wide">Saved!</span>
               </div>
             )}
             {saveStatus === 'error' && (
-              <div className="flex items-center gap-2 text-destructive">
+              <div className="flex items-center gap-2 text-red-600">
                 <AlertCircle className="h-4 w-4" />
-                <span className="text-sm">Save failed</span>
+                <span className="text-[13px] tracking-wide">Save failed</span>
               </div>
             )}
             <Button 
@@ -352,10 +353,11 @@ function EditorContent({
                 navigator.clipboard?.writeText(serialized)
                 alert('Serialized state logged to console and copied to clipboard!')
               }}
+              className="text-stone-500 hover:text-stone-900"
             >
               Debug
             </Button>
-            <Button onClick={handleSave} disabled={saving || previewing} className="bg-primary hover:bg-primary/90">
+            <Button onClick={handleSave} disabled={saving || previewing}>
               {saving ? 'Saving...' : (
                 <>
                   <Save className="h-4 w-4 mr-2" />
@@ -380,10 +382,10 @@ function EditorContent({
         </div>
 
         {/* Canvas Area */}
-        <div className="flex-1 overflow-auto p-8 bg-gray-100">
+        <div className="flex-1 overflow-auto p-8 bg-stone-100">
           <div className="flex justify-center">
             <div
-              className="bg-white shadow-2xl rounded-lg overflow-hidden transition-all"
+              className="bg-white shadow-xl rounded-xl overflow-hidden transition-all border border-stone-200"
               style={{
                 width: viewportWidths[viewMode],
                 maxWidth: '100%',
@@ -411,9 +413,9 @@ function EditorContent({
       </div>
 
       {/* Right Sidebar - Settings */}
-      <div className="w-80 border-l bg-white shadow-sm overflow-y-auto">
-        <div className="p-4 border-b bg-gray-50">
-          <h2 className="font-semibold text-sm uppercase tracking-wide text-gray-600">Settings</h2>
+      <div className="w-80 border-l border-stone-200 bg-white overflow-y-auto">
+        <div className="p-4 border-b border-stone-200">
+          <h2 className="text-[11px] font-semibold text-stone-400 uppercase tracking-widest">Settings</h2>
         </div>
         <SettingsPanel />
       </div>

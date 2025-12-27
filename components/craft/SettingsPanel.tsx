@@ -3,7 +3,7 @@
 import { useEditor } from '@craftjs/core'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
-import { Copy, Eye, EyeOff } from 'lucide-react'
+import { Copy, Eye, EyeOff, Trash2 } from 'lucide-react'
 import React from 'react'
 import { useParams } from 'next/navigation'
 import { PresetPicker, SavePresetButton } from './PresetPicker'
@@ -150,14 +150,16 @@ export function SettingsPanel() {
     <div className="p-4">
       {selected ? (
         <div className="space-y-4">
-          <div className="border-b pb-2 flex items-center justify-between">
-            <Label className="text-base font-semibold">{selected.name}</Label>
-            <div className="flex items-center gap-2">
+          {/* Component header */}
+          <div className="pb-3 border-b border-stone-200 flex items-center justify-between">
+            <span className="text-[15px] font-semibold text-stone-900 tracking-tight">{selected.name}</span>
+            <div className="flex items-center gap-1">
               <Button
                 variant="ghost"
-                size="icon"
+                size="icon-sm"
                 onClick={handleToggleVisibility}
                 title={selected.isHidden ? 'Show component' : 'Hide component'}
+                className="text-stone-400 hover:text-stone-700"
               >
                 {selected.isHidden ? (
                   <EyeOff className="h-4 w-4" />
@@ -167,9 +169,10 @@ export function SettingsPanel() {
               </Button>
               <Button
                 variant="ghost"
-                size="icon"
+                size="icon-sm"
                 onClick={handleDuplicate}
-                title="Duplicate component (Cmd/Ctrl+D)"
+                title="Duplicate component"
+                className="text-stone-400 hover:text-stone-700"
               >
                 <Copy className="h-4 w-4" />
               </Button>
@@ -178,7 +181,7 @@ export function SettingsPanel() {
           
           {/* Preset Buttons - shown for components with presets */}
           {hasPresets && presetCount > 0 && (
-            <div className="flex gap-2 pb-2 border-b">
+            <div className="flex gap-2 pb-3 border-b border-stone-200">
               <div className="flex-1">
                 <PresetPicker 
                   componentType={selected.componentType} 
@@ -202,33 +205,37 @@ export function SettingsPanel() {
               }
             </div>
           ) : (
-            <div className="text-sm text-muted-foreground py-4 space-y-2">
-              <p className="font-medium">No settings available for this component</p>
-              <div className="text-xs space-y-1 bg-gray-100 p-3 rounded">
-                <p><strong>Component:</strong> {selected.name}</p>
-                <p><strong>Type:</strong> {selected.componentType || 'unknown'}</p>
-                <p><strong>Settings Function:</strong> {selected.settings ? 'Found' : 'Not found'}</p>
-                <p><strong>Debug:</strong> Check browser console for component resolution details</p>
+            <div className="text-[13px] text-stone-500 py-6 space-y-3">
+              <p className="font-medium text-stone-700">No settings available for this component</p>
+              <div className="text-[11px] space-y-1.5 bg-stone-50 p-3 rounded-lg border border-stone-200">
+                <p><span className="font-medium text-stone-600">Component:</span> {selected.name}</p>
+                <p><span className="font-medium text-stone-600">Type:</span> {selected.componentType || 'unknown'}</p>
               </div>
             </div>
           )}
-          <div className="flex gap-2 pt-4 border-t">
-            {selected.isDeletable && (
+          
+          {/* Delete button */}
+          {selected.isDeletable && (
+            <div className="pt-4 border-t border-stone-200">
               <Button
-                variant="destructive"
-                className="flex-1"
+                variant="outline"
+                className="w-full text-red-600 border-red-200 hover:bg-red-50 hover:border-red-300"
                 onClick={() => {
                   actions.delete(selected.id)
                 }}
               >
+                <Trash2 className="h-4 w-4 mr-2" />
                 Delete Component
               </Button>
-            )}
-          </div>
+            </div>
+          )}
         </div>
       ) : (
-        <div className="text-center text-muted-foreground py-8">
-          <p className="text-sm">Select a component to edit its settings</p>
+        <div className="text-center py-12">
+          <div className="w-12 h-12 rounded-xl bg-stone-100 flex items-center justify-center mx-auto mb-4">
+            <Eye className="h-5 w-5 text-stone-400" />
+          </div>
+          <p className="text-[13px] text-stone-500 tracking-wide">Select a component to edit its settings</p>
         </div>
       )}
     </div>

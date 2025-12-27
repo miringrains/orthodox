@@ -49,6 +49,7 @@ const components = [
   { name: 'Text Block', icon: Type, component: TextBlock, componentName: 'TextBlock', category: 'Basic' },
   { name: 'Image', icon: Image, component: ImageBlock, componentName: 'ImageBlock', category: 'Basic' },
   { name: 'Button', icon: MousePointerClick, component: ButtonBlock, componentName: 'ButtonBlock', category: 'Basic' },
+  { name: 'Clipped Image', icon: Image, component: ClippedImage, componentName: 'ClippedImage', category: 'Basic' },
   { name: 'Navbar', icon: Navigation, component: Navbar, componentName: 'Navbar', category: 'Layout' },
   { name: 'Container', icon: Layout, component: Container, componentName: 'Container', category: 'Layout' },
   { name: 'Section', icon: Layout, component: Section, componentName: 'Section', category: 'Layout' },
@@ -58,6 +59,8 @@ const components = [
   { name: 'Triptych', icon: LayoutGrid, component: Triptych, componentName: 'Triptych', category: 'Layout' },
   { name: 'Spacer', icon: Space, component: Spacer, componentName: 'Spacer', category: 'Layout' },
   { name: 'Divider', icon: Minus, component: Divider, componentName: 'Divider', category: 'Layout' },
+  { name: 'CTA Bar', icon: LayoutList, component: CallToActionBar, componentName: 'CallToActionBar', category: 'Layout' },
+  { name: 'Floating Image Section', icon: Layout, component: FloatingImageSection, componentName: 'FloatingImageSection', category: 'Layout' },
   { name: 'Icon Display', icon: Frame, component: IconDisplay, componentName: 'IconDisplay', category: 'Orthodox' },
   { name: 'Feast Banner', icon: Cross, component: FeastBanner, componentName: 'FeastBanner', category: 'Orthodox' },
   { name: 'Feast Highlight', icon: Sparkles, component: FeastHighlight, componentName: 'FeastHighlight', category: 'Orthodox' },
@@ -66,9 +69,6 @@ const components = [
   { name: 'News List', icon: Megaphone, component: NewsList, componentName: 'NewsList', category: 'Content' },
   { name: 'Sermons', icon: Headphones, component: SermonCardGrid, componentName: 'SermonCardGrid', category: 'Content' },
   { name: 'Gallery', icon: Grid3x3, component: GalleryGrid, componentName: 'GalleryGrid', category: 'Content' },
-  { name: 'CTA Bar', icon: LayoutList, component: CallToActionBar, componentName: 'CallToActionBar', category: 'Layout' },
-  { name: 'Floating Image Section', icon: Layout, component: FloatingImageSection, componentName: 'FloatingImageSection', category: 'Layout' },
-  { name: 'Clipped Image', icon: Image, component: ClippedImage, componentName: 'ClippedImage', category: 'Basic' },
 ]
 
 const categories = ['Basic', 'Layout', 'Orthodox', 'Content']
@@ -82,10 +82,10 @@ export function Toolbox() {
         const categoryComponents = components.filter(c => c.category === category)
         return (
           <div key={category}>
-            <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2 px-2">
+            <h3 className="text-[11px] font-semibold text-stone-400 uppercase tracking-widest mb-3 px-1">
               {category}
             </h3>
-            <div className="space-y-1">
+            <div className="space-y-1.5">
               {categoryComponents.map(({ name, icon: Icon, component: Component, componentName }) => {
                 // Get default props from component's craft configuration
                 const defaultProps = (Component as any).craft?.props || {}
@@ -104,13 +104,13 @@ export function Toolbox() {
                         }
                       }
                     }}
-                    className="flex items-center gap-3 p-3 border border-gray-200 rounded-lg hover:border-primary hover:bg-primary/5 cursor-grab active:cursor-grabbing transition-all group"
+                    className="flex items-center gap-3 p-3 bg-stone-50 border border-stone-200 rounded-lg hover:border-stone-400 hover:bg-white cursor-grab active:cursor-grabbing transition-all group"
                     draggable={false}
                   >
-                    <div className="p-1.5 rounded bg-gray-100 group-hover:bg-primary/10 transition-colors">
-                      <Icon className="h-4 w-4 text-gray-600 group-hover:text-primary" />
+                    <div className="p-1.5 rounded-md bg-white border border-stone-200 group-hover:border-stone-300 transition-colors">
+                      <Icon className="h-4 w-4 text-stone-500 group-hover:text-stone-700" />
                     </div>
-                    <span className="text-sm font-medium text-gray-700 group-hover:text-gray-900">{name}</span>
+                    <span className="text-[13px] font-medium text-stone-600 group-hover:text-stone-900 tracking-wide">{name}</span>
                   </div>
                 )
               })}

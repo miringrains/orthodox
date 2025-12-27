@@ -66,9 +66,9 @@ export function FontSelector({ label, value, onChange, description }: FontSelect
 
   return (
     <div>
-      <Label>{label}</Label>
+      <Label className="text-[13px] font-medium text-stone-700 tracking-wide">{label}</Label>
       <Select value={value || 'inherit'} onValueChange={handleFontChange}>
-        <SelectTrigger className="mt-2">
+        <SelectTrigger className="mt-1.5 bg-white border-stone-300 text-stone-900">
           <SelectValue>
             {value === 'inherit' ? 'System Default' : 
               AVAILABLE_FONTS.find(f => f.family === value)?.name || value}
@@ -80,7 +80,7 @@ export function FontSelector({ label, value, onChange, description }: FontSelect
           </SelectItem>
           
           <SelectGroup>
-            <SelectLabel className="text-xs text-muted-foreground uppercase tracking-wide">
+            <SelectLabel className="text-[11px] text-stone-400 uppercase tracking-widest">
               Serif (Traditional)
             </SelectLabel>
             {fontsByCategory.serif.map((font) => (
@@ -95,7 +95,7 @@ export function FontSelector({ label, value, onChange, description }: FontSelect
           </SelectGroup>
 
           <SelectGroup>
-            <SelectLabel className="text-xs text-muted-foreground uppercase tracking-wide">
+            <SelectLabel className="text-[11px] text-stone-400 uppercase tracking-widest">
               Sans-Serif (Modern)
             </SelectLabel>
             {fontsByCategory['sans-serif'].map((font) => (
@@ -110,7 +110,7 @@ export function FontSelector({ label, value, onChange, description }: FontSelect
           </SelectGroup>
 
           <SelectGroup>
-            <SelectLabel className="text-xs text-muted-foreground uppercase tracking-wide">
+            <SelectLabel className="text-[11px] text-stone-400 uppercase tracking-widest">
               Display (Headlines)
             </SelectLabel>
             {fontsByCategory.display.map((font) => (
@@ -126,7 +126,7 @@ export function FontSelector({ label, value, onChange, description }: FontSelect
         </SelectContent>
       </Select>
       {description && (
-        <p className="text-xs text-muted-foreground mt-1">{description}</p>
+        <p className="text-[11px] text-stone-400 mt-1.5 tracking-wide">{description}</p>
       )}
     </div>
   )
