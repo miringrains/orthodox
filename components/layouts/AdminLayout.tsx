@@ -106,12 +106,12 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
                     flex items-center gap-3 px-3 py-2.5 rounded-md
                     text-sm font-medium
                     ${isActive
-                      ? 'gold-polish gold-polish-depth text-[#3A2A08]'
+                      ? 'nav-gold-active'
                       : 'text-[#3A3A3A] dark:text-[#CFCAC2] hover:bg-[#EEECE6] dark:hover:bg-[#232323] transition-colors'
                     }
                   `}
                 >
-                  <Icon className={`h-[18px] w-[18px] ${isActive ? 'text-[#3A2A08]' : 'text-[#8C8881]'}`} />
+                  <Icon className={`h-[18px] w-[18px] ${isActive ? 'text-[#1A1405]' : 'text-[#8C8881]'}`} />
                   <span>{item.label}</span>
                 </Link>
               )
