@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname, useRouter } from 'next/navigation'
@@ -18,6 +18,7 @@ import {
   X,
   LogOut,
   Navigation,
+  Church,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { createClient } from '@/lib/supabase/client'
@@ -26,7 +27,29 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
   const router = useRouter()
   const [isMobileOpen, setIsMobileOpen] = useState(false)
+  const [parishName, setParishName] = useState<string | null>(null)
+  const [parishLogo, setParishLogo] = useState<string | null>(null)
   const supabase = createClient()
+
+  useEffect(() => {
+    async function fetchParish() {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return
+
+      const { data: membership } = await supabase
+        .from('parish_users')
+        .select('parish_id, parishes(name, logo_url)')
+        .eq('user_id', user.id)
+        .single()
+
+      if (membership?.parishes) {
+        const parish = membership.parishes as { name: string; logo_url: string | null }
+        setParishName(parish.name)
+        setParishLogo(parish.logo_url)
+      }
+    }
+    fetchParish()
+  }, [supabase])
 
   const navItems = [
     { href: '/admin/dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -70,25 +93,45 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
       >
         <div className="flex flex-col h-full">
           {/* Logo/Header */}
-          <div className="p-5 border-b border-[#D1CEC8] dark:border-[#2F2F2F] flex items-center justify-between">
-            <Link href="/admin/dashboard" className="flex items-center">
-              <Image
-                src="/projectorthv1.svg"
-                alt="Project Orthodox"
-                width={160}
-                height={60}
-                className="h-10 w-auto"
-                priority
-              />
-            </Link>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="md:hidden text-[#6A6761] hover:text-[#0B0B0B] hover:bg-[#EEECE6]"
-              onClick={() => setIsMobileOpen(false)}
-            >
-              <X className="h-5 w-5" />
-            </Button>
+          <div className="p-5 border-b border-[#D1CEC8] dark:border-[#2F2F2F]">
+            <div className="flex items-center justify-between">
+              <Link href="/admin/dashboard" className="flex items-center">
+                <Image
+                  src="/projectorthv1.svg"
+                  alt="Project Orthodox"
+                  width={160}
+                  height={60}
+                  className="h-10 w-auto"
+                  priority
+                />
+              </Link>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="md:hidden text-[#6A6761] hover:text-[#0B0B0B] hover:bg-[#EEECE6]"
+                onClick={() => setIsMobileOpen(false)}
+              >
+                <X className="h-5 w-5" />
+              </Button>
+            </div>
+            
+            {/* Parish name subtitle */}
+            {parishName && (
+              <div className="mt-3 flex items-center gap-2">
+                {parishLogo ? (
+                  <Image
+                    src={parishLogo}
+                    alt={parishName}
+                    width={24}
+                    height={24}
+                    className="w-6 h-6 rounded object-contain"
+                  />
+                ) : (
+                  <Church className="w-4 h-4 text-[#8C8881]" />
+                )}
+                <span className="text-sm text-[#6A6761] truncate">{parishName}</span>
+              </div>
+            )}
           </div>
 
           {/* Navigation */}

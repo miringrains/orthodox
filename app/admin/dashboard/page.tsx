@@ -1,6 +1,8 @@
 import { createClient } from '@/lib/supabase/server'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { DollarSign, Calendar, Megaphone, Users } from 'lucide-react'
+import { DollarSign, Calendar, Megaphone, Users, FileEdit, Plus, Eye } from 'lucide-react'
+import { DashboardClient } from '@/components/admin/DashboardClient'
+import Link from 'next/link'
 
 export const dynamic = 'force-dynamic'
 
@@ -12,14 +14,25 @@ export default async function DashboardPage() {
     return <div>Not authenticated</div>
   }
 
-  // Get user's parishes
+  // Get user's parishes with additional fields
   const { data: parishes } = await supabase
     .from('parish_users')
-    .select('parish_id, parishes(name, slug)')
+    .select('parish_id, parishes(id, name, slug, first_dashboard_visit, selected_plan)')
     .eq('user_id', user.id)
 
-  // Get stats for first parish (for now)
+  // Get first parish data
+  const parishData = parishes?.[0]?.parishes as { 
+    id: string
+    name: string
+    slug: string
+    first_dashboard_visit: boolean
+    selected_plan: string
+  } | null
+  
   const parishId = parishes?.[0]?.parish_id
+  const parishName = parishData?.name || 'Your Parish'
+  const showWelcomeModal = parishData?.first_dashboard_visit ?? false
+  const selectedPlan = parishData?.selected_plan || 'free'
 
   let stats = {
     donations: 0,
@@ -57,13 +70,40 @@ export default async function DashboardPage() {
     }
   }
 
+  const planLabels: Record<string, string> = {
+    free: 'Free',
+    starter: 'Starter',
+    growth: 'Growth',
+    pro: 'Pro',
+  }
+
   return (
     <div className="space-y-8">
-      <div>
-        <h1 className="text-3xl font-bold">Dashboard</h1>
-        <p className="text-muted-foreground mt-2">
-          Welcome back! Here's what's happening with your parish.
-        </p>
+      {/* Welcome Modal (client component) */}
+      {parishId && (
+        <DashboardClient
+          parishId={parishId}
+          parishName={parishName}
+          showWelcomeModal={showWelcomeModal}
+        />
+      )}
+
+      {/* Header with parish name */}
+      <div className="flex items-start justify-between">
+        <div>
+          <h1 className="text-3xl font-bold text-[#0B0B0B]">
+            Welcome, {parishName}
+          </h1>
+          <p className="text-[#6A6761] mt-2">
+            Here&apos;s what&apos;s happening with your parish.
+          </p>
+        </div>
+        
+        {/* Plan badge */}
+        <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#EEECE6] text-sm">
+          <span className="text-[#6A6761]">Plan:</span>
+          <span className="font-medium text-[#0B0B0B]">{planLabels[selectedPlan] || selectedPlan}</span>
+        </div>
       </div>
 
       {/* Stats Grid */}
@@ -119,29 +159,57 @@ export default async function DashboardPage() {
 
       {/* Quick Actions */}
       <div>
-        <h2 className="text-2xl font-semibold mb-4">Quick Actions</h2>
+        <h2 className="text-2xl font-semibold text-[#0B0B0B] mb-4">Quick Actions</h2>
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          <Card className="cursor-pointer hover:bg-muted/50 transition-colors">
-            <CardHeader>
-              <CardTitle className="text-lg">Create Announcement</CardTitle>
-              <CardDescription>Share news with your parish</CardDescription>
-            </CardHeader>
-          </Card>
-          <Card className="cursor-pointer hover:bg-muted/50 transition-colors">
-            <CardHeader>
-              <CardTitle className="text-lg">Add Event</CardTitle>
-              <CardDescription>Schedule a service or gathering</CardDescription>
-            </CardHeader>
-          </Card>
-          <Card className="cursor-pointer hover:bg-muted/50 transition-colors">
-            <CardHeader>
-              <CardTitle className="text-lg">View Donations</CardTitle>
-              <CardDescription>See recent giving activity</CardDescription>
-            </CardHeader>
-          </Card>
+          <Link href="/admin/pages">
+            <Card className="cursor-pointer hover:bg-muted/50 transition-colors h-full">
+              <CardHeader>
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-lg bg-[#F4EBD3] flex items-center justify-center">
+                    <FileEdit className="h-5 w-5 text-[#C9A227]" />
+                  </div>
+                  <div>
+                    <CardTitle className="text-lg">Edit Website</CardTitle>
+                    <CardDescription>Customize your parish site</CardDescription>
+                  </div>
+                </div>
+              </CardHeader>
+            </Card>
+          </Link>
+          
+          <Link href="/admin/events/new">
+            <Card className="cursor-pointer hover:bg-muted/50 transition-colors h-full">
+              <CardHeader>
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-lg bg-[#E7ECEF] flex items-center justify-center">
+                    <Plus className="h-5 w-5 text-[#2F3A44]" />
+                  </div>
+                  <div>
+                    <CardTitle className="text-lg">Add Event</CardTitle>
+                    <CardDescription>Schedule a service or gathering</CardDescription>
+                  </div>
+                </div>
+              </CardHeader>
+            </Card>
+          </Link>
+          
+          <Link href="/admin/giving">
+            <Card className="cursor-pointer hover:bg-muted/50 transition-colors h-full">
+              <CardHeader>
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-lg bg-[#E6F1EC] flex items-center justify-center">
+                    <Eye className="h-5 w-5 text-[#1F4D3A]" />
+                  </div>
+                  <div>
+                    <CardTitle className="text-lg">View Donations</CardTitle>
+                    <CardDescription>See recent giving activity</CardDescription>
+                  </div>
+                </div>
+              </CardHeader>
+            </Card>
+          </Link>
         </div>
       </div>
     </div>
   )
 }
-

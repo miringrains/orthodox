@@ -94,8 +94,8 @@ export default function SignupPage() {
         return
       }
 
-      router.push('/admin/dashboard')
-      router.refresh()
+      // Redirect to onboarding flow instead of dashboard
+      window.location.href = '/onboarding/questions'
     } catch (err) {
       console.error('Signup error:', err)
       setError('An unexpected error occurred')
