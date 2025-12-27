@@ -69,8 +69,8 @@ export default function AddonsPage() {
       if (membership) {
         setParishId(membership.parish_id)
         
-        // Load existing selection
-        const { data: parish } = await supabase
+        // Load existing selection (using any cast since types not regenerated)
+        const { data: parish } = await (supabase as any)
           .from('parishes')
           .select('selected_addons')
           .eq('id', membership.parish_id)
@@ -97,7 +97,7 @@ export default function AddonsPage() {
     
     setLoading(true)
     
-    await supabase
+    await (supabase as any)
       .from('parishes')
       .update({ selected_addons: selectedAddons })
       .eq('id', parishId)

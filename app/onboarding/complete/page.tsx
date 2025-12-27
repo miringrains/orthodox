@@ -44,7 +44,8 @@ export default function CompletePage() {
         .single()
 
       if (membership) {
-        const { data: parish } = await supabase
+        // Using any cast since types not regenerated
+        const { data: parish } = await (supabase as any)
           .from('parishes')
           .select('name, selected_plan, selected_addons')
           .eq('id', membership.parish_id)
@@ -76,7 +77,7 @@ export default function CompletePage() {
       .single()
 
     if (membership) {
-      await supabase
+      await (supabase as any)
         .from('parishes')
         .update({ onboarding_completed: true })
         .eq('id', membership.parish_id)

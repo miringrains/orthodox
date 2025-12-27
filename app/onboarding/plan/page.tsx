@@ -84,8 +84,8 @@ export default function PlanPage() {
       if (membership) {
         setParishId(membership.parish_id)
         
-        // Load existing selection and answers
-        const { data: parish } = await supabase
+        // Load existing selection and answers (using any cast since types not regenerated)
+        const { data: parish } = await (supabase as any)
           .from('parishes')
           .select('selected_plan, onboarding_answers')
           .eq('id', membership.parish_id)
@@ -118,7 +118,7 @@ export default function PlanPage() {
     
     setLoading(true)
     
-    await supabase
+    await (supabase as any)
       .from('parishes')
       .update({ selected_plan: selectedPlan })
       .eq('id', parishId)

@@ -36,16 +36,25 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) return
 
+      // First get parish_id from parish_users
       const { data: membership } = await supabase
         .from('parish_users')
-        .select('parish_id, parishes(name, logo_url)')
+        .select('parish_id')
         .eq('user_id', user.id)
         .single()
 
-      if (membership?.parishes) {
-        const parish = membership.parishes as { name: string; logo_url: string | null }
-        setParishName(parish.name)
-        setParishLogo(parish.logo_url)
+      if (membership?.parish_id) {
+        // Fetch parish details separately (using any cast since logo_url not in types)
+        const { data: parish } = await (supabase as any)
+          .from('parishes')
+          .select('name, logo_url')
+          .eq('id', membership.parish_id)
+          .single()
+        
+        if (parish) {
+          setParishName(parish.name)
+          setParishLogo(parish.logo_url)
+        }
       }
     }
     fetchParish()

@@ -81,8 +81,8 @@ export default function QuestionsPage() {
       if (membership) {
         setParishId(membership.parish_id)
         
-        // Load existing answers if any
-        const { data: parish } = await supabase
+        // Load existing answers if any (using any cast since types not regenerated)
+        const { data: parish } = await (supabase as any)
           .from('parishes')
           .select('onboarding_answers')
           .eq('id', membership.parish_id)
@@ -99,7 +99,7 @@ export default function QuestionsPage() {
   const saveAnswers = async () => {
     if (!parishId) return
     
-    await supabase
+    await (supabase as any)
       .from('parishes')
       .update({ onboarding_answers: answers as unknown as Record<string, unknown> })
       .eq('id', parishId)

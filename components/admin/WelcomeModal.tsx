@@ -69,8 +69,8 @@ export function WelcomeModal({ parishId, parishName, isOpen, onClose }: WelcomeM
         }
       }
 
-      // Update parish record
-      await supabase
+      // Update parish record (using any cast since types not regenerated)
+      await (supabase as any)
         .from('parishes')
         .update({
           first_dashboard_visit: false,
@@ -90,7 +90,7 @@ export function WelcomeModal({ parishId, parishName, isOpen, onClose }: WelcomeM
   const handleSkip = async () => {
     setLoading(true)
     
-    await supabase
+    await (supabase as any)
       .from('parishes')
       .update({ first_dashboard_visit: false })
       .eq('id', parishId)

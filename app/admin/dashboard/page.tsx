@@ -17,22 +17,28 @@ export default async function DashboardPage() {
   // Get user's parishes with additional fields
   const { data: parishes } = await supabase
     .from('parish_users')
-    .select('parish_id, parishes(id, name, slug, first_dashboard_visit, selected_plan)')
+    .select('parish_id, parishes(id, name, slug)')
     .eq('user_id', user.id)
 
   // Get first parish data
-  const parishData = parishes?.[0]?.parishes as { 
-    id: string
-    name: string
-    slug: string
-    first_dashboard_visit: boolean
-    selected_plan: string
-  } | null
-  
   const parishId = parishes?.[0]?.parish_id
-  const parishName = parishData?.name || 'Your Parish'
-  const showWelcomeModal = parishData?.first_dashboard_visit ?? false
-  const selectedPlan = parishData?.selected_plan || 'free'
+  const basicParishData = parishes?.[0]?.parishes as { id: string; name: string; slug: string } | null
+  const parishName = basicParishData?.name || 'Your Parish'
+
+  // Fetch additional onboarding fields separately (not in generated types yet)
+  let showWelcomeModal = false
+  let selectedPlan = 'free'
+  
+  if (parishId) {
+    const { data: extendedData } = await (supabase as any)
+      .from('parishes')
+      .select('first_dashboard_visit, selected_plan')
+      .eq('id', parishId)
+      .single()
+    
+    showWelcomeModal = extendedData?.first_dashboard_visit ?? false
+    selectedPlan = extendedData?.selected_plan || 'free'
+  }
 
   let stats = {
     donations: 0,
