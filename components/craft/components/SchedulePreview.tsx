@@ -17,7 +17,7 @@ interface ServiceSchedule {
   day_of_week: number | null
   time: string | null
   notes: string | null
-  is_recurring: boolean
+  is_recurring: boolean | null
 }
 
 interface SchedulePreviewProps {

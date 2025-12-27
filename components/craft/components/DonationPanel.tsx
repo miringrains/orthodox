@@ -19,8 +19,8 @@ interface Project {
   title: string
   description: string | null
   goal_amount: number | null
-  current_amount: number
-  is_visible: boolean
+  current_amount: number | null
+  is_visible: boolean | null
 }
 
 interface DonationFund {
@@ -28,7 +28,7 @@ interface DonationFund {
   name: string
   description: string | null
   fund_type: string
-  is_default: boolean
+  is_default: boolean | null
 }
 
 interface DonationPanelProps {
@@ -179,7 +179,7 @@ export function DonationPanel({
         ) : mode === 'projects' && projects.length > 0 ? (
           <div className="space-y-4 mb-4">
             {projects.map((project) => {
-              const progress = getProgress(project.current_amount, project.goal_amount)
+              const progress = getProgress(project.current_amount ?? 0, project.goal_amount)
               return (
                 <div key={project.id} className="space-y-2">
                   <div className="flex items-center justify-between">
@@ -188,7 +188,7 @@ export function DonationPanel({
                     </span>
                     {project.goal_amount && (
                       <span className="text-xs" style={styles.muted}>
-                        {formatCurrency(project.current_amount)} / {formatCurrency(project.goal_amount)}
+                        {formatCurrency(project.current_amount ?? 0)} / {formatCurrency(project.goal_amount)}
                       </span>
                     )}
                   </div>

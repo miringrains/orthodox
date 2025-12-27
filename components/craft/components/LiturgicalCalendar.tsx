@@ -15,7 +15,7 @@ interface CalendarEvent {
   id: string
   title: string
   start_at: string
-  is_feast: boolean
+  is_feast: boolean | null
   feast_name: string | null
   event_type: string
 }

@@ -21,7 +21,7 @@ interface Sermon {
   video_url: string | null
   text_content: string | null
   date_preached: string | null
-  view_count: number
+  view_count: number | null
 }
 
 interface SermonCardGridProps {
@@ -215,13 +215,19 @@ export function SermonCardGrid({
                   </CardTitle>
                   <div className="flex gap-1 flex-shrink-0">
                     {sermon.audio_url && (
-                      <Headphones className="h-4 w-4 text-blue-500" title="Audio available" />
+                      <span title="Audio available">
+                        <Headphones className="h-4 w-4 text-blue-500" />
+                      </span>
                     )}
                     {sermon.video_url && (
-                      <Video className="h-4 w-4 text-red-500" title="Video available" />
+                      <span title="Video available">
+                        <Video className="h-4 w-4 text-red-500" />
+                      </span>
                     )}
                     {sermon.text_content && (
-                      <FileText className="h-4 w-4 text-green-500" title="Transcript available" />
+                      <span title="Transcript available">
+                        <FileText className="h-4 w-4 text-green-500" />
+                      </span>
                     )}
                   </div>
                 </div>

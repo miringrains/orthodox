@@ -16,8 +16,8 @@ interface Announcement {
   title: string
   content: string
   category: string | null
-  is_pinned: boolean
-  created_at: string
+  is_pinned: boolean | null
+  created_at: string | null
   published_at: string | null
 }
 
@@ -115,7 +115,8 @@ export function NewsList({
   const actualColumns = getActualColumns()
 
   // Format date for display
-  const formatDate = (dateString: string) => {
+  const formatDate = (dateString: string | null) => {
+    if (!dateString) return ''
     try {
       return new Date(dateString).toLocaleDateString('en-US', {
         month: 'short',

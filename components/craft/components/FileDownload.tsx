@@ -18,7 +18,7 @@ interface MediaAsset {
   file_url: string
   file_type: string | null
   file_size: number | null
-  created_at: string
+  created_at: string | null
 }
 
 interface FileDownloadProps {
@@ -128,7 +128,8 @@ export function FileDownload({
   }, [parishId, maxItems, fileTypes])
 
   // Format date
-  const formatDate = (dateString: string) => {
+  const formatDate = (dateString: string | null) => {
+    if (!dateString) return ''
     try {
       return new Date(dateString).toLocaleDateString('en-US', {
         month: 'short',

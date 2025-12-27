@@ -15,7 +15,7 @@ interface MediaAsset {
   file_name: string
   file_url: string
   file_type: string | null
-  created_at: string
+  created_at: string | null
 }
 
 interface GalleryGridProps {

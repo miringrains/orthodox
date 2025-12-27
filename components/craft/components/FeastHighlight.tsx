@@ -18,7 +18,7 @@ interface FeastEvent {
   description: string | null
   start_at: string
   feast_name: string | null
-  is_feast: boolean
+  is_feast: boolean | null
 }
 
 interface FeastHighlightProps {

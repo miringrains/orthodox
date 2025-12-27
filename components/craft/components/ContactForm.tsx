@@ -80,7 +80,8 @@ export function ContactForm({
     try {
       const supabase = createClient()
       
-      const { error: insertError } = await supabase
+      // Type cast needed until Supabase types are regenerated with contact_submissions table
+      const { error: insertError } = await (supabase as any)
         .from('contact_submissions')
         .insert({
           parish_id: parishId,
