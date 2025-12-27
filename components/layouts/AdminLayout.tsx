@@ -80,7 +80,7 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <div className="flex h-screen overflow-hidden bg-neutral-50 dark:bg-neutral-950">
+    <div className="flex h-screen overflow-hidden bg-stone-100 dark:bg-neutral-950">
       {/* Mobile overlay */}
       {isMobileOpen && (
         <div
@@ -93,23 +93,22 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
       <aside
         className={`
           fixed md:static inset-y-0 left-0 z-50
-          w-64 bg-white dark:bg-neutral-900
+          w-64 bg-white dark:bg-neutral-900 border-r border-stone-200 dark:border-neutral-800
           transform transition-transform duration-200 ease-in-out
-          shadow-[1px_0_0_0_rgba(0,0,0,0.05)]
           ${isMobileOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
         `}
       >
         <div className="flex flex-col h-full">
           {/* Logo/Header */}
-          <div className="p-5">
+          <div className="p-5 pb-4">
             <div className="flex items-center justify-between">
               <Link href="/admin/dashboard" className="flex items-center">
                 <Image
                   src="/projectorthv1.svg"
                   alt="Project Orthodox"
-                  width={160}
-                  height={60}
-                  className="h-9 w-auto"
+                  width={180}
+                  height={70}
+                  className="h-11 w-auto"
                   priority
                 />
               </Link>
@@ -125,7 +124,7 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
             
             {/* Parish name subtitle */}
             {parishName && (
-              <div className="mt-4 flex items-center gap-2.5 px-1">
+              <div className="mt-4 flex items-center gap-2.5">
                 {parishLogo ? (
                   <Image
                     src={parishLogo}
@@ -135,9 +134,9 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
                     className="w-5 h-5 rounded object-contain"
                   />
                 ) : (
-                  <Church className="w-4 h-4 text-neutral-400" />
+                  <Church className="w-4 h-4 text-stone-400" />
                 )}
-                <span className="text-sm text-neutral-600 dark:text-neutral-400 truncate font-medium">{parishName}</span>
+                <span className="text-[13px] text-stone-500 dark:text-neutral-400 truncate tracking-wide">{parishName}</span>
               </div>
             )}
           </div>
@@ -154,15 +153,15 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
                   href={item.href}
                   onClick={() => setIsMobileOpen(false)}
                   className={`
-                    flex items-center gap-3 px-3 py-2 rounded-lg
-                    text-sm transition-colors duration-150
+                    flex items-center gap-3 px-3 py-2.5 rounded-lg
+                    text-[13px] tracking-wide transition-all duration-150
                     ${isActive
-                      ? 'bg-neutral-100 dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 font-medium border-l-2 border-gold-500 -ml-[2px] pl-[calc(0.75rem+2px)]'
-                      : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100 hover:bg-neutral-100 dark:hover:bg-neutral-800'
+                      ? 'bg-stone-900 dark:bg-neutral-100 text-white dark:text-neutral-900 font-medium shadow-sm'
+                      : 'text-stone-600 dark:text-neutral-400 hover:text-stone-900 dark:hover:text-neutral-100 hover:bg-stone-100 dark:hover:bg-neutral-800'
                     }
                   `}
                 >
-                  <Icon className={`h-[18px] w-[18px] ${isActive ? 'text-gold-600 dark:text-gold-400' : 'text-neutral-400'}`} />
+                  <Icon className={`h-[18px] w-[18px] ${isActive ? 'text-gold-400' : 'text-stone-400 dark:text-neutral-500'}`} />
                   <span>{item.label}</span>
                 </Link>
               )
@@ -170,14 +169,14 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
           </nav>
 
           {/* Logout */}
-          <div className="p-3">
+          <div className="p-3 border-t border-stone-100 dark:border-neutral-800">
             <Button
               variant="ghost"
-              className="w-full justify-start text-neutral-500 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-100"
+              className="w-full justify-start text-stone-400 hover:text-stone-700 dark:text-neutral-500 dark:hover:text-neutral-200"
               onClick={handleLogout}
             >
               <LogOut className="h-[18px] w-[18px] mr-3" />
-              <span className="text-sm">Sign Out</span>
+              <span className="text-[13px] tracking-wide">Sign Out</span>
             </Button>
           </div>
         </div>
@@ -186,7 +185,7 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
       {/* Main content */}
       <div className="flex flex-col flex-1 overflow-hidden">
         {/* Mobile header */}
-        <header className="md:hidden p-4 bg-white dark:bg-neutral-900 flex items-center justify-between shadow-[0_1px_0_0_rgba(0,0,0,0.05)]">
+        <header className="md:hidden p-4 bg-white dark:bg-neutral-900 flex items-center justify-between border-b border-stone-200 dark:border-neutral-800">
           <Button
             variant="ghost"
             size="icon-sm"
@@ -197,15 +196,15 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
           <Image
             src="/projectorthv1.svg"
             alt="Project Orthodox"
-            width={120}
-            height={45}
-            className="h-8 w-auto"
+            width={140}
+            height={50}
+            className="h-9 w-auto"
           />
           <div className="w-8" />
         </header>
 
         {/* Page content */}
-        <main className="flex-1 overflow-y-auto bg-neutral-50 dark:bg-neutral-950 p-6 md:p-8">
+        <main className="flex-1 overflow-y-auto bg-stone-100 dark:bg-neutral-950 p-6 md:p-8">
           <div className="max-w-7xl mx-auto">{children}</div>
         </main>
       </div>

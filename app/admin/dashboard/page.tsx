@@ -97,18 +97,18 @@ export default async function DashboardPage() {
       {/* Header with parish name */}
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="font-display text-4xl text-neutral-900 dark:text-neutral-100">
+          <h1 className="font-display text-4xl text-stone-900 dark:text-neutral-100" style={{ letterSpacing: '-0.02em' }}>
             Welcome, {parishName}
           </h1>
-          <p className="text-neutral-500 mt-2">
+          <p className="text-stone-500 mt-2 tracking-wide">
             Here&apos;s what&apos;s happening with your parish.
           </p>
         </div>
         
         {/* Plan badge */}
-        <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-neutral-100 dark:bg-neutral-800 text-sm">
-          <span className="text-neutral-500">Plan:</span>
-          <span className="font-medium text-neutral-900 dark:text-neutral-100">{planLabels[selectedPlan] || selectedPlan}</span>
+        <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-white dark:bg-neutral-800 border border-stone-200 dark:border-neutral-700 text-sm shadow-sm">
+          <span className="text-stone-500 tracking-wide">Plan:</span>
+          <span className="font-semibold text-stone-900 dark:text-neutral-100">{planLabels[selectedPlan] || selectedPlan}</span>
         </div>
       </div>
 
@@ -169,7 +169,7 @@ export default async function DashboardPage() {
 
       {/* Quick Actions */}
       <div>
-        <h2 className="text-xl font-semibold text-neutral-900 dark:text-neutral-100 mb-4">Quick Actions</h2>
+        <h2 className="font-display text-2xl text-stone-900 dark:text-neutral-100 mb-5" style={{ letterSpacing: '-0.01em' }}>Quick Actions</h2>
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           <Link href="/admin/pages" className="group">
             <Card className="h-full hover:shadow-md transition-shadow">
