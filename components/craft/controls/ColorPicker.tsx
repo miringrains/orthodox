@@ -37,3 +37,4 @@ export function ColorPicker({ label, value, onChange, placeholder = '#000000' }:
     </div>
   )
 }
+

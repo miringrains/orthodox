@@ -3,11 +3,15 @@
 import { useEffect } from 'react'
 import { Editor, Frame } from '@craftjs/core'
 import { FontProvider } from './contexts/FontContext'
+import { ParishProvider } from './contexts/ParishContext'
 import { craftComponents } from './components'
 import { AVAILABLE_FONTS, generateFontUrl } from '@/lib/fonts'
 
 interface CraftRendererProps {
   content?: any
+  parishId?: string
+  parishSlug?: string
+  parishName?: string
 }
 
 /**
@@ -46,7 +50,7 @@ function FontLoader({ fonts }: { fonts: { headingFont?: string; bodyFont?: strin
   return null
 }
 
-export function CraftRenderer({ content }: CraftRendererProps) {
+export function CraftRenderer({ content, parishId, parishSlug, parishName }: CraftRendererProps) {
   if (!content) {
     return (
       <div className="container mx-auto px-4 py-12">
@@ -103,22 +107,29 @@ export function CraftRenderer({ content }: CraftRendererProps) {
     }
     
     return (
-      <FontProvider initialFonts={globalFonts}>
-        {/* Load all fonts from Google Fonts */}
-        <FontLoader fonts={globalFonts} />
-        
-        <div
-          style={{
-            fontFamily: globalFonts.fontFamily && globalFonts.fontFamily !== 'inherit' ? globalFonts.fontFamily : undefined,
-            fontSize: globalFonts.baseFontSize || '16px',
-            fontWeight: globalFonts.baseFontWeight || 'normal',
-          }}
-        >
-          <Editor enabled={false} resolver={craftComponents}>
-            <Frame data={JSON.stringify(craftContent)} />
-          </Editor>
-        </div>
-      </FontProvider>
+      <ParishProvider
+        parishId={parishId || null}
+        parishSlug={parishSlug || null}
+        parishName={parishName || null}
+        isEditorMode={false}
+      >
+        <FontProvider initialFonts={globalFonts}>
+          {/* Load all fonts from Google Fonts */}
+          <FontLoader fonts={globalFonts} />
+          
+          <div
+            style={{
+              fontFamily: globalFonts.fontFamily && globalFonts.fontFamily !== 'inherit' ? globalFonts.fontFamily : undefined,
+              fontSize: globalFonts.baseFontSize || '16px',
+              fontWeight: globalFonts.baseFontWeight || 'normal',
+            }}
+          >
+            <Editor enabled={false} resolver={craftComponents}>
+              <Frame data={JSON.stringify(craftContent)} />
+            </Editor>
+          </div>
+        </FontProvider>
+      </ParishProvider>
     )
   } catch (error) {
     console.error('Error rendering Craft.js content:', error)

@@ -34,3 +34,4 @@ export function OpacityControl({ label, value, onChange }: OpacityControlProps) 
     </div>
   )
 }
+

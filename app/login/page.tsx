@@ -4,3 +4,4 @@ export default function LoginRedirect() {
   redirect('/auth/login')
 }
 
+

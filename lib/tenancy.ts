@@ -21,3 +21,4 @@ export async function getParishIdFromSlug(slug: string): Promise<string | null> 
   return parish?.id || null
 }
 
+

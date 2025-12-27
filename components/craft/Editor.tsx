@@ -11,6 +11,7 @@ import { SettingsPanel } from './SettingsPanel'
 import { GlobalSettings } from './GlobalSettings'
 import { FontProvider, useFontContext } from './contexts/FontContext'
 import { LayoutProvider } from './contexts/LayoutContext'
+import { ParishProvider } from './contexts/ParishContext'
 import { craftComponents } from './components'
 import { TemplatePicker } from './TemplatePicker'
 import type { PageTemplate } from '@/lib/templates'
@@ -424,6 +425,43 @@ function EditorContent({
 }
 
 export function CraftEditor({ content, onSave, pageId }: CraftEditorProps) {
+  const supabase = createClient()
+  
+  // Parish data state
+  const [parishData, setParishData] = useState<{
+    id: string | null
+    slug: string | null
+    name: string | null
+  }>({ id: null, slug: null, name: null })
+
+  // Fetch parish data on mount
+  useEffect(() => {
+    async function fetchParishData() {
+      if (!pageId) return
+      
+      try {
+        const { data: page } = await supabase
+          .from('pages')
+          .select('parish_id, parishes(slug, name)')
+          .eq('id', pageId)
+          .single()
+        
+        if (page) {
+          const parish = page.parishes as any
+          setParishData({
+            id: page.parish_id,
+            slug: parish?.slug || null,
+            name: parish?.name || null,
+          })
+        }
+      } catch (error) {
+        console.error('Error fetching parish data:', error)
+      }
+    }
+    
+    fetchParishData()
+  }, [pageId, supabase])
+  
   // Debug: log what we receive
   console.log('=== CraftEditor MOUNT ===')
   console.log('Raw content type:', typeof content)
@@ -454,16 +492,23 @@ export function CraftEditor({ content, onSave, pageId }: CraftEditorProps) {
   console.log('=== END CraftEditor MOUNT ===')
   
   return (
-    <FontProvider initialFonts={globalFonts}>
-      <LayoutProvider>
-        <Editor resolver={craftComponents}>
-          <EditorContent 
-            onSave={onSave} 
-            pageId={pageId} 
-            initialCraftData={initialCraftData}
-          />
-        </Editor>
-      </LayoutProvider>
-    </FontProvider>
+    <ParishProvider 
+      parishId={parishData.id} 
+      parishSlug={parishData.slug}
+      parishName={parishData.name}
+      isEditorMode={true}
+    >
+      <FontProvider initialFonts={globalFonts}>
+        <LayoutProvider>
+          <Editor resolver={craftComponents}>
+            <EditorContent 
+              onSave={onSave} 
+              pageId={pageId} 
+              initialCraftData={initialCraftData}
+            />
+          </Editor>
+        </LayoutProvider>
+      </FontProvider>
+    </ParishProvider>
   )
 }

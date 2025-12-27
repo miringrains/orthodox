@@ -26,6 +26,12 @@ import { IconDisplay } from './components/IconDisplay'
 import { CallToActionBar } from './components/CallToActionBar'
 import { FloatingImageSection } from './components/FloatingImageSection'
 import { ClippedImage } from './components/ClippedImage'
+// New data-bound components
+import { LiturgicalCalendar } from './components/LiturgicalCalendar'
+import { ContactForm } from './components/ContactForm'
+import { LocationMap } from './components/LocationMap'
+import { LiveStreamEmbed } from './components/LiveStreamEmbed'
+import { FileDownload } from './components/FileDownload'
 
 // Export components for Craft.js resolver
 export const craftComponents = {
@@ -56,4 +62,10 @@ export const craftComponents = {
   // New visual components
   FloatingImageSection,
   ClippedImage,
+  // New data-bound components
+  LiturgicalCalendar,
+  ContactForm,
+  LocationMap,
+  LiveStreamEmbed,
+  FileDownload,
 }

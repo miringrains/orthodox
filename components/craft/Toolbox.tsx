@@ -15,7 +15,11 @@ import {
   Sparkles,
   Cross,
   LayoutGrid,
-  Frame
+  Frame,
+  Mail,
+  MapPin,
+  Video,
+  FileText
 } from 'lucide-react'
 import { TextBlock } from './components/TextBlock'
 import { ImageBlock } from './components/ImageBlock'
@@ -42,6 +46,12 @@ import { IconDisplay } from './components/IconDisplay'
 import { CallToActionBar } from './components/CallToActionBar'
 import { FloatingImageSection } from './components/FloatingImageSection'
 import { ClippedImage } from './components/ClippedImage'
+// New data-bound components
+import { LiturgicalCalendar } from './components/LiturgicalCalendar'
+import { ContactForm } from './components/ContactForm'
+import { LocationMap } from './components/LocationMap'
+import { LiveStreamEmbed } from './components/LiveStreamEmbed'
+import { FileDownload } from './components/FileDownload'
 import { Navigation, Columns, Heading as HeadingIcon, Minus, Space, LayoutList } from 'lucide-react'
 
 const components = [
@@ -69,6 +79,11 @@ const components = [
   { name: 'News List', icon: Megaphone, component: NewsList, componentName: 'NewsList', category: 'Content' },
   { name: 'Sermons', icon: Headphones, component: SermonCardGrid, componentName: 'SermonCardGrid', category: 'Content' },
   { name: 'Gallery', icon: Grid3x3, component: GalleryGrid, componentName: 'GalleryGrid', category: 'Content' },
+  { name: 'Calendar', icon: Calendar, component: LiturgicalCalendar, componentName: 'LiturgicalCalendar', category: 'Content' },
+  { name: 'Contact Form', icon: Mail, component: ContactForm, componentName: 'ContactForm', category: 'Content' },
+  { name: 'Location Map', icon: MapPin, component: LocationMap, componentName: 'LocationMap', category: 'Content' },
+  { name: 'Live Stream', icon: Video, component: LiveStreamEmbed, componentName: 'LiveStreamEmbed', category: 'Content' },
+  { name: 'File Downloads', icon: FileText, component: FileDownload, componentName: 'FileDownload', category: 'Content' },
 ]
 
 const categories = ['Basic', 'Layout', 'Orthodox', 'Content']

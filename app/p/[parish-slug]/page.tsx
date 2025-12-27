@@ -66,7 +66,12 @@ export default async function ParishHomePage({
     
     return (
       <BuilderPageWrapper parishName={parish.name}>
-        <CraftRenderer content={builderData} />
+        <CraftRenderer 
+          content={builderData} 
+          parishId={parishId}
+          parishSlug={slug}
+          parishName={parish.name}
+        />
       </BuilderPageWrapper>
     )
   }

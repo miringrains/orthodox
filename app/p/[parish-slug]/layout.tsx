@@ -18,3 +18,4 @@ export default async function ParishLayout({
 
   return <PublicLayout parish={parish}>{children}</PublicLayout>
 }
+

@@ -28,3 +28,4 @@ jobs:
           git add lib/database.types.ts
           git diff --staged --quiet || (git commit -m "Update database types" && git push)
 
+

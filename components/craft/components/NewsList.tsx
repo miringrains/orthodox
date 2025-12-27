@@ -2,15 +2,30 @@
 
 import { useNode } from '@craftjs/core'
 import { useState, useEffect, useRef } from 'react'
+import Link from 'next/link'
+import { Megaphone, Loader2, Pin } from 'lucide-react'
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
 import { ColorPicker } from '../controls/ColorPicker'
 import { SettingsAccordion } from '../controls/SettingsAccordion'
+import { useParishContext } from '../contexts/ParishContext'
+import { createClient } from '@/lib/supabase/client'
+
+interface Announcement {
+  id: string
+  title: string
+  content: string
+  category: string | null
+  is_pinned: boolean
+  created_at: string
+  published_at: string | null
+}
 
 interface NewsListProps {
   title?: string
   limit?: number
   columns?: number
+  showPinnedFirst?: boolean
   // Theme-aware colors
   textColor?: string
   mutedTextColor?: string
@@ -22,6 +37,7 @@ export function NewsList({
   title, 
   limit = 3,
   columns = 3,
+  showPinnedFirst = true,
   textColor = '',
   mutedTextColor = '',
   cardBackground = '',
@@ -33,6 +49,11 @@ export function NewsList({
   } = useNode((state) => ({
     isSelected: state.events.selected,
   }))
+
+  const { parishId, parishSlug, isEditorMode } = useParishContext()
+  const [announcements, setAnnouncements] = useState<Announcement[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
   // Use ResizeObserver to detect container width for responsive layout
   const containerRef = useRef<HTMLDivElement>(null)
@@ -48,6 +69,43 @@ export function NewsList({
     return () => observer.disconnect()
   }, [])
 
+  // Fetch announcements from database
+  useEffect(() => {
+    async function fetchAnnouncements() {
+      if (!parishId) {
+        setLoading(false)
+        return
+      }
+
+      try {
+        const supabase = createClient()
+        let query = supabase
+          .from('announcements')
+          .select('*')
+          .eq('parish_id', parishId)
+
+        // Order by pinned first, then by date
+        if (showPinnedFirst) {
+          query = query.order('is_pinned', { ascending: false })
+        }
+        query = query.order('created_at', { ascending: false })
+        query = query.limit(limit)
+
+        const { data, error: fetchError } = await query
+
+        if (fetchError) throw fetchError
+        setAnnouncements(data || [])
+      } catch (err) {
+        console.error('Error fetching announcements:', err)
+        setError('Failed to load announcements')
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchAnnouncements()
+  }, [parishId, limit, showPinnedFirst])
+
   // Determine actual columns based on container width
   const getActualColumns = () => {
     if (containerWidth < 640) return 1
@@ -55,6 +113,25 @@ export function NewsList({
     return columns
   }
   const actualColumns = getActualColumns()
+
+  // Format date for display
+  const formatDate = (dateString: string) => {
+    try {
+      return new Date(dateString).toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+      })
+    } catch {
+      return dateString
+    }
+  }
+
+  // Truncate content for preview
+  const truncateContent = (content: string, maxLength: number = 120) => {
+    if (content.length <= maxLength) return content
+    return content.slice(0, maxLength).trim() + '...'
+  }
 
   const styles = {
     title: {
@@ -77,6 +154,9 @@ export function NewsList({
     },
   }
 
+  // Announcements link href
+  const announcementsHref = parishSlug ? `/p/${parishSlug}/announcements` : '/announcements'
+
   return (
     <div
       ref={(ref) => {
@@ -89,25 +169,64 @@ export function NewsList({
       className={isSelected ? 'ring-2 ring-primary rounded' : ''}
     >
       {title && (
-        <h2 className="text-2xl font-bold mb-6" style={styles.title}>
-          {title}
-        </h2>
+        <div className="flex items-center gap-2 mb-6">
+          <Megaphone className="h-5 w-5" style={styles.muted} />
+          <h2 className="text-2xl font-bold" style={styles.title}>
+            {title}
+          </h2>
+        </div>
       )}
-      <div 
-        className="grid gap-4"
-        style={{ gridTemplateColumns: `repeat(${actualColumns}, minmax(0, 1fr))` }}
-      >
-        {Array.from({ length: limit }).map((_, i) => (
-          <div key={i} style={styles.card}>
-            <h3 className="text-lg font-semibold mb-3" style={styles.cardTitle}>
-              Announcement {i + 1}
-            </h3>
-            <p className="text-sm" style={styles.muted}>
-              Announcement content will be displayed here
-            </p>
-          </div>
-        ))}
-      </div>
+
+      {loading ? (
+        <div className="flex items-center justify-center gap-2 py-8" style={styles.muted}>
+          <Loader2 className="h-5 w-5 animate-spin" />
+          <span>Loading announcements...</span>
+        </div>
+      ) : error ? (
+        <p className="text-red-500 py-4">{error}</p>
+      ) : announcements.length === 0 ? (
+        <p className="py-4" style={styles.muted}>
+          {isEditorMode 
+            ? 'No announcements yet. Add announcements in the admin panel.'
+            : 'No announcements available.'}
+        </p>
+      ) : (
+        <div 
+          className="grid gap-4"
+          style={{ gridTemplateColumns: `repeat(${actualColumns}, minmax(0, 1fr))` }}
+        >
+          {announcements.map((announcement) => (
+            <div key={announcement.id} style={styles.card}>
+              <div className="flex items-start justify-between gap-2 mb-2">
+                <h3 className="text-lg font-semibold" style={styles.cardTitle}>
+                  {announcement.title}
+                </h3>
+                {announcement.is_pinned && (
+                  <Pin className="h-4 w-4 flex-shrink-0 text-amber-500" />
+                )}
+              </div>
+              <p className="text-xs mb-3" style={styles.muted}>
+                {formatDate(announcement.created_at)}
+                {announcement.category && (
+                  <span className="ml-2 px-2 py-0.5 rounded-full bg-white/10 text-xs">
+                    {announcement.category}
+                  </span>
+                )}
+              </p>
+              <p className="text-sm" style={styles.muted}>
+                {truncateContent(announcement.content)}
+              </p>
+              <Link 
+                href={`${announcementsHref}/${announcement.id}`}
+                className="text-sm font-medium hover:underline mt-3 inline-block"
+                style={styles.cardTitle}
+              >
+                Read more →
+              </Link>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   )
 }
@@ -147,6 +266,16 @@ function NewsListSettings() {
             max={12}
           />
         </div>
+        <div className="flex items-center space-x-2 mt-3">
+          <input
+            type="checkbox"
+            id="showPinnedFirst"
+            checked={props.showPinnedFirst !== false}
+            onChange={(e) => setProp((props: any) => (props.showPinnedFirst = e.target.checked))}
+            className="h-4 w-4 rounded border-gray-300"
+          />
+          <Label htmlFor="showPinnedFirst" className="text-sm">Show pinned announcements first</Label>
+        </div>
       </SettingsAccordion>
 
       <SettingsAccordion title="Layout">
@@ -160,8 +289,8 @@ function NewsListSettings() {
                 onClick={() => setProp((p: any) => (p.columns = option.value))}
                 className={`flex-1 px-2 py-1.5 text-xs rounded-md border transition-colors ${
                   (props.columns || 3) === option.value
-                    ? 'bg-primary text-primary-foreground border-primary'
-                    : 'bg-white hover:bg-gray-50 border-gray-200'
+                    ? 'bg-stone-900 text-white border-stone-900'
+                    : 'bg-white hover:bg-stone-50 border-stone-200'
                 }`}
               >
                 {option.label}
@@ -210,6 +339,7 @@ NewsList.craft = {
     title: 'Recent Announcements',
     limit: 3,
     columns: 3,
+    showPinnedFirst: true,
     textColor: '',
     mutedTextColor: '',
     cardBackground: '',
