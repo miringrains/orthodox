@@ -1,0 +1,1367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Monastery Template - St. Seraphim Orthodox Church</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Libre+Franklin:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      /* Monastery Light Palette - Morning Prayer */
+      --bg-primary: #FAF8F3;
+      --bg-secondary: #F4F0E8;
+      --bg-tertiary: #EBE6DB;
+      --bg-card: #FFFFFF;
+      --bg-dark: #2C2418;
+      
+      --text-primary: #2C2418;
+      --text-secondary: #5C4F3D;
+      --text-muted: #8B7E6A;
+      
+      --accent-gold: #9C7C38;
+      --accent-gold-dark: #7A5F29;
+      --accent-sage: #5C6B52;
+      --accent-sage-light: #7A8B70;
+      
+      --border-light: #E5E0D5;
+      --border-gold: rgba(156, 124, 56, 0.3);
+      
+      --font-heading: 'Crimson Pro', Georgia, serif;
+      --font-body: 'Libre Franklin', system-ui, sans-serif;
+      
+      /* Spacing scale */
+      --space-xs: 0.5rem;
+      --space-sm: 1rem;
+      --space-md: 1.5rem;
+      --space-lg: 2.5rem;
+      --space-xl: 4rem;
+      --space-2xl: 6rem;
+      --space-3xl: 8rem;
+    }
+
+    html {
+      font-size: 17px;
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: var(--font-body);
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Container */
+    .container {
+      max-width: 1140px;
+      margin: 0 auto;
+      padding: 0 var(--space-lg);
+    }
+
+    /* ============================================
+       DECORATIVE ELEMENTS
+    ============================================ */
+    .corner-ornament {
+      position: absolute;
+      width: 60px;
+      height: 60px;
+      opacity: 0.4;
+      pointer-events: none;
+    }
+    
+    .corner-ornament img {
+      width: 100%;
+      height: 100%;
+      /* Dark brown color for light theme */
+      filter: sepia(60%) saturate(200%) brightness(40%) hue-rotate(350deg);
+    }
+    
+    .corner-top-left { top: 0; left: 0; }
+    .corner-top-right { top: 0; right: 0; transform: scaleX(-1); }
+    .corner-bottom-left { bottom: 0; left: 0; transform: scaleY(-1); }
+    .corner-bottom-right { bottom: 0; right: 0; transform: scale(-1, -1); }
+    
+    .divider {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem 0;
+    }
+    
+    .divider img {
+      height: 18px;
+      width: auto;
+      filter: sepia(60%) saturate(200%) brightness(50%) hue-rotate(350deg);
+      opacity: 0.7;
+    }
+
+    /* ============================================
+       NAVBAR
+    ============================================ */
+    .navbar {
+      background: var(--bg-primary);
+      padding: var(--space-sm) 0;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      border-bottom: 1px solid var(--border-light);
+    }
+
+    .navbar-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .navbar-brand {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+    }
+
+    .navbar-icon {
+      width: 44px;
+      height: 44px;
+      background: var(--accent-gold);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      color: white;
+    }
+
+    .navbar-title {
+      font-family: var(--font-heading);
+      font-size: 1.375rem;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .navbar-menu {
+      display: flex;
+      align-items: center;
+      gap: var(--space-lg);
+      list-style: none;
+    }
+
+    .navbar-menu a {
+      font-size: 0.9375rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .navbar-menu a:hover {
+      color: var(--accent-gold-dark);
+    }
+
+    .navbar-cta {
+      background: var(--accent-gold);
+      color: white;
+      padding: 0.625rem 1.5rem;
+      font-size: 0.875rem;
+      font-weight: 600;
+      text-decoration: none;
+      border-radius: 4px;
+      transition: background 0.2s;
+    }
+
+    .navbar-cta:hover {
+      background: var(--accent-gold-dark);
+    }
+
+    /* ============================================
+       HERO SECTION
+    ============================================ */
+    .hero {
+      padding-top: 80px;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      background: var(--bg-secondary);
+      position: relative;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-xl);
+      align-items: center;
+    }
+
+    .hero-content {
+      padding: var(--space-xl) 0;
+    }
+
+    .hero-quote {
+      font-family: var(--font-heading);
+      font-size: 1rem;
+      font-style: italic;
+      color: var(--accent-gold);
+      margin-bottom: var(--space-md);
+      padding-left: var(--space-sm);
+      border-left: 2px solid var(--accent-gold);
+    }
+
+    .hero-title {
+      font-family: var(--font-heading);
+      font-size: clamp(2.5rem, 4vw, 3.5rem);
+      font-weight: 500;
+      line-height: 1.15;
+      color: var(--text-primary);
+      margin-bottom: var(--space-md);
+    }
+
+    .hero-subtitle {
+      font-size: 1.125rem;
+      font-weight: 400;
+      color: var(--text-secondary);
+      line-height: 1.75;
+      margin-bottom: var(--space-lg);
+    }
+
+    .hero-buttons {
+      display: flex;
+      gap: var(--space-sm);
+      flex-wrap: wrap;
+    }
+
+    .btn-primary {
+      background: var(--accent-gold);
+      color: white;
+      padding: 0.875rem 2rem;
+      font-size: 0.9375rem;
+      font-weight: 600;
+      text-decoration: none;
+      border-radius: 4px;
+      transition: background 0.2s;
+    }
+
+    .btn-primary:hover {
+      background: var(--accent-gold-dark);
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--accent-gold-dark);
+      padding: 0.875rem 2rem;
+      font-size: 0.9375rem;
+      font-weight: 600;
+      text-decoration: none;
+      border: 1px solid var(--border-gold);
+      border-radius: 4px;
+      transition: all 0.2s;
+    }
+
+    .btn-secondary:hover {
+      background: rgba(156, 124, 56, 0.08);
+      border-color: var(--accent-gold);
+    }
+
+    /* Hero Image Stack */
+    .hero-image-stack {
+      position: relative;
+      padding: var(--space-lg);
+    }
+
+    .hero-image-main {
+      aspect-ratio: 4/3;
+      border-radius: 8px;
+      position: relative;
+      z-index: 2;
+      box-shadow: 0 20px 60px rgba(44, 36, 24, 0.12);
+      overflow: hidden;
+      background: url('../curchi-monastery-orhei-moldova.webp') center/cover;
+    }
+
+    /* Decorative offset frame */
+    .hero-image-stack::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: calc(100% - 40px);
+      height: calc(100% - 40px);
+      border: 1px solid var(--accent-gold);
+      border-radius: 8px;
+      z-index: 1;
+    }
+
+    /* Floating announcement card */
+    .hero-announcement {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      background: var(--bg-card);
+      padding: var(--space-md) var(--space-lg);
+      border-radius: 8px;
+      box-shadow: 0 10px 40px rgba(44, 36, 24, 0.15);
+      z-index: 3;
+      max-width: 280px;
+    }
+
+    .hero-announcement-label {
+      font-size: 0.6875rem;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--accent-gold);
+      margin-bottom: var(--space-xs);
+    }
+
+    .hero-announcement-title {
+      font-family: var(--font-heading);
+      font-size: 1rem;
+      font-weight: 500;
+      color: var(--text-primary);
+      line-height: 1.4;
+    }
+
+    /* ============================================
+       ABOUT SECTION
+    ============================================ */
+    .about-section {
+      padding: var(--space-3xl) 0;
+      background: var(--bg-primary);
+    }
+
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-2xl);
+      align-items: center;
+    }
+
+    .about-label {
+      font-size: 0.6875rem;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--accent-gold);
+      margin-bottom: var(--space-sm);
+    }
+
+    .about-title {
+      font-family: var(--font-heading);
+      font-size: 2.5rem;
+      font-weight: 500;
+      color: var(--text-primary);
+      margin-bottom: var(--space-md);
+      line-height: 1.2;
+    }
+
+    .about-text {
+      font-size: 1.0625rem;
+      line-height: 1.8;
+      color: var(--text-secondary);
+      margin-bottom: var(--space-sm);
+    }
+
+    .about-link {
+      font-size: 0.9375rem;
+      font-weight: 600;
+      color: var(--accent-gold-dark);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: var(--space-sm);
+    }
+
+    .about-link:hover {
+      text-decoration: underline;
+    }
+
+    /* Image with accent overlay */
+    .about-image-wrapper {
+      position: relative;
+    }
+
+    .about-image {
+      aspect-ratio: 4/3;
+      border-radius: 8px;
+      overflow: hidden;
+      background: url('../hancu-monastery-church-greenery-moldova.webp') center/cover;
+    }
+
+    .about-accent {
+      position: absolute;
+      bottom: -20px;
+      right: -20px;
+      background: var(--accent-sage);
+      padding: var(--space-md) var(--space-lg);
+      border-radius: 8px;
+      color: white;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(92, 107, 82, 0.25);
+    }
+
+    .about-accent-number {
+      font-family: var(--font-heading);
+      font-size: 2.5rem;
+      font-weight: 400;
+      line-height: 1;
+    }
+
+    .about-accent-label {
+      font-size: 0.6875rem;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      opacity: 0.85;
+      margin-top: 0.25rem;
+    }
+
+    /* ============================================
+       THREE CARDS SECTION
+    ============================================ */
+    .cards-section {
+      padding: var(--space-3xl) 0;
+      background: var(--bg-secondary);
+      position: relative;
+    }
+
+    .section-header {
+      text-align: center;
+      max-width: 600px;
+      margin: 0 auto var(--space-lg);
+    }
+
+    .section-header h2 {
+      font-family: var(--font-heading);
+      font-size: 2.25rem;
+      font-weight: 500;
+      color: var(--text-primary);
+      margin-bottom: var(--space-sm);
+    }
+
+    .section-header p {
+      font-size: 1.0625rem;
+      color: var(--text-secondary);
+      line-height: 1.7;
+    }
+
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-lg);
+    }
+
+    .card {
+      background: var(--bg-card);
+      border-radius: 12px;
+      padding: var(--space-lg);
+      box-shadow: 0 4px 20px rgba(44, 36, 24, 0.06);
+      transition: transform 0.3s, box-shadow 0.3s;
+      position: relative;
+    }
+    
+    .card .corner-ornament {
+      width: 40px;
+      height: 40px;
+      opacity: 0.2;
+      transition: opacity 0.3s;
+    }
+    
+    .card:hover .corner-ornament {
+      opacity: 0.4;
+    }
+
+    .card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 12px 40px rgba(44, 36, 24, 0.1);
+    }
+
+    .card-icon {
+      width: 52px;
+      height: 52px;
+      background: var(--bg-secondary);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      margin-bottom: var(--space-md);
+    }
+
+    .card h3 {
+      font-family: var(--font-heading);
+      font-size: 1.375rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: var(--space-xs);
+    }
+
+    .card p {
+      font-size: 0.9375rem;
+      line-height: 1.7;
+      color: var(--text-muted);
+    }
+
+    /* ============================================
+       SCHEDULE SECTION
+    ============================================ */
+    .schedule-section {
+      padding: var(--space-3xl) 0;
+      background: var(--bg-primary);
+    }
+
+    .schedule-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.5fr;
+      gap: var(--space-2xl);
+      align-items: start;
+    }
+
+    .schedule-intro h2 {
+      font-family: var(--font-heading);
+      font-size: 2.25rem;
+      font-weight: 500;
+      color: var(--text-primary);
+      margin-bottom: var(--space-md);
+    }
+
+    .schedule-intro p {
+      font-size: 1.0625rem;
+      line-height: 1.7;
+      color: var(--text-secondary);
+      margin-bottom: var(--space-md);
+    }
+
+    .schedule-intro a {
+      font-size: 0.9375rem;
+      font-weight: 600;
+      color: var(--accent-gold-dark);
+      text-decoration: none;
+    }
+
+    .schedule-intro a:hover {
+      text-decoration: underline;
+    }
+
+    .schedule-list {
+      background: var(--bg-card);
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(44, 36, 24, 0.06);
+      overflow: hidden;
+      position: relative;
+    }
+    
+    .schedule-list .corner-ornament {
+      width: 50px;
+      height: 50px;
+      opacity: 0.15;
+    }
+
+    .schedule-item {
+      display: grid;
+      grid-template-columns: 120px 1fr;
+      border-bottom: 1px solid var(--border-light);
+      transition: background 0.2s;
+      position: relative;
+      z-index: 10;
+    }
+
+    .schedule-item:last-child {
+      border-bottom: none;
+    }
+
+    .schedule-item:hover {
+      background: rgba(156, 124, 56, 0.03);
+    }
+
+    .schedule-time {
+      padding: var(--space-md);
+      background: rgba(156, 124, 56, 0.05);
+      border-right: 1px solid var(--border-light);
+    }
+
+    .schedule-day {
+      font-size: 0.6875rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent-gold-dark);
+      margin-bottom: 0.125rem;
+    }
+
+    .schedule-hour {
+      font-family: var(--font-heading);
+      font-size: 1.25rem;
+      font-weight: 500;
+      color: var(--text-primary);
+    }
+
+    .schedule-details {
+      padding: var(--space-md) var(--space-lg);
+    }
+
+    .schedule-name {
+      font-family: var(--font-heading);
+      font-size: 1.125rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 0.125rem;
+    }
+
+    .schedule-note {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+    }
+
+    /* ============================================
+       QUOTE SECTION
+    ============================================ */
+    .quote-section {
+      background: var(--accent-sage);
+      padding: var(--space-3xl) 0;
+      position: relative;
+    }
+    
+    .quote-section .corner-ornament {
+      width: 80px;
+      height: 80px;
+      opacity: 0.15;
+    }
+    
+    .quote-section .corner-ornament img {
+      filter: brightness(10);
+    }
+
+    .quote-inner {
+      max-width: 700px;
+      margin: 0 auto;
+      text-align: center;
+      padding: 0 var(--space-lg);
+      position: relative;
+      z-index: 10;
+    }
+
+    .quote-text {
+      font-family: var(--font-heading);
+      font-size: 1.75rem;
+      font-weight: 400;
+      font-style: italic;
+      color: white;
+      line-height: 1.5;
+      margin-bottom: var(--space-md);
+    }
+
+    .quote-attribution {
+      font-size: 0.9375rem;
+      font-weight: 500;
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    /* ============================================
+       NEWS SECTION
+    ============================================ */
+    .news-section {
+      padding: var(--space-3xl) 0;
+      background: var(--bg-secondary);
+    }
+
+    .news-header {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      margin-bottom: var(--space-xl);
+    }
+
+    .news-header h2 {
+      font-family: var(--font-heading);
+      font-size: 2.25rem;
+      font-weight: 500;
+      color: var(--text-primary);
+    }
+
+    .news-header a {
+      font-size: 0.9375rem;
+      font-weight: 600;
+      color: var(--accent-gold-dark);
+      text-decoration: none;
+    }
+
+    .news-header a:hover {
+      text-decoration: underline;
+    }
+
+    .news-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr 1fr;
+      gap: var(--space-lg);
+    }
+
+    .news-card {
+      background: var(--bg-card);
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 20px rgba(44, 36, 24, 0.06);
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .news-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 12px 40px rgba(44, 36, 24, 0.1);
+    }
+
+    /* Featured card spans 2 rows */
+    .news-card--featured {
+      grid-row: span 2;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .news-card--featured .news-image {
+      flex: 1;
+      min-height: 200px;
+    }
+
+    .news-image {
+      height: 160px;
+      background: url('../indoor-view-church.webp') center/cover;
+    }
+    
+    .news-card:nth-child(2) .news-image {
+      background-image: url('../low-angle-view-cathedral-against-clear-sky.webp');
+    }
+    
+    .news-card:nth-child(3) .news-image {
+      background-image: url('../interior-saint-stephen-orthodox-church-istanbul-turkey.webp');
+    }
+
+    .news-content {
+      padding: var(--space-md);
+    }
+
+    .news-date {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--accent-gold-dark);
+      margin-bottom: var(--space-xs);
+    }
+
+    .news-title {
+      font-family: var(--font-heading);
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: var(--space-xs);
+      line-height: 1.3;
+    }
+
+    .news-card--featured .news-title {
+      font-size: 1.5rem;
+    }
+
+    .news-excerpt {
+      font-size: 0.9375rem;
+      line-height: 1.6;
+      color: var(--text-muted);
+    }
+
+    /* ============================================
+       CONTACT CTA
+    ============================================ */
+    .contact-section {
+      background: var(--bg-dark);
+      padding: var(--space-3xl) 0;
+      position: relative;
+    }
+    
+    .contact-section .corner-ornament {
+      width: 100px;
+      height: 100px;
+      opacity: 0.1;
+    }
+    
+    .contact-section .corner-ornament img {
+      filter: brightness(10);
+    }
+
+    .contact-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-2xl);
+      position: relative;
+      z-index: 10;
+    }
+
+    .contact-info h2 {
+      font-family: var(--font-heading);
+      font-size: 2rem;
+      font-weight: 500;
+      color: white;
+      margin-bottom: var(--space-lg);
+    }
+
+    .contact-detail {
+      margin-bottom: var(--space-md);
+    }
+
+    .contact-label {
+      font-size: 0.6875rem;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--accent-gold);
+      margin-bottom: 0.25rem;
+    }
+
+    .contact-value {
+      font-size: 1rem;
+      color: rgba(255, 255, 255, 0.85);
+      line-height: 1.5;
+    }
+
+    .contact-cta {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .contact-cta h3 {
+      font-family: var(--font-heading);
+      font-size: 1.75rem;
+      font-weight: 500;
+      color: white;
+      margin-bottom: var(--space-sm);
+      line-height: 1.3;
+    }
+
+    .contact-cta p {
+      font-size: 1rem;
+      color: rgba(255, 255, 255, 0.7);
+      margin-bottom: var(--space-md);
+      line-height: 1.6;
+    }
+
+    .btn-gold {
+      display: inline-block;
+      background: var(--accent-gold);
+      color: white;
+      padding: 1rem 2.5rem;
+      font-size: 0.9375rem;
+      font-weight: 600;
+      text-decoration: none;
+      border-radius: 4px;
+      transition: background 0.2s;
+      align-self: flex-start;
+    }
+
+    .btn-gold:hover {
+      background: var(--accent-gold-dark);
+    }
+
+    /* ============================================
+       FOOTER
+    ============================================ */
+    .footer {
+      background: var(--bg-primary);
+      padding: var(--space-xl) 0 var(--space-lg);
+      border-top: 1px solid var(--border-light);
+      position: relative;
+    }
+    
+    .footer .corner-ornament {
+      width: 80px;
+      height: 80px;
+      opacity: 0.1;
+    }
+
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 1.5fr 1fr 1fr 1fr;
+      gap: var(--space-xl);
+      margin-bottom: var(--space-xl);
+      position: relative;
+      z-index: 10;
+    }
+
+    .footer-brand h3 {
+      font-family: var(--font-heading);
+      font-size: 1.375rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: var(--space-sm);
+    }
+
+    .footer-brand p {
+      font-size: 0.9375rem;
+      line-height: 1.7;
+      color: var(--text-muted);
+      max-width: 280px;
+    }
+
+    .footer-col h4 {
+      font-size: 0.6875rem;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--accent-gold-dark);
+      margin-bottom: var(--space-md);
+    }
+
+    .footer-links {
+      list-style: none;
+    }
+
+    .footer-links li {
+      margin-bottom: var(--space-xs);
+    }
+
+    .footer-links a {
+      font-size: 0.9375rem;
+      color: var(--text-secondary);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .footer-links a:hover {
+      color: var(--accent-gold-dark);
+    }
+
+    .footer-bottom {
+      padding-top: var(--space-md);
+      border-top: 1px solid var(--border-light);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: relative;
+      z-index: 10;
+    }
+
+    .footer-copyright {
+      font-size: 0.8125rem;
+      color: var(--text-muted);
+    }
+
+    .footer-social {
+      display: flex;
+      gap: var(--space-xs);
+    }
+
+    .footer-social a {
+      width: 36px;
+      height: 36px;
+      background: var(--bg-secondary);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.875rem;
+      transition: all 0.2s;
+    }
+
+    .footer-social a:hover {
+      background: var(--accent-gold);
+      color: white;
+    }
+
+    /* ============================================
+       RESPONSIVE
+    ============================================ */
+    @media (max-width: 1024px) {
+      .hero-grid,
+      .about-grid,
+      .schedule-grid,
+      .contact-grid {
+        grid-template-columns: 1fr;
+        gap: var(--space-xl);
+      }
+      
+      .hero-image-stack {
+        padding: var(--space-md);
+      }
+      
+      .hero-announcement {
+        position: relative;
+        bottom: auto;
+        left: auto;
+        margin-top: var(--space-md);
+        max-width: 100%;
+      }
+      
+      .about-accent {
+        right: var(--space-md);
+        bottom: -var(--space-md);
+      }
+      
+      .cards-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .news-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .news-card--featured {
+        grid-row: span 1;
+      }
+      
+      .footer-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: var(--space-lg);
+      }
+      
+      .corner-ornament {
+        width: 50px;
+        height: 50px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .navbar-menu {
+        display: none;
+      }
+      
+      .hero-title {
+        font-size: 2.25rem;
+      }
+      
+      .hero-image-stack::before {
+        display: none;
+      }
+      
+      .schedule-item {
+        grid-template-columns: 1fr;
+      }
+      
+      .schedule-time {
+        border-right: none;
+        border-bottom: 1px solid var(--border-light);
+      }
+      
+      .contact-grid {
+        text-align: center;
+      }
+      
+      .btn-gold {
+        align-self: center;
+      }
+      
+      .footer-grid {
+        grid-template-columns: 1fr;
+        text-align: center;
+      }
+      
+      .footer-brand p {
+        max-width: 100%;
+      }
+      
+      .footer-bottom {
+        flex-direction: column;
+        gap: var(--space-sm);
+      }
+      
+      .corner-ornament {
+        width: 40px;
+        height: 40px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <div class="container navbar-inner">
+      <div class="navbar-brand">
+        <div class="navbar-icon">☦</div>
+        <span class="navbar-title">St. Seraphim Orthodox Church</span>
+      </div>
+      <ul class="navbar-menu">
+        <li><a href="#">About Us</a></li>
+        <li><a href="#">Services</a></li>
+        <li><a href="#">Ministries</a></li>
+        <li><a href="#">Calendar</a></li>
+        <li><a href="#">Contact</a></li>
+      </ul>
+      <a href="#" class="navbar-cta">Plan Your Visit</a>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="container hero-grid">
+      <div class="hero-content">
+        <p class="hero-quote">"Acquire the Spirit of peace and a thousand souls around you will be saved."</p>
+        <h1 class="hero-title">A Community Rooted in Prayer & Tradition</h1>
+        <p class="hero-subtitle">We are an Orthodox Christian parish welcoming all who seek to encounter Christ through the ancient faith of the Apostles.</p>
+        <div class="hero-buttons">
+          <a href="#" class="btn-primary">Visit This Sunday</a>
+          <a href="#" class="btn-secondary">Learn About Orthodoxy</a>
+        </div>
+      </div>
+      <div class="hero-image-stack">
+        <div class="hero-image-main"></div>
+        <div class="hero-announcement">
+          <p class="hero-announcement-label">This Sunday</p>
+          <p class="hero-announcement-title">Sunday of the Prodigal Son — 10:00 AM Divine Liturgy</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DIVIDER -->
+  <div class="divider">
+    <img src="../divider-1.svg" alt="">
+  </div>
+
+  <!-- ABOUT SECTION -->
+  <section class="about-section">
+    <div class="container about-grid">
+      <div class="about-content">
+        <p class="about-label">Welcome Home</p>
+        <h2 class="about-title">Where Ancient Faith Meets Modern Life</h2>
+        <p class="about-text">Whether you've been Orthodox your whole life or are just beginning to explore the faith, you'll find a home here. Our community gathers each week to worship God in the beauty of the Divine Liturgy.</p>
+        <p class="about-text">We grow together in faith and serve one another and our neighbors in love — because that's what it means to be the Church.</p>
+        <a href="#" class="about-link">Read our story →</a>
+      </div>
+      <div class="about-image-wrapper">
+        <div class="about-image"></div>
+        <div class="about-accent">
+          <p class="about-accent-number">1978</p>
+          <p class="about-accent-label">Established</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CARDS SECTION -->
+  <section class="cards-section">
+    <div class="container">
+      <div class="section-header">
+        <h2>Experience Our Parish Life</h2>
+        <p>From worship to fellowship to service, there are many ways to be part of our community.</p>
+      </div>
+      <div class="divider">
+        <img src="../divider-2.svg" alt="">
+      </div>
+      <div class="cards-grid">
+        <div class="card">
+          <div class="corner-ornament corner-top-left"><img src="../corner-1.svg" alt=""></div>
+          <div class="corner-ornament corner-top-right"><img src="../corner-1.svg" alt=""></div>
+          <div class="card-icon">⛪</div>
+          <h3>Divine Services</h3>
+          <p>Experience the timeless beauty of Orthodox worship — the ancient prayers, sacred music, and the Holy Mysteries that have nourished Christians for two millennia.</p>
+        </div>
+        <div class="card">
+          <div class="corner-ornament corner-top-left"><img src="../corner-1.svg" alt=""></div>
+          <div class="corner-ornament corner-top-right"><img src="../corner-1.svg" alt=""></div>
+          <div class="card-icon">📖</div>
+          <h3>Faith Formation</h3>
+          <p>Whether you're new to Orthodoxy or seeking to grow deeper, we offer catechism classes, Bible studies, and educational programs for all ages.</p>
+        </div>
+        <div class="card">
+          <div class="corner-ornament corner-top-left"><img src="../corner-1.svg" alt=""></div>
+          <div class="corner-ornament corner-top-right"><img src="../corner-1.svg" alt=""></div>
+          <div class="card-icon">🤝</div>
+          <h3>Fellowship & Service</h3>
+          <p>Our parish is a family. We gather for potlucks, serve our community through outreach, and support one another through life's joys and challenges.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SCHEDULE SECTION -->
+  <section class="schedule-section">
+    <div class="container schedule-grid">
+      <div class="schedule-intro">
+        <h2>Weekly Service Schedule</h2>
+        <p>Join us for divine services throughout the week. All are welcome regardless of background or familiarity with Orthodox worship.</p>
+        <a href="#">View full calendar →</a>
+      </div>
+      <div class="schedule-list">
+        <div class="corner-ornament corner-top-left"><img src="../corner-2.svg" alt=""></div>
+        <div class="corner-ornament corner-top-right"><img src="../corner-2.svg" alt=""></div>
+        <div class="schedule-item">
+          <div class="schedule-time">
+            <p class="schedule-day">Sunday</p>
+            <p class="schedule-hour">10:00 AM</p>
+          </div>
+          <div class="schedule-details">
+            <p class="schedule-name">Divine Liturgy</p>
+            <p class="schedule-note">Orthros at 9:00 AM · Fellowship follows</p>
+          </div>
+        </div>
+        <div class="schedule-item">
+          <div class="schedule-time">
+            <p class="schedule-day">Saturday</p>
+            <p class="schedule-hour">5:00 PM</p>
+          </div>
+          <div class="schedule-details">
+            <p class="schedule-name">Great Vespers</p>
+            <p class="schedule-note">Confessions available after service</p>
+          </div>
+        </div>
+        <div class="schedule-item">
+          <div class="schedule-time">
+            <p class="schedule-day">Wednesday</p>
+            <p class="schedule-hour">6:30 PM</p>
+          </div>
+          <div class="schedule-details">
+            <p class="schedule-name">Vespers & Bible Study</p>
+            <p class="schedule-note">Currently studying the Gospel of John</p>
+          </div>
+        </div>
+        <div class="schedule-item">
+          <div class="schedule-time">
+            <p class="schedule-day">Feasts</p>
+            <p class="schedule-hour">Varies</p>
+          </div>
+          <div class="schedule-details">
+            <p class="schedule-name">Feast Days & Holy Days</p>
+            <p class="schedule-note">Check calendar for dates and times</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- QUOTE SECTION -->
+  <section class="quote-section">
+    <div class="corner-ornament corner-top-left"><img src="../corner-3.svg" alt=""></div>
+    <div class="corner-ornament corner-top-right"><img src="../corner-3.svg" alt=""></div>
+    <div class="corner-ornament corner-bottom-left"><img src="../corner-3.svg" alt=""></div>
+    <div class="corner-ornament corner-bottom-right"><img src="../corner-3.svg" alt=""></div>
+    <div class="quote-inner">
+      <p class="quote-text">"Let us attend! Let us stand aright! Let us stand with fear! Let us be attentive, that we may offer the Holy Oblation in peace."</p>
+      <p class="quote-attribution">— From the Divine Liturgy</p>
+    </div>
+  </section>
+
+  <!-- NEWS SECTION -->
+  <section class="news-section">
+    <div class="container">
+      <div class="news-header">
+        <h2>Parish Announcements</h2>
+        <a href="#">View All →</a>
+      </div>
+      <div class="news-grid">
+        <article class="news-card news-card--featured">
+          <div class="news-image"></div>
+          <div class="news-content">
+            <p class="news-date">January 12, 2026</p>
+            <h3 class="news-title">Great Blessing of Waters & House Blessings</h3>
+            <p class="news-excerpt">Join us for the Theophany service and Great Blessing of Waters. Fr. Seraphim will begin house blessings the following week — sign up in the narthex or contact the office to schedule.</p>
+          </div>
+        </article>
+        <article class="news-card">
+          <div class="news-image"></div>
+          <div class="news-content">
+            <p class="news-date">January 19, 2026</p>
+            <h3 class="news-title">Annual Parish Meeting</h3>
+            <p class="news-excerpt">Following Divine Liturgy. All stewards are encouraged to attend.</p>
+          </div>
+        </article>
+        <article class="news-card">
+          <div class="news-image"></div>
+          <div class="news-content">
+            <p class="news-date">January 26, 2026</p>
+            <h3 class="news-title">Adult Education Series</h3>
+            <p class="news-excerpt">6-week series on "The Sacraments of the Church" begins after coffee hour.</p>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT CTA -->
+  <section class="contact-section">
+    <div class="corner-ornament corner-top-left"><img src="../corner-4.svg" alt=""></div>
+    <div class="corner-ornament corner-top-right"><img src="../corner-4.svg" alt=""></div>
+    <div class="container contact-grid">
+      <div class="contact-info">
+        <h2>Visit Us</h2>
+        <div class="contact-detail">
+          <p class="contact-label">Address</p>
+          <p class="contact-value">456 Oak Avenue<br>Anytown, ST 12345</p>
+        </div>
+        <div class="contact-detail">
+          <p class="contact-label">Phone</p>
+          <p class="contact-value">(555) 987-6543</p>
+        </div>
+        <div class="contact-detail">
+          <p class="contact-label">Email</p>
+          <p class="contact-value">info@stseraphimorthodox.org</p>
+        </div>
+        <div class="contact-detail">
+          <p class="contact-label">Office Hours</p>
+          <p class="contact-value">Tuesday – Friday, 10 AM – 4 PM</p>
+        </div>
+      </div>
+      <div class="contact-cta">
+        <h3>We'd love to welcome you</h3>
+        <p>Whether you're Orthodox, curious about the faith, or simply seeking God, you are welcome here.</p>
+        <a href="#" class="btn-gold">Plan Your First Visit</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="corner-ornament corner-top-left"><img src="../corner-4.svg" alt=""></div>
+    <div class="corner-ornament corner-top-right"><img src="../corner-4.svg" alt=""></div>
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <h3>St. Seraphim Orthodox Church</h3>
+          <p>A parish of the Orthodox Church in America, serving the faithful since 1978.</p>
+        </div>
+        <div class="footer-col">
+          <h4>Explore</h4>
+          <ul class="footer-links">
+            <li><a href="#">About Orthodoxy</a></li>
+            <li><a href="#">Parish History</a></li>
+            <li><a href="#">Our Clergy</a></li>
+            <li><a href="#">Become a Member</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Ministries</h4>
+          <ul class="footer-links">
+            <li><a href="#">Sunday School</a></li>
+            <li><a href="#">Youth Group</a></li>
+            <li><a href="#">Choir</a></li>
+            <li><a href="#">Philoptochos</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Resources</h4>
+          <ul class="footer-links">
+            <li><a href="#">Sermons</a></li>
+            <li><a href="#">Calendar</a></li>
+            <li><a href="#">Photo Gallery</a></li>
+            <li><a href="#">Give Online</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p class="footer-copyright">© 2026 St. Seraphim Orthodox Church. All rights reserved.</p>
+        <div class="footer-social">
+          <a href="#">FB</a>
+          <a href="#">IG</a>
+          <a href="#">YT</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>

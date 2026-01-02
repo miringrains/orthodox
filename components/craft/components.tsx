@@ -32,6 +32,14 @@ import { ContactForm } from './components/ContactForm'
 import { LocationMap } from './components/LocationMap'
 import { LiveStreamEmbed } from './components/LiveStreamEmbed'
 import { FileDownload } from './components/FileDownload'
+// New template components
+import { CornerFrame } from './components/CornerFrame'
+import { SectionDivider } from './components/SectionDivider'
+import { QuoteSection } from './components/QuoteSection'
+import { ScheduleList } from './components/ScheduleList'
+import { NewsCardGrid } from './components/NewsCardGrid'
+import { CTABanner } from './components/CTABanner'
+import { Footer } from './components/Footer'
 
 // Export components for Craft.js resolver
 export const craftComponents = {
@@ -68,4 +76,12 @@ export const craftComponents = {
   LocationMap,
   LiveStreamEmbed,
   FileDownload,
+  // New template components
+  CornerFrame,
+  SectionDivider,
+  QuoteSection,
+  ScheduleList,
+  NewsCardGrid,
+  CTABanner,
+  Footer,
 }

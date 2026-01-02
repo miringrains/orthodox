@@ -25,7 +25,7 @@ export interface PageTemplate {
   id: string
   name: string
   description: string
-  category: 'monastery' | 'cathedral' | 'pascha' | 'byzantine'
+  category: 'monastery' | 'cathedral'
   mode: 'light' | 'dark'
   thumbnail: string
   colors: TemplateColors
@@ -43,7 +43,7 @@ export interface PageTemplate {
   }
 }
 
-export type TemplateCategory = 'monastery' | 'cathedral' | 'pascha' | 'byzantine'
+export type TemplateCategory = 'monastery' | 'cathedral'
 export type TemplateMode = 'light' | 'dark'
 
 export interface TemplateRegistry {
