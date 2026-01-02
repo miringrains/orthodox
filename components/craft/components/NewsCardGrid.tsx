@@ -95,12 +95,12 @@ export const NewsCardGrid = ({
         .limit(limit)
 
       if (data && !error) {
-        const items: NewsItem[] = data.map((item: { id: string; title: string; content: string; created_at: string | null; category?: string }) => ({
+        const items: NewsItem[] = (data as any[]).map((item) => ({
           id: item.id,
           title: item.title,
           excerpt: item.content.substring(0, 150) + (item.content.length > 150 ? '...' : ''),
           date: item.created_at ? new Date(item.created_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : '',
-          category: item.category,
+          category: item.category || undefined,
         }))
         setLiveItems(items)
       }
@@ -121,7 +121,7 @@ export const NewsCardGrid = ({
 
   return (
     <div
-      ref={(ref) => ref && connect(drag(ref))}
+      ref={(ref) => { if (ref) connect(drag(ref)) }}
       className="w-full"
       style={{
         backgroundColor,

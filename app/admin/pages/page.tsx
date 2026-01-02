@@ -88,7 +88,7 @@ export default async function PagesPage() {
               <div>
                 <h2 className="text-xl font-semibold text-white">Home Page</h2>
                 <p className="text-stone-400 text-sm">
-                  {homePage.is_published ? 'Published' : 'Draft'} • 
+                  {(homePage as any).is_published ? 'Published' : 'Draft'} • 
                   {homePage.builder_schema ? ' Has content' : ' No content yet'}
                 </p>
               </div>

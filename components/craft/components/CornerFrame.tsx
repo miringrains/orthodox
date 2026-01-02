@@ -37,7 +37,7 @@ export const CornerFrame = ({
 
   return (
     <div
-      ref={(ref) => ref && connect(drag(ref))}
+      ref={(ref) => { if (ref) connect(drag(ref)) }}
       className="relative"
       style={{
         backgroundColor,

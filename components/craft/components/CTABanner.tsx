@@ -58,7 +58,7 @@ export const CTABanner = ({
 
   return (
     <div
-      ref={(ref) => ref && connect(drag(ref))}
+      ref={(ref) => { if (ref) connect(drag(ref)) }}
       className="w-full"
       style={{
         backgroundColor,

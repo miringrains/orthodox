@@ -80,19 +80,20 @@ export const ScheduleList = ({
 
       if (data && !error) {
         const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
-        const items: ScheduleItem[] = data.map((schedule: { day_of_week: number; start_time: string; title: string; description: string | null }) => {
-          const time = schedule.start_time.split(':')
-          const hour = parseInt(time[0])
-          const minute = time[1]
+        const items: ScheduleItem[] = (data as any[]).map((schedule) => {
+          const timeStr = schedule.time || '10:00'
+          const timeParts = timeStr.split(':')
+          const hour = parseInt(timeParts[0])
+          const minute = timeParts[1] || '00'
           const ampm = hour >= 12 ? 'PM' : 'AM'
           const displayHour = hour > 12 ? hour - 12 : hour === 0 ? 12 : hour
 
           return {
-            day: dayNames[schedule.day_of_week] || 'Sunday',
+            day: dayNames[schedule.day_of_week ?? 0] || 'Sunday',
             time: `${displayHour}:${minute}`,
             ampm,
-            title: schedule.title,
-            description: schedule.description || undefined,
+            title: schedule.service_type || 'Service',
+            description: schedule.notes || undefined,
           }
         })
         setLiveItems(items)
@@ -109,7 +110,7 @@ export const ScheduleList = ({
 
   return (
     <div
-      ref={(ref) => ref && connect(drag(ref))}
+      ref={(ref) => { if (ref) connect(drag(ref)) }}
       className="relative w-full"
       style={{
         backgroundColor,

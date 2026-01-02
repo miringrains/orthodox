@@ -127,7 +127,7 @@ export const Footer = ({
 
   return (
     <footer
-      ref={(ref) => ref && connect(drag(ref))}
+      ref={(ref) => { if (ref) connect(drag(ref)) }}
       className="relative w-full"
       style={{
         backgroundColor,
