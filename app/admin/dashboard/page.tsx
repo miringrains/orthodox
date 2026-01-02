@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
-import { DollarSign, Calendar, Megaphone, Users, FileEdit, Plus, Eye, ArrowRight } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { DollarSign, Calendar, Megaphone, Users, FileEdit, Plus, Eye, ArrowRight, ExternalLink, Palette } from 'lucide-react'
 import { DashboardClient } from '@/components/admin/DashboardClient'
 import Link from 'next/link'
 
@@ -24,10 +25,12 @@ export default async function DashboardPage() {
   const parishId = parishes?.[0]?.parish_id
   const basicParishData = parishes?.[0]?.parishes as { id: string; name: string; slug: string } | null
   const parishName = basicParishData?.name || 'Your Parish'
+  const parishSlug = basicParishData?.slug
 
   // Fetch additional onboarding fields separately (not in generated types yet)
   let showWelcomeModal = false
   let selectedPlan = 'free'
+  let homePageId: string | null = null
   
   if (parishId) {
     const { data: extendedData } = await (supabase as any)
@@ -38,6 +41,35 @@ export default async function DashboardPage() {
     
     showWelcomeModal = extendedData?.first_dashboard_visit ?? false
     selectedPlan = extendedData?.selected_plan || 'free'
+
+    // Get or create home page
+    const { data: homePage } = await supabase
+      .from('pages')
+      .select('id')
+      .eq('parish_id', parishId)
+      .eq('kind', 'HOME')
+      .maybeSingle()
+    
+    if (homePage) {
+      homePageId = homePage.id
+    } else {
+      // Auto-create home page if missing
+      const { data: newPage } = await supabase
+        .from('pages')
+        .insert({
+          parish_id: parishId,
+          title: 'Home',
+          slug: 'home',
+          kind: 'HOME',
+          builder_enabled: true,
+          builder_schema: null,
+          is_published: false,
+        })
+        .select('id')
+        .single()
+      
+      homePageId = newPage?.id || null
+    }
   }
 
   let stats = {
@@ -112,6 +144,37 @@ export default async function DashboardPage() {
         </div>
       </div>
 
+      {/* Edit Website CTA */}
+      {homePageId && (
+        <div className="bg-gradient-to-r from-stone-900 to-stone-800 dark:from-neutral-800 dark:to-neutral-900 rounded-2xl p-6 flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 rounded-xl bg-gold-500/20 flex items-center justify-center">
+              <Palette className="h-6 w-6 text-gold-400" />
+            </div>
+            <div>
+              <h2 className="text-xl font-semibold text-white">Your Website</h2>
+              <p className="text-stone-400 text-sm">Customize your parish website with the visual builder</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-3">
+            {parishSlug && (
+              <Button asChild variant="ghost" className="text-stone-300 hover:text-white hover:bg-stone-700">
+                <Link href={`/p/${parishSlug}`} target="_blank">
+                  <ExternalLink className="h-4 w-4 mr-2" />
+                  View Live
+                </Link>
+              </Button>
+            )}
+            <Button asChild className="bg-gold-500 hover:bg-gold-600 text-stone-900 font-semibold">
+              <Link href={`/admin/pages/${homePageId}/builder`}>
+                <FileEdit className="h-4 w-4 mr-2" />
+                Edit Website
+              </Link>
+            </Button>
+          </div>
+        </div>
+      )}
+
       {/* Stats Grid */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         {[
@@ -142,7 +205,7 @@ export default async function DashboardPage() {
         </h2>
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {[
-            { href: '/admin/pages', title: 'Edit Website', desc: 'Customize your parish site', icon: FileEdit, iconBg: 'bg-gold-50 dark:bg-gold-500/10', iconColor: 'text-gold-600 dark:text-gold-400' },
+            { href: '/admin/announcements/new', title: 'Post Announcement', desc: 'Share news with your parish', icon: Megaphone, iconBg: 'bg-blue-50 dark:bg-blue-500/10', iconColor: 'text-blue-600 dark:text-blue-400' },
             { href: '/admin/events/new', title: 'Add Event', desc: 'Schedule a service or gathering', icon: Plus, iconBg: 'bg-stone-100 dark:bg-neutral-800', iconColor: 'text-stone-600 dark:text-neutral-400' },
             { href: '/admin/giving', title: 'View Donations', desc: 'See recent giving activity', icon: Eye, iconBg: 'bg-emerald-50 dark:bg-emerald-500/10', iconColor: 'text-emerald-600 dark:text-emerald-400' },
           ].map((action) => (

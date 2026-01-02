@@ -94,6 +94,24 @@ export default function SignupPage() {
         return
       }
 
+      // 5. Auto-create HOME page with default template
+      const { error: pageError } = await supabase
+        .from('pages')
+        .insert({
+          parish_id: parish.id,
+          title: 'Home',
+          slug: 'home',
+          kind: 'HOME',
+          builder_enabled: true,
+          builder_schema: null, // Will be set when user picks template
+          is_published: false,
+        })
+
+      if (pageError) {
+        console.error('Home page creation error:', pageError)
+        // Non-fatal - continue to onboarding
+      }
+
       // Redirect to onboarding flow
       window.location.href = '/onboarding/questions'
     } catch (err) {
