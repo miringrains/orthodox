@@ -90,7 +90,6 @@ export const NewsCardGrid = ({
         .from('announcements')
         .select('*')
         .eq('parish_id', parishId)
-        .eq('is_published', true)
         .order('created_at', { ascending: false })
         .limit(limit)
 

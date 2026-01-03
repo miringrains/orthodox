@@ -102,10 +102,9 @@ export default function SignupPage() {
           title: 'Home',
           slug: 'home',
           kind: 'HOME',
-          builder_enabled: true,
-          builder_schema: null, // Will be set when user picks template
-          is_published: false,
-        })
+        builder_enabled: true,
+        builder_schema: null, // Will be set when user picks template
+      })
 
       if (pageError) {
         console.error('Home page creation error:', pageError)

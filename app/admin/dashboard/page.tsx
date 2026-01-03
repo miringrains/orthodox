@@ -61,10 +61,9 @@ export default async function DashboardPage() {
           title: 'Home',
           slug: 'home',
           kind: 'HOME',
-          builder_enabled: true,
-          builder_schema: null,
-          is_published: false,
-        })
+        builder_enabled: true,
+        builder_schema: null,
+      })
         .select('id')
         .single()
       

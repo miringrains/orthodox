@@ -45,7 +45,6 @@ export default async function PagesPage() {
         kind: 'HOME',
         builder_enabled: true,
         builder_schema: null,
-        is_published: false,
       })
       .select('*, parishes(name, slug)')
       .single()
@@ -88,8 +87,7 @@ export default async function PagesPage() {
               <div>
                 <h2 className="text-xl font-semibold text-white">Home Page</h2>
                 <p className="text-stone-400 text-sm">
-                  {(homePage as any).is_published ? 'Published' : 'Draft'} • 
-                  {homePage.builder_schema ? ' Has content' : ' No content yet'}
+                  {homePage.builder_schema ? 'Has content' : 'No content yet'}
                 </p>
               </div>
             </div>
