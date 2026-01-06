@@ -5,11 +5,11 @@
 export function getDefaultPageTemplate() {
   return {
     ROOT: {
-      type: {
-        resolvedName: 'div',
-      },
+      type: 'div',
       isCanvas: true,
-      props: {},
+      props: {
+        className: 'min-h-[600px] w-full',
+      },
       displayName: 'div',
       custom: {},
       hidden: false,
@@ -58,9 +58,7 @@ export function getDefaultPageTemplate() {
       linkedNodes: {},
     },
     contentSection: {
-      type: {
-        resolvedName: 'div',
-      },
+      type: 'div',
       isCanvas: true,
       props: {},
       displayName: 'div',
@@ -135,11 +133,11 @@ export function getDefaultPageTemplate() {
 export function getEmptyTemplate() {
   return {
     ROOT: {
-      type: {
-        resolvedName: 'div',
-      },
+      type: 'div',
       isCanvas: true,
-      props: {},
+      props: {
+        className: 'min-h-[600px] w-full',
+      },
       displayName: 'div',
       custom: {},
       hidden: false,
