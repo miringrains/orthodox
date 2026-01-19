@@ -126,14 +126,14 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
                   <Image
                     src={parishLogo}
                     alt={parishName}
-                    width={20}
-                    height={20}
+                    width={22}
+                    height={22}
                     className="w-5 h-5 rounded object-contain"
                   />
                 ) : (
                   <Church className="w-4 h-4 text-stone-400" />
                 )}
-                <span className="text-[13px] text-stone-500 dark:text-neutral-400 truncate tracking-wide">{parishName}</span>
+                <span className="text-sm text-stone-500 dark:text-neutral-400 truncate">{parishName}</span>
               </div>
             )}
           </div>
@@ -151,7 +151,7 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
                   onClick={() => setIsMobileOpen(false)}
                   className={`
                     flex items-center gap-3 px-3 py-2.5 rounded-lg
-                    text-[13px] tracking-wide transition-all duration-150
+                    text-sm transition-all duration-150
                     ${isActive
                       ? 'bg-stone-900 dark:bg-neutral-100 text-white dark:text-neutral-900 font-medium shadow-sm'
                       : 'text-stone-600 dark:text-neutral-400 hover:text-stone-900 dark:hover:text-neutral-100 hover:bg-stone-100 dark:hover:bg-neutral-800'
@@ -173,7 +173,7 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
               onClick={handleLogout}
             >
               <LogOut className="h-[18px] w-[18px] mr-3" />
-              <span className="text-[13px] tracking-wide">Sign Out</span>
+              <span className="text-sm">Sign Out</span>
             </Button>
           </div>
         </div>

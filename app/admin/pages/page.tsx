@@ -1,9 +1,16 @@
 import { createClient } from '@/lib/supabase/server'
 import { requireAuth } from '@/lib/auth'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
 import Link from 'next/link'
-import { Plus, Edit, FileText, Home, ExternalLink, Palette, MoreHorizontal, Eye, GripVertical, Settings } from 'lucide-react'
+import { Plus, FileText, Home, ExternalLink, MoreHorizontal, Eye, GripVertical, Settings, Trash2, Copy, Pencil } from 'lucide-react'
 
 export const dynamic = 'force-dynamic'
 
@@ -64,17 +71,17 @@ export default async function PagesPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="font-display text-3xl text-stone-900 dark:text-neutral-100" style={{ letterSpacing: '-0.02em' }}>
             Website Pages
           </h1>
-          <p className="text-stone-500 dark:text-neutral-400 mt-2 text-[15px] tracking-wide">
+          <p className="text-stone-500 dark:text-neutral-400 mt-2 text-base">
             Manage your parish website pages and navigation
           </p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
           <Button variant="outline" asChild>
             <Link href="/admin/settings">
               <Settings className="h-4 w-4 mr-2" />
@@ -93,16 +100,16 @@ export default async function PagesPage() {
       {/* Home Page - Primary */}
       {homePage && (
         <div className="bg-white dark:bg-neutral-900 border border-stone-200 dark:border-neutral-700 rounded-2xl overflow-hidden">
-          <div className="flex items-center p-4 gap-4">
+          <div className="flex items-center p-5 gap-5">
             {/* Thumbnail placeholder */}
-            <div className="w-24 h-16 rounded-lg bg-gradient-to-br from-stone-100 to-stone-200 dark:from-neutral-800 dark:to-neutral-700 flex items-center justify-center flex-shrink-0 overflow-hidden">
-              <Home className="h-6 w-6 text-stone-400 dark:text-neutral-500" />
+            <div className="w-28 h-20 rounded-lg bg-gradient-to-br from-stone-100 to-stone-200 dark:from-neutral-800 dark:to-neutral-700 flex items-center justify-center flex-shrink-0 overflow-hidden">
+              <Home className="h-7 w-7 text-stone-400 dark:text-neutral-500" />
             </div>
             
             <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2">
-                <h2 className="text-lg font-semibold text-stone-900 dark:text-neutral-100">HomePage</h2>
-                <span className={`text-[10px] font-medium uppercase tracking-wider px-2 py-0.5 rounded-full ${
+              <div className="flex items-center gap-3">
+                <h2 className="text-xl font-semibold text-stone-900 dark:text-neutral-100">Home Page</h2>
+                <span className={`text-xs font-semibold uppercase tracking-wide px-2.5 py-1 rounded-full ${
                   getPageStatus(homePage) === 'published' 
                     ? 'bg-emerald-100 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400'
                     : 'bg-amber-100 dark:bg-amber-500/20 text-amber-700 dark:text-amber-400'
@@ -110,16 +117,16 @@ export default async function PagesPage() {
                   {getPageStatus(homePage) === 'published' ? '● Published' : '● Draft'}
                 </span>
               </div>
-              <p className="text-[13px] text-stone-500 dark:text-neutral-400 mt-0.5">
+              <p className="text-sm text-stone-500 dark:text-neutral-400 mt-1">
                 {parishSlug ? `/p/${parishSlug}` : 'Your main landing page'}
               </p>
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-3">
               {parishSlug && (
                 <Button asChild variant="ghost" size="sm">
                   <Link href={`/p/${parishSlug}`} target="_blank">
-                    <Eye className="h-4 w-4 mr-1" />
+                    <Eye className="h-4 w-4 mr-2" />
                     Preview
                   </Link>
                 </Button>
@@ -129,9 +136,29 @@ export default async function PagesPage() {
                   Edit in Builder
                 </Link>
               </Button>
-              <Button variant="ghost" size="icon">
-                <MoreHorizontal className="h-4 w-4" />
-              </Button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon">
+                    <MoreHorizontal className="h-5 w-5" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-48">
+                  <DropdownMenuItem asChild>
+                    <Link href={`/admin/pages/${homePage.id}`} className="flex items-center">
+                      <Settings className="h-4 w-4 mr-2" />
+                      Page Settings
+                    </Link>
+                  </DropdownMenuItem>
+                  {parishSlug && (
+                    <DropdownMenuItem asChild>
+                      <Link href={`/p/${parishSlug}`} target="_blank" className="flex items-center">
+                        <ExternalLink className="h-4 w-4 mr-2" />
+                        View Live Site
+                      </Link>
+                    </DropdownMenuItem>
+                  )}
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           </div>
         </div>
@@ -139,7 +166,7 @@ export default async function PagesPage() {
 
       {/* All Pages Section */}
       <div>
-        <h2 className="font-display text-xl text-stone-900 dark:text-neutral-100 mb-4" style={{ letterSpacing: '-0.01em' }}>
+        <h2 className="font-display text-2xl text-stone-900 dark:text-neutral-100 mb-5" style={{ letterSpacing: '-0.01em' }}>
           All Pages
         </h2>
         
@@ -154,21 +181,21 @@ export default async function PagesPage() {
               const pageUrl = parish?.slug && page.slug ? `/p/${parish.slug}/${page.slug}` : null
 
               return (
-                <div key={page.id} className="flex items-center p-4 gap-4 hover:bg-stone-50 dark:hover:bg-neutral-800 transition-colors">
+                <div key={page.id} className="flex items-center p-5 gap-5 hover:bg-stone-50 dark:hover:bg-neutral-800 transition-colors">
                   {/* Drag handle */}
                   <button className="text-stone-300 dark:text-neutral-600 hover:text-stone-500 dark:hover:text-neutral-400 cursor-grab">
-                    <GripVertical className="h-4 w-4" />
+                    <GripVertical className="h-5 w-5" />
                   </button>
 
                   {/* Thumbnail placeholder */}
-                  <div className="w-16 h-12 rounded bg-gradient-to-br from-stone-100 to-stone-200 dark:from-neutral-800 dark:to-neutral-700 flex items-center justify-center flex-shrink-0">
-                    <FileText className="h-4 w-4 text-stone-400 dark:text-neutral-500" />
+                  <div className="w-20 h-14 rounded-lg bg-gradient-to-br from-stone-100 to-stone-200 dark:from-neutral-800 dark:to-neutral-700 flex items-center justify-center flex-shrink-0">
+                    <FileText className="h-5 w-5 text-stone-400 dark:text-neutral-500" />
                   </div>
                   
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
-                      <span className="font-medium text-stone-900 dark:text-neutral-100">{title}</span>
-                      <span className={`text-[10px] font-medium uppercase tracking-wider px-2 py-0.5 rounded-full ${
+                    <div className="flex items-center gap-3">
+                      <span className="text-lg font-medium text-stone-900 dark:text-neutral-100">{title}</span>
+                      <span className={`text-xs font-semibold uppercase tracking-wide px-2.5 py-1 rounded-full ${
                         status === 'published' 
                           ? 'bg-emerald-100 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400'
                           : 'bg-amber-100 dark:bg-amber-500/20 text-amber-700 dark:text-amber-400'
@@ -177,21 +204,57 @@ export default async function PagesPage() {
                       </span>
                     </div>
                     {pageUrl && (
-                      <p className="text-[12px] text-stone-400 dark:text-neutral-500 mt-0.5">
-                        url: {pageUrl}
+                      <p className="text-sm text-stone-400 dark:text-neutral-500 mt-1">
+                        {pageUrl}
                       </p>
                     )}
                   </div>
 
-                  <div className="flex items-center gap-2">
-                    <Button asChild variant="outline" size="sm">
+                  <div className="flex items-center gap-3">
+                    <Button asChild variant="outline">
                       <Link href={`/admin/pages/${page.id}/builder`}>
                         Edit
                       </Link>
                     </Button>
-                    <Button variant="ghost" size="icon">
-                      <MoreHorizontal className="h-4 w-4" />
-                    </Button>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="icon">
+                          <MoreHorizontal className="h-5 w-5" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="w-48">
+                        <DropdownMenuItem asChild>
+                          <Link href={`/admin/pages/${page.id}/builder`} className="flex items-center">
+                            <Pencil className="h-4 w-4 mr-2" />
+                            Edit in Builder
+                          </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                          <Link href={`/admin/pages/${page.id}`} className="flex items-center">
+                            <Settings className="h-4 w-4 mr-2" />
+                            Page Settings
+                          </Link>
+                        </DropdownMenuItem>
+                        {pageUrl && (
+                          <DropdownMenuItem asChild>
+                            <Link href={pageUrl} target="_blank" className="flex items-center">
+                              <ExternalLink className="h-4 w-4 mr-2" />
+                              View Live
+                            </Link>
+                          </DropdownMenuItem>
+                        )}
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem className="flex items-center">
+                          <Copy className="h-4 w-4 mr-2" />
+                          Duplicate Page
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem className="flex items-center text-red-600 dark:text-red-400">
+                          <Trash2 className="h-4 w-4 mr-2" />
+                          Delete Page
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   </div>
                 </div>
               )
@@ -199,14 +262,14 @@ export default async function PagesPage() {
           </div>
         ) : (
           <Card>
-            <CardContent className="py-8 text-center">
-              <div className="w-12 h-12 rounded-xl bg-stone-100 dark:bg-neutral-800 flex items-center justify-center mx-auto mb-4">
-                <FileText className="h-6 w-6 text-stone-400 dark:text-neutral-500" />
+            <CardContent className="py-12 text-center">
+              <div className="w-14 h-14 rounded-xl bg-stone-100 dark:bg-neutral-800 flex items-center justify-center mx-auto mb-5">
+                <FileText className="h-7 w-7 text-stone-400 dark:text-neutral-500" />
               </div>
-              <p className="text-stone-500 dark:text-neutral-400 text-[15px] tracking-wide mb-4">
+              <p className="text-stone-500 dark:text-neutral-400 text-base mb-5">
                 No additional pages yet
               </p>
-              <Button asChild variant="outline" size="sm">
+              <Button asChild variant="outline">
                 <Link href="/admin/pages/new">
                   <Plus className="h-4 w-4 mr-2" />
                   Add About, Contact, or other pages

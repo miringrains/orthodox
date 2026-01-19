@@ -3,9 +3,15 @@ import { requireAuth } from '@/lib/auth'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
 import Link from 'next/link'
-import Image from 'next/image'
-import { Plus, Headphones, Calendar, Play, Mic, Video, BookOpen, Eye, MoreHorizontal, Settings, User } from 'lucide-react'
+import { Plus, Headphones, Play, Mic, Video, BookOpen, MoreHorizontal, Pencil, Trash2, Download, ExternalLink, User } from 'lucide-react'
 
 export const dynamic = 'force-dynamic'
 
@@ -42,17 +48,17 @@ export default async function SermonsPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="font-display text-3xl text-stone-900 dark:text-neutral-100" style={{ letterSpacing: '-0.02em' }}>
             Sermons
           </h1>
-          <p className="text-stone-500 dark:text-neutral-400 mt-2 text-[15px] tracking-wide">
+          <p className="text-stone-500 dark:text-neutral-400 mt-2 text-base">
             Manage sermons and media
           </p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
           <Button variant="outline" asChild>
             <Link href="/admin/sermons/podcast-settings">
               <Mic className="h-4 w-4 mr-2" />
@@ -69,9 +75,9 @@ export default async function SermonsPage() {
       </div>
 
       {/* Filters */}
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-4">
         <div className="relative">
-          <select className="h-9 px-3 pr-8 rounded-lg border border-stone-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-[13px] text-stone-700 dark:text-neutral-200 appearance-none cursor-pointer">
+          <select className="h-10 px-4 pr-10 rounded-lg border border-stone-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-sm text-stone-700 dark:text-neutral-200 appearance-none cursor-pointer">
             <option>All Preachers</option>
             {preachers.map(preacher => (
               <option key={preacher} value={preacher}>{preacher}</option>
@@ -79,18 +85,18 @@ export default async function SermonsPage() {
           </select>
         </div>
         <div className="relative">
-          <select className="h-9 px-3 pr-8 rounded-lg border border-stone-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-[13px] text-stone-700 dark:text-neutral-200 appearance-none cursor-pointer">
+          <select className="h-10 px-4 pr-10 rounded-lg border border-stone-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-sm text-stone-700 dark:text-neutral-200 appearance-none cursor-pointer">
             <option>All Series</option>
           </select>
         </div>
         <Input 
           placeholder="Search sermons..." 
-          className="max-w-xs h-9 text-[13px]"
+          className="max-w-xs h-10 text-sm"
         />
       </div>
 
       {sermons && sermons.length > 0 ? (
-        <div className="space-y-3">
+        <div className="space-y-4">
           {sermons.map((sermon) => {
             const preacherName = (sermon as any).preacher_name
             const scriptureRef = (sermon as any).scripture_reference
@@ -99,24 +105,24 @@ export default async function SermonsPage() {
             return (
               <div 
                 key={sermon.id}
-                className="flex items-center gap-4 p-4 bg-white dark:bg-neutral-900 border border-stone-200 dark:border-neutral-700 rounded-xl hover:border-stone-300 dark:hover:border-neutral-600 transition-colors"
+                className="flex items-center gap-5 p-5 bg-white dark:bg-neutral-900 border border-stone-200 dark:border-neutral-700 rounded-xl hover:border-stone-300 dark:hover:border-neutral-600 transition-colors"
               >
                 {/* Thumbnail */}
-                <div className="w-24 h-16 rounded-lg bg-gradient-to-br from-stone-100 to-stone-200 dark:from-neutral-800 dark:to-neutral-700 flex-shrink-0 overflow-hidden relative">
+                <div className="w-28 h-20 rounded-lg bg-gradient-to-br from-stone-100 to-stone-200 dark:from-neutral-800 dark:to-neutral-700 flex-shrink-0 overflow-hidden relative">
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="w-10 h-10 rounded-full bg-white/90 dark:bg-neutral-900/90 flex items-center justify-center">
-                      <Play className="h-4 w-4 text-stone-600 dark:text-neutral-300 ml-0.5" />
+                    <div className="w-12 h-12 rounded-full bg-white/90 dark:bg-neutral-900/90 flex items-center justify-center">
+                      <Play className="h-5 w-5 text-stone-600 dark:text-neutral-300 ml-0.5" />
                     </div>
                   </div>
                 </div>
 
                 {/* Content */}
                 <div className="flex-1 min-w-0">
-                  <div className="font-semibold text-stone-900 dark:text-neutral-100 mb-1">
+                  <div className="text-lg font-semibold text-stone-900 dark:text-neutral-100 mb-1">
                     {sermon.title}
                   </div>
                   
-                  <div className="flex items-center gap-3 text-[12px] text-stone-500 dark:text-neutral-400">
+                  <div className="flex items-center gap-4 text-sm text-stone-500 dark:text-neutral-400">
                     {sermon.date_preached && (
                       <span>
                         {new Date(sermon.date_preached).toLocaleDateString('en-US', {
@@ -127,41 +133,41 @@ export default async function SermonsPage() {
                       </span>
                     )}
                     {preacherName && (
-                      <span className="flex items-center gap-1">
-                        <User className="h-3 w-3" />
+                      <span className="flex items-center gap-1.5">
+                        <User className="h-4 w-4" />
                         {preacherName}
                       </span>
                     )}
                     {scriptureRef && (
-                      <span className="flex items-center gap-1">
-                        <BookOpen className="h-3 w-3" />
+                      <span className="flex items-center gap-1.5">
+                        <BookOpen className="h-4 w-4" />
                         {scriptureRef}
                       </span>
                     )}
                   </div>
 
                   {/* Media indicators */}
-                  <div className="flex items-center gap-2 mt-2">
+                  <div className="flex items-center gap-3 mt-3">
                     {sermon.audio_url && (
-                      <span className="inline-flex items-center gap-1 text-[11px] font-medium text-stone-500 dark:text-neutral-400 bg-stone-100 dark:bg-neutral-800 px-1.5 py-0.5 rounded">
-                        <Mic className="h-3 w-3" />
+                      <span className="inline-flex items-center gap-1.5 text-xs font-medium text-stone-500 dark:text-neutral-400 bg-stone-100 dark:bg-neutral-800 px-2 py-1 rounded">
+                        <Mic className="h-3.5 w-3.5" />
                         Audio
                       </span>
                     )}
                     {sermon.video_url && (
-                      <span className="inline-flex items-center gap-1 text-[11px] font-medium text-stone-500 dark:text-neutral-400 bg-stone-100 dark:bg-neutral-800 px-1.5 py-0.5 rounded">
-                        <Video className="h-3 w-3" />
+                      <span className="inline-flex items-center gap-1.5 text-xs font-medium text-stone-500 dark:text-neutral-400 bg-stone-100 dark:bg-neutral-800 px-2 py-1 rounded">
+                        <Video className="h-3.5 w-3.5" />
                         Video
                       </span>
                     )}
                     {duration && (
-                      <span className="text-[11px] text-stone-400 dark:text-neutral-500">
+                      <span className="text-sm text-stone-400 dark:text-neutral-500">
                         {formatDuration(duration)}
                       </span>
                     )}
                     {(sermon.view_count ?? 0) > 0 && (
-                      <span className="flex items-center gap-1 text-[11px] text-stone-400 dark:text-neutral-500">
-                        <Play className="h-3 w-3" />
+                      <span className="flex items-center gap-1.5 text-sm text-stone-400 dark:text-neutral-500">
+                        <Play className="h-3.5 w-3.5" />
                         {sermon.view_count} plays
                       </span>
                     )}
@@ -169,15 +175,46 @@ export default async function SermonsPage() {
                 </div>
 
                 {/* Actions */}
-                <div className="flex items-center gap-2">
-                  <Button asChild variant="outline" size="sm">
+                <div className="flex items-center gap-3">
+                  <Button asChild variant="outline">
                     <Link href={`/admin/sermons/${sermon.id}`}>
                       Edit
                     </Link>
                   </Button>
-                  <Button variant="ghost" size="icon">
-                    <MoreHorizontal className="h-4 w-4" />
-                  </Button>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="icon">
+                        <MoreHorizontal className="h-5 w-5" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-48">
+                      <DropdownMenuItem asChild>
+                        <Link href={`/admin/sermons/${sermon.id}`} className="flex items-center">
+                          <Pencil className="h-4 w-4 mr-2" />
+                          Edit Sermon
+                        </Link>
+                      </DropdownMenuItem>
+                      {sermon.audio_url && (
+                        <DropdownMenuItem className="flex items-center">
+                          <Download className="h-4 w-4 mr-2" />
+                          Download Audio
+                        </DropdownMenuItem>
+                      )}
+                      {sermon.video_url && (
+                        <DropdownMenuItem asChild>
+                          <a href={sermon.video_url} target="_blank" rel="noopener noreferrer" className="flex items-center">
+                            <ExternalLink className="h-4 w-4 mr-2" />
+                            View Video
+                          </a>
+                        </DropdownMenuItem>
+                      )}
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem className="flex items-center text-red-600 dark:text-red-400">
+                        <Trash2 className="h-4 w-4 mr-2" />
+                        Delete
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </div>
               </div>
             )
@@ -185,11 +222,11 @@ export default async function SermonsPage() {
         </div>
       ) : (
         <Card>
-          <CardContent className="py-12 text-center">
-            <div className="w-12 h-12 rounded-xl bg-stone-100 dark:bg-neutral-800 flex items-center justify-center mx-auto mb-4">
-              <Headphones className="h-6 w-6 text-stone-400 dark:text-neutral-500" />
+          <CardContent className="py-16 text-center">
+            <div className="w-14 h-14 rounded-xl bg-stone-100 dark:bg-neutral-800 flex items-center justify-center mx-auto mb-5">
+              <Headphones className="h-7 w-7 text-stone-400 dark:text-neutral-500" />
             </div>
-            <p className="text-stone-500 dark:text-neutral-400 text-[15px] tracking-wide">
+            <p className="text-stone-500 dark:text-neutral-400 text-base">
               No sermons yet. Add your first one!
             </p>
           </CardContent>
