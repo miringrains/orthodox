@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { WelcomeModal } from './WelcomeModal'
+import { OnboardingWizard } from './OnboardingWizard'
 
 interface DashboardClientProps {
   parishId: string
@@ -13,7 +13,7 @@ export function DashboardClient({ parishId, parishName, showWelcomeModal }: Dash
   const [isModalOpen, setIsModalOpen] = useState(showWelcomeModal)
 
   return (
-    <WelcomeModal
+    <OnboardingWizard
       parishId={parishId}
       parishName={parishName}
       isOpen={isModalOpen}
@@ -21,4 +21,3 @@ export function DashboardClient({ parishId, parishName, showWelcomeModal }: Dash
     />
   )
 }
-

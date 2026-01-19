@@ -1,7 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { DollarSign, Calendar, Megaphone, Users, FileEdit, Plus, Eye, ArrowRight, ExternalLink, Palette } from 'lucide-react'
+import { DollarSign, Calendar, Megaphone, Users, FileEdit, Plus, Eye, ArrowRight, ExternalLink, Palette, TrendingUp, Clock, Globe, BarChart3 } from 'lucide-react'
 import { DashboardClient } from '@/components/admin/DashboardClient'
 import Link from 'next/link'
 
@@ -61,9 +61,9 @@ export default async function DashboardPage() {
           title: 'Home',
           slug: 'home',
           kind: 'HOME',
-        builder_enabled: true,
-        builder_schema: null,
-      })
+          builder_enabled: true,
+          builder_schema: null,
+        })
         .select('id')
         .single()
       
@@ -136,11 +136,14 @@ export default async function DashboardPage() {
           </p>
         </div>
         
-        {/* Plan badge */}
-        <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-white dark:bg-neutral-800 border border-stone-200 dark:border-neutral-700 text-[13px] shadow-sm">
+        {/* Plan badge - now clickable */}
+        <Link 
+          href="/admin/settings"
+          className="flex items-center gap-2 px-4 py-2 rounded-full bg-white dark:bg-neutral-800 border border-stone-200 dark:border-neutral-700 text-[13px] shadow-sm hover:border-gold-400 hover:shadow-md transition-all"
+        >
           <span className="text-stone-400 dark:text-neutral-500 tracking-wide">Plan:</span>
-          <span className="font-semibold text-stone-700 dark:text-neutral-200">{planLabels[selectedPlan] || selectedPlan}</span>
-        </div>
+          <span className="font-semibold text-gold-600 dark:text-gold-400">{planLabels[selectedPlan] || selectedPlan}</span>
+        </Link>
       </div>
 
       {/* Edit Website CTA */}
@@ -174,6 +177,73 @@ export default async function DashboardPage() {
         </div>
       )}
 
+      {/* Website Analytics Section */}
+      <div className="bg-white dark:bg-neutral-900 border border-stone-200 dark:border-neutral-700 rounded-2xl p-6">
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-lg bg-emerald-50 dark:bg-emerald-500/10 flex items-center justify-center">
+              <BarChart3 className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
+            </div>
+            <div>
+              <h2 className="text-lg font-semibold text-stone-900 dark:text-neutral-100">Website Analytics</h2>
+              <p className="text-[13px] text-stone-500 dark:text-neutral-400">Last 30 days performance</p>
+            </div>
+          </div>
+          <Button variant="outline" size="sm" asChild>
+            <Link href="/admin/reports">
+              View Full Report
+              <ArrowRight className="h-4 w-4 ml-2" />
+            </Link>
+          </Button>
+        </div>
+
+        {/* Analytics Metrics */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="bg-stone-50 dark:bg-neutral-800 rounded-xl p-4">
+            <div className="flex items-center gap-2 mb-2">
+              <Users className="h-4 w-4 text-stone-400" />
+              <span className="text-[12px] text-stone-500 dark:text-neutral-400 tracking-wide">Total Visitors</span>
+            </div>
+            <div className="text-2xl font-bold text-stone-900 dark:text-neutral-100">—</div>
+            <div className="flex items-center gap-1 mt-1">
+              <TrendingUp className="h-3 w-3 text-emerald-500" />
+              <span className="text-[11px] text-emerald-600 dark:text-emerald-400">Set up analytics</span>
+            </div>
+          </div>
+
+          <div className="bg-stone-50 dark:bg-neutral-800 rounded-xl p-4">
+            <div className="flex items-center gap-2 mb-2">
+              <Clock className="h-4 w-4 text-stone-400" />
+              <span className="text-[12px] text-stone-500 dark:text-neutral-400 tracking-wide">Avg. Time on Site</span>
+            </div>
+            <div className="text-2xl font-bold text-stone-900 dark:text-neutral-100">—</div>
+            <div className="text-[11px] text-stone-400 mt-1">Coming soon</div>
+          </div>
+
+          <div className="bg-stone-50 dark:bg-neutral-800 rounded-xl p-4">
+            <div className="flex items-center gap-2 mb-2">
+              <Globe className="h-4 w-4 text-stone-400" />
+              <span className="text-[12px] text-stone-500 dark:text-neutral-400 tracking-wide">Top Traffic Source</span>
+            </div>
+            <div className="text-lg font-semibold text-stone-900 dark:text-neutral-100">—</div>
+            <div className="text-[11px] text-stone-400 mt-1">Connect analytics</div>
+          </div>
+
+          <div className="bg-stone-50 dark:bg-neutral-800 rounded-xl p-4">
+            <div className="flex items-center gap-2 mb-2">
+              <Eye className="h-4 w-4 text-stone-400" />
+              <span className="text-[12px] text-stone-500 dark:text-neutral-400 tracking-wide">Most Viewed Page</span>
+            </div>
+            <div className="text-lg font-semibold text-stone-900 dark:text-neutral-100">—</div>
+            <div className="text-[11px] text-stone-400 mt-1">Configure tracking</div>
+          </div>
+        </div>
+
+        <p className="text-[12px] text-stone-400 dark:text-neutral-500 mt-4 text-center">
+          Analytics will be available once you connect a tracking service like Umami or Plausible in Settings.
+        </p>
+      </div>
+
       {/* Stats Grid */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         {[
@@ -205,7 +275,7 @@ export default async function DashboardPage() {
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {[
             { href: '/admin/announcements/new', title: 'Post Announcement', desc: 'Share news with your parish', icon: Megaphone, iconBg: 'bg-blue-50 dark:bg-blue-500/10', iconColor: 'text-blue-600 dark:text-blue-400' },
-            { href: '/admin/events/new', title: 'Add Event', desc: 'Schedule a service or gathering', icon: Plus, iconBg: 'bg-stone-100 dark:bg-neutral-800', iconColor: 'text-stone-600 dark:text-neutral-400' },
+            { href: '/admin/calendar', title: 'Add Event', desc: 'Schedule a service or gathering', icon: Plus, iconBg: 'bg-stone-100 dark:bg-neutral-800', iconColor: 'text-stone-600 dark:text-neutral-400' },
             { href: '/admin/giving', title: 'View Donations', desc: 'See recent giving activity', icon: Eye, iconBg: 'bg-emerald-50 dark:bg-emerald-500/10', iconColor: 'text-emerald-600 dark:text-emerald-400' },
           ].map((action) => (
             <Link key={action.href} href={action.href} className="group">

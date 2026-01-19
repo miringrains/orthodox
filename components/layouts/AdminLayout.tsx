@@ -17,7 +17,6 @@ import {
   Menu,
   X,
   LogOut,
-  Navigation,
   Church,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -60,10 +59,8 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
 
   const navItems = [
     { href: '/admin/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-    { href: '/admin/pages', label: 'Pages', icon: FileText },
-    { href: '/admin/navigation', label: 'Navigation', icon: Navigation },
-    { href: '/admin/schedule', label: 'Schedule', icon: Calendar },
-    { href: '/admin/events', label: 'Events', icon: Calendar },
+    { href: '/admin/pages', label: 'Website Pages', icon: FileText },
+    { href: '/admin/calendar', label: 'Calendar', icon: Calendar },
     { href: '/admin/announcements', label: 'Announcements', icon: Megaphone },
     { href: '/admin/sermons', label: 'Sermons', icon: Headphones },
     { href: '/admin/giving', label: 'Giving', icon: DollarSign },

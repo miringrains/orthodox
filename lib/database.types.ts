@@ -20,11 +20,14 @@ export type Database = {
           content: string
           created_at: string | null
           created_by: string
+          expires_at: string | null
           id: string
+          image_url: string | null
           is_pinned: boolean | null
           parish_id: string
           published_at: string | null
           scheduled_for: string | null
+          status: string | null
           title: string
           updated_at: string | null
         }
@@ -33,11 +36,14 @@ export type Database = {
           content: string
           created_at?: string | null
           created_by: string
+          expires_at?: string | null
           id?: string
+          image_url?: string | null
           is_pinned?: boolean | null
           parish_id: string
           published_at?: string | null
           scheduled_for?: string | null
+          status?: string | null
           title: string
           updated_at?: string | null
         }
@@ -46,11 +52,14 @@ export type Database = {
           content?: string
           created_at?: string | null
           created_by?: string
+          expires_at?: string | null
           id?: string
+          image_url?: string | null
           is_pinned?: boolean | null
           parish_id?: string
           published_at?: string | null
           scheduled_for?: string | null
+          status?: string | null
           title?: string
           updated_at?: string | null
         }
@@ -121,39 +130,63 @@ export type Database = {
       }
       community_needs: {
         Row: {
+          category: string | null
           created_at: string | null
           created_by: string
           current_amount: number | null
+          current_volunteers: number | null
+          deadline: string | null
           description: string | null
           goal_amount: number | null
           id: string
+          is_recurring: boolean | null
+          max_volunteers: number | null
+          need_type: string | null
           parish_id: string
+          status: string | null
           title: string
           updated_at: string | null
+          urgency: string | null
           visibility: string | null
         }
         Insert: {
+          category?: string | null
           created_at?: string | null
           created_by: string
           current_amount?: number | null
+          current_volunteers?: number | null
+          deadline?: string | null
           description?: string | null
           goal_amount?: number | null
           id?: string
+          is_recurring?: boolean | null
+          max_volunteers?: number | null
+          need_type?: string | null
           parish_id: string
+          status?: string | null
           title: string
           updated_at?: string | null
+          urgency?: string | null
           visibility?: string | null
         }
         Update: {
+          category?: string | null
           created_at?: string | null
           created_by?: string
           current_amount?: number | null
+          current_volunteers?: number | null
+          deadline?: string | null
           description?: string | null
           goal_amount?: number | null
           id?: string
+          is_recurring?: boolean | null
+          max_volunteers?: number | null
+          need_type?: string | null
           parish_id?: string
+          status?: string | null
           title?: string
           updated_at?: string | null
+          urgency?: string | null
           visibility?: string | null
         }
         Relationships: [
@@ -166,6 +199,50 @@ export type Database = {
           },
           {
             foreignKeyName: "community_needs_parish_id_fkey"
+            columns: ["parish_id"]
+            isOneToOne: false
+            referencedRelation: "parishes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      contact_submissions: {
+        Row: {
+          created_at: string | null
+          email: string
+          id: string
+          is_read: boolean | null
+          message: string
+          name: string
+          parish_id: string
+          phone: string | null
+          subject: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          email: string
+          id?: string
+          is_read?: boolean | null
+          message: string
+          name: string
+          parish_id: string
+          phone?: string | null
+          subject?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          email?: string
+          id?: string
+          is_read?: boolean | null
+          message?: string
+          name?: string
+          parish_id?: string
+          phone?: string | null
+          subject?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contact_submissions_parish_id_fkey"
             columns: ["parish_id"]
             isOneToOne: false
             referencedRelation: "parishes"
@@ -334,7 +411,7 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "donations_community_need_fk"
+            foreignKeyName: "donations_community_need_id_fkey"
             columns: ["community_need_id"]
             isOneToOne: false
             referencedRelation: "community_needs"
@@ -362,7 +439,7 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "donations_project_fk"
+            foreignKeyName: "donations_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "projects"
@@ -408,6 +485,7 @@ export type Database = {
       }
       events: {
         Row: {
+          color: string | null
           created_at: string | null
           created_by: string
           description: string | null
@@ -418,11 +496,15 @@ export type Database = {
           is_feast: boolean | null
           location: string | null
           parish_id: string
+          recurrence_rule: string | null
+          service_type: string | null
           start_at: string
+          status: string | null
           title: string
           updated_at: string | null
         }
         Insert: {
+          color?: string | null
           created_at?: string | null
           created_by: string
           description?: string | null
@@ -433,11 +515,15 @@ export type Database = {
           is_feast?: boolean | null
           location?: string | null
           parish_id: string
+          recurrence_rule?: string | null
+          service_type?: string | null
           start_at: string
+          status?: string | null
           title: string
           updated_at?: string | null
         }
         Update: {
+          color?: string | null
           created_at?: string | null
           created_by?: string
           description?: string | null
@@ -448,7 +534,10 @@ export type Database = {
           is_feast?: boolean | null
           location?: string | null
           parish_id?: string
+          recurrence_rule?: string | null
+          service_type?: string | null
           start_at?: string
+          status?: string | null
           title?: string
           updated_at?: string | null
         }
@@ -468,39 +557,6 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
-      }
-      global_projects: {
-        Row: {
-          created_at: string | null
-          description: string | null
-          goal_amount: number | null
-          id: string
-          is_active: boolean | null
-          project_type: string | null
-          title: string
-          updated_at: string | null
-        }
-        Insert: {
-          created_at?: string | null
-          description?: string | null
-          goal_amount?: number | null
-          id?: string
-          is_active?: boolean | null
-          project_type?: string | null
-          title: string
-          updated_at?: string | null
-        }
-        Update: {
-          created_at?: string | null
-          description?: string | null
-          goal_amount?: number | null
-          id?: string
-          is_active?: boolean | null
-          project_type?: string | null
-          title?: string
-          updated_at?: string | null
-        }
-        Relationships: []
       }
       media_assets: {
         Row: {
@@ -644,11 +700,18 @@ export type Database = {
           created_at: string | null
           custom_domain: string | null
           default_languages: string[] | null
+          first_dashboard_visit: boolean | null
           id: string
           is_active: boolean | null
           jurisdiction: string | null
           location: Json | null
+          logo_url: string | null
           name: string
+          needs_domain: boolean | null
+          onboarding_answers: Json | null
+          onboarding_completed: boolean | null
+          selected_addons: string[] | null
+          selected_plan: string | null
           slug: string
           subdomain: string | null
           theme_config: Json | null
@@ -659,11 +722,18 @@ export type Database = {
           created_at?: string | null
           custom_domain?: string | null
           default_languages?: string[] | null
+          first_dashboard_visit?: boolean | null
           id?: string
           is_active?: boolean | null
           jurisdiction?: string | null
           location?: Json | null
+          logo_url?: string | null
           name: string
+          needs_domain?: boolean | null
+          onboarding_answers?: Json | null
+          onboarding_completed?: boolean | null
+          selected_addons?: string[] | null
+          selected_plan?: string | null
           slug: string
           subdomain?: string | null
           theme_config?: Json | null
@@ -674,11 +744,18 @@ export type Database = {
           created_at?: string | null
           custom_domain?: string | null
           default_languages?: string[] | null
+          first_dashboard_visit?: boolean | null
           id?: string
           is_active?: boolean | null
           jurisdiction?: string | null
           location?: Json | null
+          logo_url?: string | null
           name?: string
+          needs_domain?: boolean | null
+          onboarding_answers?: Json | null
+          onboarding_completed?: boolean | null
+          selected_addons?: string[] | null
+          selected_plan?: string | null
           slug?: string
           subdomain?: string | null
           theme_config?: Json | null
@@ -693,11 +770,15 @@ export type Database = {
           created_by: string
           current_amount: number | null
           description: string | null
+          donor_count: number | null
           goal_amount: number | null
           id: string
+          image_url: string | null
           is_visible: boolean | null
+          last_update: string | null
           parish_id: string
           project_type: string | null
+          status: string | null
           title: string
           updated_at: string | null
         }
@@ -706,11 +787,15 @@ export type Database = {
           created_by: string
           current_amount?: number | null
           description?: string | null
+          donor_count?: number | null
           goal_amount?: number | null
           id?: string
+          image_url?: string | null
           is_visible?: boolean | null
+          last_update?: string | null
           parish_id: string
           project_type?: string | null
+          status?: string | null
           title: string
           updated_at?: string | null
         }
@@ -719,11 +804,15 @@ export type Database = {
           created_by?: string
           current_amount?: number | null
           description?: string | null
+          donor_count?: number | null
           goal_amount?: number | null
           id?: string
+          image_url?: string | null
           is_visible?: boolean | null
+          last_update?: string | null
           parish_id?: string
           project_type?: string | null
+          status?: string | null
           title?: string
           updated_at?: string | null
         }
@@ -751,11 +840,15 @@ export type Database = {
           created_by: string
           date_preached: string | null
           description: string | null
+          duration_seconds: number | null
           id: string
           parish_id: string
+          preacher_name: string | null
+          scripture_reference: string | null
           series_id: string | null
           text_content: string | null
           title: string
+          transcript: string | null
           updated_at: string | null
           video_url: string | null
           view_count: number | null
@@ -766,11 +859,15 @@ export type Database = {
           created_by: string
           date_preached?: string | null
           description?: string | null
+          duration_seconds?: number | null
           id?: string
           parish_id: string
+          preacher_name?: string | null
+          scripture_reference?: string | null
           series_id?: string | null
           text_content?: string | null
           title: string
+          transcript?: string | null
           updated_at?: string | null
           video_url?: string | null
           view_count?: number | null
@@ -781,11 +878,15 @@ export type Database = {
           created_by?: string
           date_preached?: string | null
           description?: string | null
+          duration_seconds?: number | null
           id?: string
           parish_id?: string
+          preacher_name?: string | null
+          scripture_reference?: string | null
           series_id?: string | null
           text_content?: string | null
           title?: string
+          transcript?: string | null
           updated_at?: string | null
           video_url?: string | null
           view_count?: number | null
@@ -806,7 +907,7 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "sermons_series_fk"
+            foreignKeyName: "sermons_series_id_fkey"
             columns: ["series_id"]
             isOneToOne: false
             referencedRelation: "sermons"
@@ -1039,5 +1140,3 @@ export const Constants = {
     Enums: {},
   },
 } as const
-
-
