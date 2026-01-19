@@ -1,5 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
-import { Card, CardContent, CardHeader } from '@/components/ui/card'
+import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { DollarSign, Calendar, Megaphone, Users, FileEdit, Plus, Eye, ArrowRight, ExternalLink, Palette, TrendingUp, Clock, Globe, BarChart3 } from 'lucide-react'
 import { DashboardClient } from '@/components/admin/DashboardClient'
@@ -115,7 +115,7 @@ export default async function DashboardPage() {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-10">
       {/* Welcome Modal (client component) */}
       {parishId && (
         <DashboardClient
@@ -131,7 +131,7 @@ export default async function DashboardPage() {
           <h1 className="font-display text-4xl text-stone-900 dark:text-neutral-100" style={{ letterSpacing: '-0.02em' }}>
             Welcome, {parishName}
           </h1>
-          <p className="text-stone-500 dark:text-neutral-400 mt-2 text-[15px] tracking-wide">
+          <p className="text-stone-500 dark:text-neutral-400 mt-3 text-lg">
             Here&apos;s what&apos;s happening with your parish.
           </p>
         </div>
@@ -139,37 +139,37 @@ export default async function DashboardPage() {
         {/* Plan badge - now clickable */}
         <Link 
           href="/admin/settings"
-          className="flex items-center gap-2 px-4 py-2 rounded-full bg-white dark:bg-neutral-800 border border-stone-200 dark:border-neutral-700 text-[13px] shadow-sm hover:border-gold-400 hover:shadow-md transition-all"
+          className="flex items-center gap-2.5 px-5 py-2.5 rounded-full bg-white dark:bg-neutral-800 border border-stone-200 dark:border-neutral-700 text-sm shadow-sm hover:border-gold-400 hover:shadow-md transition-all"
         >
-          <span className="text-stone-400 dark:text-neutral-500 tracking-wide">Plan:</span>
+          <span className="text-stone-400 dark:text-neutral-500">Plan:</span>
           <span className="font-semibold text-gold-600 dark:text-gold-400">{planLabels[selectedPlan] || selectedPlan}</span>
         </Link>
       </div>
 
       {/* Edit Website CTA */}
       {homePageId && (
-        <div className="bg-gradient-to-r from-stone-900 to-stone-800 dark:from-neutral-800 dark:to-neutral-900 rounded-2xl p-6 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-xl bg-gold-500/20 flex items-center justify-center">
-              <Palette className="h-6 w-6 text-gold-400" />
+        <div className="bg-gradient-to-r from-stone-900 to-stone-800 dark:from-neutral-800 dark:to-neutral-900 rounded-2xl p-8 flex items-center justify-between">
+          <div className="flex items-center gap-5">
+            <div className="w-14 h-14 rounded-xl bg-gold-500/20 flex items-center justify-center">
+              <Palette className="h-7 w-7 text-gold-400" />
             </div>
             <div>
-              <h2 className="text-xl font-semibold text-white">Your Website</h2>
-              <p className="text-stone-400 text-sm">Customize your parish website with the visual builder</p>
+              <h2 className="text-2xl font-semibold text-white">Your Website</h2>
+              <p className="text-stone-400 text-base mt-1">Customize your parish website with the visual builder</p>
             </div>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-4">
             {parishSlug && (
-              <Button asChild variant="ghost" className="text-stone-300 hover:text-white hover:bg-stone-700">
+              <Button asChild variant="ghost" className="text-stone-300 hover:text-white hover:bg-stone-700 h-11 px-5">
                 <Link href={`/p/${parishSlug}`} target="_blank">
-                  <ExternalLink className="h-4 w-4 mr-2" />
+                  <ExternalLink className="h-5 w-5 mr-2" />
                   View Live
                 </Link>
               </Button>
             )}
-            <Button asChild className="bg-gold-500 hover:bg-gold-600 text-stone-900 font-semibold">
+            <Button asChild className="bg-gold-500 hover:bg-gold-600 text-stone-900 font-semibold h-11 px-6">
               <Link href={`/admin/pages/${homePageId}/builder`}>
-                <FileEdit className="h-4 w-4 mr-2" />
+                <FileEdit className="h-5 w-5 mr-2" />
                 Edit Website
               </Link>
             </Button>
@@ -177,19 +177,20 @@ export default async function DashboardPage() {
         </div>
       )}
 
-      {/* Website Analytics Section */}
-      <div className="bg-white dark:bg-neutral-900 border border-stone-200 dark:border-neutral-700 rounded-2xl p-6">
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-emerald-50 dark:bg-emerald-500/10 flex items-center justify-center">
-              <BarChart3 className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
+      {/* Website Analytics Section - Porto Rocha style */}
+      <div className="bg-white dark:bg-neutral-900 border border-stone-200 dark:border-neutral-700 rounded-2xl overflow-hidden">
+        {/* Header */}
+        <div className="flex items-center justify-between px-8 py-6 border-b border-stone-100 dark:border-neutral-800">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 rounded-xl bg-emerald-50 dark:bg-emerald-500/10 flex items-center justify-center">
+              <BarChart3 className="h-6 w-6 text-emerald-600 dark:text-emerald-400" />
             </div>
             <div>
-              <h2 className="text-lg font-semibold text-stone-900 dark:text-neutral-100">Website Analytics</h2>
-              <p className="text-[13px] text-stone-500 dark:text-neutral-400">Last 30 days performance</p>
+              <h2 className="text-xl font-semibold text-stone-900 dark:text-neutral-100">Website Analytics</h2>
+              <p className="text-sm text-stone-500 dark:text-neutral-400 mt-0.5">Last 30 days performance</p>
             </div>
           </div>
-          <Button variant="outline" size="sm" asChild>
+          <Button variant="outline" className="h-10 px-5" asChild>
             <Link href="/admin/reports">
               View Full Report
               <ArrowRight className="h-4 w-4 ml-2" />
@@ -197,102 +198,112 @@ export default async function DashboardPage() {
           </Button>
         </div>
 
-        {/* Analytics Metrics */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="bg-stone-50 dark:bg-neutral-800 rounded-xl p-4">
-            <div className="flex items-center gap-2 mb-2">
-              <Users className="h-4 w-4 text-stone-400" />
-              <span className="text-[12px] text-stone-500 dark:text-neutral-400 tracking-wide">Total Visitors</span>
+        {/* Analytics Metrics - generous spacing, bold values */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 divide-x divide-stone-100 dark:divide-neutral-800">
+          {/* Total Visitors */}
+          <div className="p-8">
+            <div className="flex items-center gap-2.5 text-stone-500 dark:text-neutral-400 mb-4">
+              <Users className="h-5 w-5" />
+              <span className="text-sm font-medium">Total Visitors</span>
             </div>
-            <div className="text-2xl font-bold text-stone-900 dark:text-neutral-100">—</div>
-            <div className="flex items-center gap-1 mt-1">
-              <TrendingUp className="h-3 w-3 text-emerald-500" />
-              <span className="text-[11px] text-emerald-600 dark:text-emerald-400">Set up analytics</span>
-            </div>
+            <div className="text-4xl font-bold text-stone-900 dark:text-neutral-100 mb-3">—</div>
+            <Link href="/admin/settings" className="inline-flex items-center gap-1.5 text-sm text-emerald-600 dark:text-emerald-400 hover:underline">
+              <TrendingUp className="h-4 w-4" />
+              Set up analytics
+            </Link>
           </div>
 
-          <div className="bg-stone-50 dark:bg-neutral-800 rounded-xl p-4">
-            <div className="flex items-center gap-2 mb-2">
-              <Clock className="h-4 w-4 text-stone-400" />
-              <span className="text-[12px] text-stone-500 dark:text-neutral-400 tracking-wide">Avg. Time on Site</span>
+          {/* Avg Time on Site */}
+          <div className="p-8">
+            <div className="flex items-center gap-2.5 text-stone-500 dark:text-neutral-400 mb-4">
+              <Clock className="h-5 w-5" />
+              <span className="text-sm font-medium">Avg. Time on Site</span>
             </div>
-            <div className="text-2xl font-bold text-stone-900 dark:text-neutral-100">—</div>
-            <div className="text-[11px] text-stone-400 mt-1">Coming soon</div>
+            <div className="text-4xl font-bold text-stone-900 dark:text-neutral-100 mb-3">—</div>
+            <span className="text-sm text-stone-400 dark:text-neutral-500">Coming soon</span>
           </div>
 
-          <div className="bg-stone-50 dark:bg-neutral-800 rounded-xl p-4">
-            <div className="flex items-center gap-2 mb-2">
-              <Globe className="h-4 w-4 text-stone-400" />
-              <span className="text-[12px] text-stone-500 dark:text-neutral-400 tracking-wide">Top Traffic Source</span>
+          {/* Top Traffic Source */}
+          <div className="p-8">
+            <div className="flex items-center gap-2.5 text-stone-500 dark:text-neutral-400 mb-4">
+              <Globe className="h-5 w-5" />
+              <span className="text-sm font-medium">Top Traffic Source</span>
             </div>
-            <div className="text-lg font-semibold text-stone-900 dark:text-neutral-100">—</div>
-            <div className="text-[11px] text-stone-400 mt-1">Connect analytics</div>
+            <div className="text-4xl font-bold text-stone-900 dark:text-neutral-100 mb-3">—</div>
+            <span className="text-sm text-stone-400 dark:text-neutral-500">Connect analytics</span>
           </div>
 
-          <div className="bg-stone-50 dark:bg-neutral-800 rounded-xl p-4">
-            <div className="flex items-center gap-2 mb-2">
-              <Eye className="h-4 w-4 text-stone-400" />
-              <span className="text-[12px] text-stone-500 dark:text-neutral-400 tracking-wide">Most Viewed Page</span>
+          {/* Most Viewed Page */}
+          <div className="p-8">
+            <div className="flex items-center gap-2.5 text-stone-500 dark:text-neutral-400 mb-4">
+              <Eye className="h-5 w-5" />
+              <span className="text-sm font-medium">Most Viewed Page</span>
             </div>
-            <div className="text-lg font-semibold text-stone-900 dark:text-neutral-100">—</div>
-            <div className="text-[11px] text-stone-400 mt-1">Configure tracking</div>
+            <div className="text-4xl font-bold text-stone-900 dark:text-neutral-100 mb-3">—</div>
+            <span className="text-sm text-stone-400 dark:text-neutral-500">Configure tracking</span>
           </div>
         </div>
 
-        <p className="text-[12px] text-stone-400 dark:text-neutral-500 mt-4 text-center">
-          Analytics will be available once you connect a tracking service like Umami or Plausible in Settings.
-        </p>
+        {/* Footer note */}
+        <div className="px-8 py-5 bg-stone-50 dark:bg-neutral-800/50 border-t border-stone-100 dark:border-neutral-800">
+          <p className="text-sm text-stone-500 dark:text-neutral-400 text-center">
+            Analytics will be available once you connect a tracking service like Umami or Plausible in{' '}
+            <Link href="/admin/settings" className="text-stone-700 dark:text-neutral-200 underline underline-offset-2 hover:text-stone-900">
+              Settings
+            </Link>.
+          </p>
+        </div>
       </div>
 
-      {/* Stats Grid */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      {/* Stats Grid - larger, more prominent */}
+      <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-4">
         {[
           { label: 'Last 30 Days', value: `$${stats.totalDonations.toLocaleString()}`, sub: `${stats.donations} donations`, icon: DollarSign },
           { label: 'Upcoming Events', value: stats.upcomingEvents.toString(), sub: 'Next 5 events', icon: Calendar },
           { label: 'Recent Announcements', value: stats.recentAnnouncements.toString(), sub: 'Latest posts', icon: Megaphone },
           { label: 'Parishes', value: (parishes?.length || 0).toString(), sub: 'Active parishes', icon: Users },
         ].map((stat) => (
-          <div key={stat.label} className="bg-stone-900 dark:bg-neutral-800 rounded-xl p-5">
-            <div className="flex items-center justify-between mb-3">
-              <span className="text-[13px] font-medium text-stone-400 dark:text-neutral-400 tracking-wide">{stat.label}</span>
-              <stat.icon className="h-4 w-4 text-gold-400" />
+          <div key={stat.label} className="bg-stone-900 dark:bg-neutral-800 rounded-2xl p-6">
+            <div className="flex items-center justify-between mb-4">
+              <span className="text-sm font-medium text-stone-400 dark:text-neutral-400">{stat.label}</span>
+              <stat.icon className="h-5 w-5 text-gold-400" />
             </div>
-            <div className="text-3xl font-semibold text-white dark:text-neutral-100 tracking-tight">
+            <div className="text-4xl font-bold text-white dark:text-neutral-100 tracking-tight">
               {stat.value}
             </div>
-            <p className="text-[13px] text-stone-500 dark:text-neutral-500 mt-1 tracking-wide">
+            <p className="text-sm text-stone-500 dark:text-neutral-500 mt-2">
               {stat.sub}
             </p>
           </div>
         ))}
       </div>
 
-      {/* Quick Actions */}
+      {/* Quick Actions - more breathing room */}
       <div>
-        <h2 className="font-display text-2xl text-stone-900 dark:text-neutral-100 mb-4" style={{ letterSpacing: '-0.01em' }}>
+        <h2 className="font-display text-2xl text-stone-900 dark:text-neutral-100 mb-5" style={{ letterSpacing: '-0.01em' }}>
           Quick Actions
         </h2>
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
           {[
             { href: '/admin/announcements/new', title: 'Post Announcement', desc: 'Share news with your parish', icon: Megaphone, iconBg: 'bg-blue-50 dark:bg-blue-500/10', iconColor: 'text-blue-600 dark:text-blue-400' },
             { href: '/admin/calendar', title: 'Add Event', desc: 'Schedule a service or gathering', icon: Plus, iconBg: 'bg-stone-100 dark:bg-neutral-800', iconColor: 'text-stone-600 dark:text-neutral-400' },
             { href: '/admin/giving', title: 'View Donations', desc: 'See recent giving activity', icon: Eye, iconBg: 'bg-emerald-50 dark:bg-emerald-500/10', iconColor: 'text-emerald-600 dark:text-emerald-400' },
           ].map((action) => (
             <Link key={action.href} href={action.href} className="group">
-              <Card className="h-full hover:shadow-md hover:border-stone-300 dark:hover:border-neutral-700">
-                <div className="flex items-center gap-4 p-4">
-                  <div className={`w-10 h-10 rounded-lg ${action.iconBg} flex items-center justify-center flex-shrink-0`}>
-                    <action.icon className={`h-5 w-5 ${action.iconColor}`} />
+              <Card className="h-full hover:shadow-lg hover:border-stone-300 dark:hover:border-neutral-600 transition-all duration-200">
+                <div className="flex items-center gap-5 p-5">
+                  <div className={`w-12 h-12 rounded-xl ${action.iconBg} flex items-center justify-center flex-shrink-0`}>
+                    <action.icon className={`h-6 w-6 ${action.iconColor}`} />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <div className="text-[15px] font-semibold text-stone-900 dark:text-neutral-100 tracking-tight">
+                    <div className="text-lg font-semibold text-stone-900 dark:text-neutral-100">
                       {action.title}
                     </div>
-                    <div className="text-[13px] text-stone-500 dark:text-neutral-400 tracking-wide">
+                    <div className="text-sm text-stone-500 dark:text-neutral-400 mt-0.5">
                       {action.desc}
                     </div>
                   </div>
-                  <ArrowRight className="h-4 w-4 text-stone-300 dark:text-neutral-600 group-hover:text-stone-500 dark:group-hover:text-neutral-400 transition-colors flex-shrink-0" />
+                  <ArrowRight className="h-5 w-5 text-stone-300 dark:text-neutral-600 group-hover:text-stone-500 dark:group-hover:text-neutral-400 group-hover:translate-x-1 transition-all flex-shrink-0" />
                 </div>
               </Card>
             </Link>
